@@ -44,18 +44,18 @@ bool Individ::operator!=(Individ i) {
 	else return true;
 }
 
-void Individ::move(Individ (*(*field)[W][H]), Individ *empty) {
+void Individ::move(Individ (*(*field)[W][H])) {
 	Vector <double> tempPos;
 	Individ *he=this;
 	while (way.getLength()!=0 &&
-		((*he) == *empty || (*he) == (*this)) &&
+		(he->ID == 0 || (*he) == (*this)) &&
 		(tempPos+way)<=(way*speed) &&
 		pos.x+func::round(tempPos.x+way.x)>0 && 
 		pos.x+func::round(tempPos.x+way.x)<W && 
 		pos.y+func::round(tempPos.y+way.y)>0 && 
 		pos.y+func::round(tempPos.y+way.y)<H) {
 			he = (*field)[func::round(tempPos.x + way.x + (double) pos.x)][func::round(tempPos.y + way.y + (double) pos.y)];
-			if (*he == *empty || (*he) == (*this)) {
+			if (he->ID == 0 || (*he) == (*this)) {
 				tempPos+=way;
 				collision=false;
 			} else { collision=true; break; }
@@ -69,7 +69,7 @@ void Individ::move(Individ (*(*field)[W][H]), Individ *empty) {
 
 //дописать обработку глаза типа сектор
 //вычисл€ть с помощью перевода координаты €чейки в пол€рную систему координат
-void Individ::look(Individ (*(*field)[W][H]), Individ *empty) {
+void Individ::look(Individ (*(*field)[W][H])) {
 	mem.clear();
 
 	for (int i=0; i<dna.eyes.size(); i++) {
@@ -105,7 +105,7 @@ void Individ::look(Individ (*(*field)[W][H]), Individ *empty) {
 						absP.y=func::round(P.y+pos.y);
 
 						Individ *he = (*field)[absP.x][absP.y];
-						if (*he != *empty && *he != *this) {
+						if (he->ID != 0 && *he != *this) {
 							if (he->dna.diet != dna.diet && !func::isIn(mem.enemies, he)) 
 								mem.enemies.push_back(he);
 							if (he->dna.diet == dna.diet && !func::isIn(mem.partners, he))
@@ -128,7 +128,7 @@ void Individ::look(Individ (*(*field)[W][H]), Individ *empty) {
 						absP.x=func::round(P.x+pos.x);
 						absP.y=func::round(P.y+pos.y);
 						Individ *he = (*field)[absP.x][absP.y];
-						if (*he != *empty && *he != *this) {
+						if (he->ID != 0 && *he != *this) {
 							if (he->dna.diet != dna.diet && !func::isIn(mem.enemies, he)) 
 								mem.enemies.push_back(he);
 							if (he->dna.diet == dna.diet && !func::isIn(mem.partners, he))
@@ -151,7 +151,7 @@ void Individ::look(Individ (*(*field)[W][H]), Individ *empty) {
 						absP.x=func::round(P.x+pos.x);
 						absP.y=func::round(P.y+pos.y);
 						Individ *he = (*field)[absP.x][absP.y];
-						if (*he != *empty && *he != *this) {
+						if (he->ID != 0 && *he != *this) {
 							if (he->dna.diet != dna.diet && !func::isIn(mem.enemies, he)) 
 								mem.enemies.push_back(he);
 							if (he->dna.diet == dna.diet && !func::isIn(mem.partners, he))
@@ -279,7 +279,7 @@ bool Individ::isNearby(Individ* target) {
 	else return true;
 }
 
-IndMemory <Individ*> Individ::whoIsNearby(Individ (*(*field)[W][H]), Individ *empty) {
+IndMemory <Individ*> Individ::whoIsNearby(Individ (*(*field)[W][H])) {
 	IndMemory <Individ*> result;
 	int delta[] = {-1, 0, 1};
 
@@ -287,11 +287,12 @@ IndMemory <Individ*> Individ::whoIsNearby(Individ (*(*field)[W][H]), Individ *em
 		for (int y=0; y<=2; y++) {
 			if (pos.x+delta[x] >=0 && pos.y+delta[y] >=0 && pos.x+delta[x] <W && pos.y+delta[y] <H) {
 				Individ *he = (*field)[pos.x+delta[x]][pos.y+delta[y]];
-				if (*he != *empty && *he != *this && he->state != REPRODUCT && he->state !=EAT && he->live)
+				if (he->ID != 0 && he->ID != ID && he->state != REPRODUCT && he->state !=EAT && he->live) {
 					if (he->dna.diet == dna.diet && he->gender != gender)
 						result.partners.push_back(he);
-					else 
+					if (he->dna.diet != dna.diet)
 						result.enemies.push_back(he);
+				}
 			}
 		}
 
@@ -308,7 +309,7 @@ bool isLess(Individ *first, Individ *second) {
 	if (first->energy < second->energy) return true;
 	else return false;
 }
-void Individ::step(Individ (*(*field)[W][H]), Individ *empty, std::vector <Individ> *cradle) {
+void Individ::step(Individ (*(*field)[W][H]), std::vector <Individ> *cradle) {
 	isLive();
 
 	if (live == true) {
@@ -316,13 +317,13 @@ void Individ::step(Individ (*(*field)[W][H]), Individ *empty, std::vector <Indiv
 			reproduction_timer++;
 
 		if (state != EAT && state != REPRODUCT) {
-			look(field, empty);
+			look(field);
 			checkState();
 			checkWay();
 			double energyCost = dna.phis[stamina]*(speed/dna.soc[state][max_speed]);
 			if (energy-energyCost>=0) {
 				energy -= energyCost;
-				move(field, empty);
+				move(field);
 			}
 		}
 
@@ -341,7 +342,7 @@ void Individ::step(Individ (*(*field)[W][H]), Individ *empty, std::vector <Indiv
 				if (gender == MALE) {
 					
 					IndMemory <Individ*> nearInd;
-					nearInd = whoIsNearby(field, empty);
+					nearInd = whoIsNearby(field);
 					
 					if (!nearInd.partners.empty()) {
 						std::sort(nearInd.partners.begin(), nearInd.partners.end(), isLess);
@@ -349,6 +350,8 @@ void Individ::step(Individ (*(*field)[W][H]), Individ *empty, std::vector <Indiv
 						spouse->spouse = this;
 						beginReproduction();
 						spouse->beginReproduction();
+					} else {
+						spouse = this;
 					}
 				}
 				//надо написать функцию поиска партнЄров дл€ спаривани€
@@ -367,7 +370,7 @@ void Individ::step(Individ (*(*field)[W][H]), Individ *empty, std::vector <Indiv
 		if (dna.diet == GETERO) {
 			if (state == HUNGRY) {
 				IndMemory <Individ*> nearInd;
-				nearInd = whoIsNearby(field, empty);
+				nearInd = whoIsNearby(field);
 
 				if (!nearInd.enemies.empty()) {
 					std::sort(nearInd.enemies.begin(), nearInd.enemies.end(), isLess);

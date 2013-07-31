@@ -41,7 +41,7 @@ void Environment::step() {
 	fill();
 	std::vector <Individ> ::iterator p = population.begin();
 	while (p != population.end()) {
-		(*p).step(&field, &empty, &cradle);
+		(*p).step(&field, &cradle);
 		p++;
 	}
 }

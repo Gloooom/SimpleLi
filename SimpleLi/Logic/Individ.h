@@ -38,9 +38,9 @@ public:
 	bool operator==(Individ i);
 	bool operator!=(Individ i);
 
-	void step(Individ (*(*field)[W][H]), Individ *empty, std::vector <Individ> *cradle);
-	void move(Individ (*(*field)[W][H]), Individ *empty);
-	void look(Individ (*(*field)[W][H]), Individ *empty);
+	void step(Individ (*(*field)[W][H]), std::vector <Individ> *cradle);
+	void move(Individ (*(*field)[W][H]));
+	void look(Individ (*(*field)[W][H]));
 	void checkState();
 	void checkWay();
 	void eat(Individ *target);
@@ -50,6 +50,6 @@ public:
 	void heal();
 	void isLive();
 	bool isNearby(Individ *target);
-	IndMemory <Individ*>  whoIsNearby(Individ (*(*field)[W][H]), Individ *empty);
+	IndMemory <Individ*>  whoIsNearby(Individ (*(*field)[W][H]));
 };
 
