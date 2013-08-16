@@ -2,9 +2,9 @@
 
 #pragma once
 
-#define W 50
-#define H 50
-#define POP_A 20
+#define W 25
+#define H 25
+#define POP_A 10
 #define POP_G 0
 
 #define _USE_MATH_DEFINES 
@@ -212,7 +212,7 @@ public:
 	};
 
 	double getLength() {
-		return sqrt(x*x+y*y);
+		return sqrt((double)(x*x+y*y));
 	};
 };
 

@@ -23,10 +23,11 @@ public:
 	int				reproduction_timer;
 	
 	Individ_status	state;
+	
+	Individ *spouse;
 
 	long long int	ID;
 private:
-	Individ *spouse;
 	bool collision;
 	IndMemory <Individ*> mem;
 
@@ -45,11 +46,12 @@ public:
 	void checkWay();
 	void eat(Individ *target);
 	void eat();
-	void reproduction(Individ *target, std::vector <Individ> *population) ;
-	void beginReproduction();
+	void reproduction(Individ (*(*field)[W][H]), std::vector <Individ> *cradle);
+	void beginReproduction(Individ *_spouse);
 	void heal();
 	void isLive();
 	bool isNearby(Individ *target);
+	Point <int> getNearestEmpty(Individ (*(*field)[W][H]));
 	IndMemory <Individ*>  whoIsNearby(Individ (*(*field)[W][H]));
 };
 

@@ -186,7 +186,7 @@ void addIndivid(Point <float> p, Mode_feeding diet) {
 		g.phis[fertility] = 4;
 		g.phis[live_time] = 4000;
 		g.phis[reproduction_time] = 10; 
-		g.phis[reproduction_pause] = 10;
+		g.phis[reproduction_pause] = 30;
 		g.eyes.push_back(eye1);
 		g.eyes.push_back(eye2);	
 		g.diet=diet;
