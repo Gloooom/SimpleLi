@@ -230,7 +230,10 @@ void Individ::eat() {
 }
 
 void Individ::eat(Individ *target) {
-	if (dna.diet == GETERO && target->dna.diet == AUTO && energy+dna.phis[saturation]<=dna.phis[energy_max] && target->live == true) {
+	if (dna.diet == GETERO && target->dna.diet == AUTO 
+		&& energy+dna.phis[saturation]<=dna.phis[energy_max] 
+		&& target->live == true
+		) {
 		energy+=dna.phis[saturation];
 		target->hp-=dna.phis[saturation];
 		target->state = WAIT;
@@ -261,8 +264,10 @@ void Individ::reproduction(Individ (*(*field)[W][H]), std::vector <Individ> *cra
 		if (gender == FEMALE) {
 			//Individ child(pos, dna.hibridization(spouse->dna, AVERAGE));
 			cradle->push_back(
-				Individ(getNearestEmpty(field), 
-				dna.hibridization(spouse->dna, AVERAGE))
+				Individ(
+					getNearestEmpty(field), 
+					dna.hibridization(spouse->dna, AVERAGE)//.mutation(0.1, ONE)
+					)
 				);
 		}
 
@@ -328,7 +333,7 @@ IndMemory <Individ*> Individ::whoIsNearby(Individ (*(*field)[W][H])) {
 				&& pos.x+delta[x] <W && pos.y+delta[y] <H) {
 				Individ *he = (*field)[pos.x+delta[x]][pos.y+delta[y]];
 				if (he->ID != 0 && he->ID != ID && he->state != REPRODUCT && he->state !=EAT && he->live) {
-					if (he->dna.diet == dna.diet && he->gender != gender)
+					if (he->dna.diet == dna.diet && he->gender != gender && he->state == MATURE)
 						result.partners.push_back(he);
 					if (he->dna.diet != dna.diet)
 						result.enemies.push_back(he);

@@ -56,9 +56,12 @@ GeneticCode GeneticCode::hibridization(GeneticCode person, Mode_hibrid mode) {
 //	return result;
 //}
 
-GeneticCode GeneticCode::mutation(float coef, Mode_mutation mode, Mode_change_what mode_change) {
+GeneticCode GeneticCode::mutation(float coef, Mode_mutation mode) {
 	GeneticCode result;
 	result.diet = diet;
+	result.eyes = eyes;
+	for (int i=0; i<end_of_phis; i++)
+			result.phis[i] = phis[i];
 
 	if (mode == ALL) {
 		for (int i=0; i<phis.size(); i++)
@@ -80,32 +83,12 @@ GeneticCode GeneticCode::mutation(float coef, Mode_mutation mode, Mode_change_wh
 			temp_eye.width = (randBool()) ? getVariation(eyes[i].width, coef) : eyes[i].width;
 			result.eyes.push_back(temp_eye);
 		}
-	} /*else if (mode == ONE) {
-		int r = randf(0, phis.size()+0.9);
-		switch(r) {
-		case 0 : result.max_speed = getVariation(max_speed, coef); break;
-		case 1 : result.acceleration = getVariation(acceleration,coef); break;
-		case 2 : result.hp_max = getVariation(hp_max, coef); break;
-		case 3 : result.energy_max = getVariation(energy_max, coef); break;
-		case 4 : result.saturation = getVariation(saturation, coef); break;
-		case 5 : result.stamina = getVariation(stamina, coef); break;
-		case 6 : for (int i=0; i<eyes.size(); i++) {
-					FOV temp_eye;
-					temp_eye.angle = getVariation(eyes[i].angle, coef);
-					temp_eye.height = getVariation(eyes[i].height, coef);
-					temp_eye.width = getVariation(eyes[i].width, coef);
-					result.eyes.push_back(temp_eye);
-				 }
-				 break;
-		case 7 : result.fertility = getVariation(fertility,coef); break;
-		case 8 : result.reproduction_time = getVariation(reproduction_time, coef); break;
-		case 9 : result.reproduction_pause = getVariation(reproduction_pause, coef); break;
-		case 10 : result.live_time =  getVariation(live_time, coef); break;
-		case 11 : result.soc_factor = getVariation(soc_factor, coef); break;
-		case 12 : result.width = getVariation(width, coef); break;
-		case 13 : result.height = getVariation(height, coef); break;
-		}
-	}*/
-
+	} else if (mode == ONE) {
+		result.soc[func::round(func::randf(0, end_of_status-1))]
+		[func::round(func::randf(0, end_of_soc-1))]
+		= getVariation(
+			soc[func::round(func::randf(0, end_of_status-1))]
+		[func::round(func::randf(0, end_of_soc-1))], coef);
+	}
 	return result;
 }

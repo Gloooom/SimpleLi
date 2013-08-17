@@ -61,7 +61,7 @@ public:
 	};
 
 	GeneticCode hibridization(GeneticCode person, Mode_hibrid mode);
-	GeneticCode mutation(float coef, Mode_mutation mode, Mode_change_what mode_change);
+	GeneticCode mutation(float coef, Mode_mutation mode);
 	//void operator=(GeneticCode person);
 	bool save(std::string path);
 	bool load(std::string path);

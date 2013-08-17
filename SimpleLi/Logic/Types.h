@@ -2,9 +2,9 @@
 
 #pragma once
 
-#define W 25
-#define H 25
-#define POP_A 10
+#define W 40
+#define H 40
+#define POP_A 20
 #define POP_G 0
 
 #define _USE_MATH_DEFINES 

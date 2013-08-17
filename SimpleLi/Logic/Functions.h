@@ -24,11 +24,6 @@ namespace func {
 
 	template <typename Type>
 	bool isIn(std::vector <Type> v, Type that) {
-		std::vector<Type>::iterator p = v.begin();
-		while (p != v.end()) {
-			if (*p == that) return true;
-			p++;
-		}
-		return false;
+		return std::find(v.begin(), v.end(), that) != v.end();
 	}
 }

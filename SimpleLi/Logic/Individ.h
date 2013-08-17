@@ -24,6 +24,7 @@ public:
 	
 	Individ_status	state;
 	
+	std::vector <Individ> ::iterator inPop;
 	Individ *spouse;
 
 	long long int	ID;
