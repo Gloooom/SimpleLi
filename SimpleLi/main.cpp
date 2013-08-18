@@ -221,8 +221,7 @@ void addIndivid(Point <float> p, Mode_feeding diet) {
 }
 	hgeColor c(func::randf(0,1), func::randf(0,1), func::randf(0,1), 1);
 	g.color = c.GetHWColor();
-	Individ ind(func::round(p), g);
-	env.population.push_back(ind);
+	env.addIndivid(Individ(func::round(p), g));
 }
 
 void InitEnvironment() {

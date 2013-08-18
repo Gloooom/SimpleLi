@@ -35,6 +35,10 @@ void Environment::born() {
 	cradle.clear();
 }
 
+void Environment::addIndivid(Individ ind) {
+	cradle.push_back(ind);
+}
+
 void Environment::step() {
 	checkDead();
 	born();
