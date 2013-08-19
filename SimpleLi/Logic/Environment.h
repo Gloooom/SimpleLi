@@ -8,14 +8,13 @@ class Environment {
 public:
 	Individ empty;
 	Individ *field[W][H];
-	std::vector <Individ> population;
+	std::map <long long int, Individ> population;
 
 private:
 	std::vector <Individ> cradle;
 
 public:
 	Environment() {
-		population.resize(100);
 		for (int i=0; i<W; i++)
 			for (int j=0; j<H; j++)
 				field[i][j]=&empty;

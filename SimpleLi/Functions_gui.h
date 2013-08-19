@@ -11,7 +11,6 @@ float Dot(hgeVector v1, hgeVector v2) {
 
 bool HandleKeys(int key) {
 	Point <float> tempP;
-	std::vector <Individ> ::iterator p = env.population.begin();
 
 	switch(key) {
 		case 0:
@@ -50,43 +49,6 @@ bool HandleKeys(int key) {
 		case HGEK_LEFT:
 			break;
 
-
-		case HGEK_Z:
-			while (p != env.population.end()) {
-				(*p).dna.soc[0][cohesion_partner]-=0.1f;
-				p++;
-			}
-			break;
-		case HGEK_A:
-			while (p != env.population.end()) {
-				(*p).dna.soc[0][cohesion_partner]+=0.1f;
-				p++;
-			}
-			break;
-		case HGEK_X:
-			while (p != env.population.end()) {
-				(*p).dna.soc[0][separation_partner]-=0.1f;
-				p++;
-			}
-			break;
-		case HGEK_S:
-			while (p != env.population.end()) {
-				(*p).dna.soc[0][separation_partner]+=0.1f;
-				p++;
-			}
-			break;
-		case HGEK_C:
-			while (p != env.population.end()) {
-				(*p).dna.soc[0][alignment_partner]-=0.1f;
-				p++;
-			}
-			break;
-		case HGEK_D:
-			while (p != env.population.end()) {
-				(*p).dna.soc[0][alignment_partner]+=0.1f;
-				p++;
-			}
-			break;
 
 		case HGEK_1:
 			break;

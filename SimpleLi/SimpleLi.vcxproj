@@ -88,7 +88,6 @@
     <ClCompile Include="Logic\Individ.cpp" />
     <ClCompile Include="Logic\Logic.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="stdafx.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Functions_gui.h" />

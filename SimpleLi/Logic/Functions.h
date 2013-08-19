@@ -19,6 +19,7 @@ namespace func {
 
 	template <typename F>
 	F getVariation (F d, double coef) {
+		//coef определяет максимально возможное отклонение в процентах.
 		return (d + d*(((((double) rand())/(RAND_MAX/2)) - 1) * coef));
 	}
 

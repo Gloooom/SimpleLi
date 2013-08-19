@@ -9,17 +9,17 @@ void Environment::fill() {
 			for (int j=0; j<H; j++)
 				field[i][j]=&empty;
 
-	std::vector <Individ> ::iterator p = population.begin();
+	std::map <long long int, Individ> ::iterator p = population.begin();
 	while (p != population.end()) {
-		field[(*p).pos.x][(*p).pos.y]=&(*p);
+		field[p->second.pos.x][p->second.pos.y]=&(p->second);
 		p++;
 	}
 }
 
 void Environment::checkDead() {
-	std::vector <Individ> ::iterator p = population.begin();
+	std::map <long long int, Individ> ::iterator p = population.begin();
 	while (p != population.end()) {
-		if ((*p).live == false) 
+		if (p->second.live == false) 
 			p = population.erase(p);
 		else 
 			p++;
@@ -29,7 +29,7 @@ void Environment::checkDead() {
 void Environment::born() {
 	std::vector <Individ> ::iterator c = cradle.begin();
 	while (c != cradle.end()) {
-		population.push_back(*c);
+		population[c->ID] = *c;
 		c++;
 	}
 	cradle.clear();
@@ -43,9 +43,9 @@ void Environment::step() {
 	checkDead();
 	born();
 	fill();
-	std::vector <Individ> ::iterator p = population.begin();
+	std::map <long long int, Individ> ::iterator p = population.begin();
 	while (p != population.end()) {
-		(*p).step(&field, &cradle);
+		p->second.step(&field, &cradle, &population);
 		p++;
 	}
 }

@@ -101,14 +101,14 @@ bool RenderFunc()
 		}
 	}
 
-	std::vector <Individ> ::iterator p = env.population.begin();
+	std::map <long long int, Individ> ::iterator p = env.population.begin();
 	while (p != env.population.end()) {
-		Cell c = Field[(*p).pos.x][(*p).pos.y];
+		Cell c = Field[p->second.pos.x][p->second.pos.y];
 		float x1, y1, x2, y2;
 		x1 = c.x+c.width/2;
 		y1 = c.y+c.height/2;
-		x2 = x1-(*p).way.x*20;
-		y2 = y1-(*p).way.y*20;
+		x2 = x1-p->second.way.x*20;
+		y2 = y1-p->second.way.y*20;
 		Line l(x1, y1, x2, y2, 5, 0x55009999);
 		l.RenderLine();
 		p++;
@@ -196,8 +196,8 @@ void addIndivid(Point <float> p, Mode_feeding diet) {
 		g.soc[i][rand_way] = 1;
 		g.soc[i][partner] = 1;
 		g.soc[i][cohesion_partner] = 1;
-		g.soc[i][separation_partner] = 0.2f;
-		g.soc[i][alignment_partner] = 0.2f;
+		g.soc[i][separation_partner] = 0.5f;
+		g.soc[i][alignment_partner] = 1.5f;
 		g.soc[i][enemy] = 1;
 		g.soc[i][cohesion_enemy] = 0;
 		g.soc[i][separation_enemy] = 8;

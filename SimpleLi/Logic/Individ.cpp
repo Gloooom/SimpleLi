@@ -11,8 +11,8 @@ long long int Individ::count=0;
 
 
 Individ::Individ(): way(0,0) {
-	gender == NEUTER;
-	ID=count;
+	gender = NEUTER;
+	ID = count;
 	count++;
 }
 
@@ -32,7 +32,7 @@ Individ::Individ(Point <int> _pos, GeneticCode _dna) {
 	reproduction_timer = 0;
 	hp = _dna.phis[hp_max];
 	energy = _dna.phis[energy_max];
-	spouse = this;
+	spouse = ID;
 }
 
 bool Individ::operator==(Individ i) {
@@ -242,18 +242,18 @@ void Individ::eat(Individ *target) {
 		target->checkState();
 }
 
-void Individ::beginReproduction(Individ *_spouse) {
-	if (state != REPRODUCT && _spouse->state != REPRODUCT) {
+void Individ::beginReproduction(long long int _spouse, std::map <long long int, Individ> *population) {
+	if (state != REPRODUCT && (*population)[_spouse].state != REPRODUCT) {
 		reproduction_timer = 0;
-		_spouse->reproduction_timer = 0;
+		(*population)[_spouse].reproduction_timer = 0;
 		state = REPRODUCT;
-		_spouse->state = REPRODUCT;
+		(*population)[_spouse].state = REPRODUCT;
 		spouse = _spouse;
-		_spouse->spouse = this;
+		(*population)[_spouse].spouse = ID;
 	}
 }
 
-void Individ::reproduction(Individ (*(*field)[W][H]), std::vector <Individ> *cradle) {
+void Individ::reproduction(Individ (*(*field)[W][H]), std::vector <Individ> *cradle, std::map <long long int, Individ> *population) {
 	if (reproduction_timer < dna.phis[reproduction_time]) {
 		reproduction_timer++;
 	} else {
@@ -266,7 +266,7 @@ void Individ::reproduction(Individ (*(*field)[W][H]), std::vector <Individ> *cra
 			cradle->push_back(
 				Individ(
 					getNearestEmpty(field), 
-					dna.hibridization(spouse->dna, AVERAGE)//.mutation(0.1, ONE)
+					dna.hibridization((*population)[spouse].dna, AVERAGE).mutation(1, ONE)
 					)
 				);
 		}
@@ -280,8 +280,8 @@ void Individ::reproduction(Individ (*(*field)[W][H]), std::vector <Individ> *cra
 
 Point <int> Individ::getNearestEmpty(Individ (*(*field)[W][H])) {
 	double R = 10;
-	std::vector <Vector <double> > emptyNear;
-	Vector <double> P;
+	std::vector <Vector <int> > emptyNear;
+	Vector <int> P;
 
 	int start_x = (pos.x-R>0) ? pos.x-R : 0;
 	int start_y = (pos.y-R>0) ? pos.y-R : 0;
@@ -301,10 +301,7 @@ Point <int> Individ::getNearestEmpty(Individ (*(*field)[W][H])) {
 	}
 	std::sort(emptyNear.begin(), emptyNear.end());
 
-	Point <int> nearestEmptyPoint(
-		func::round((*emptyNear.begin()).x + (double) pos.x), 
-		func::round((*emptyNear.begin()).y + (double) pos.y)
-		);
+	Point <int> nearestEmptyPoint((*emptyNear.begin()) + pos);
 	return nearestEmptyPoint;
 }
 
@@ -322,8 +319,8 @@ bool Individ::isNearby(Individ* target) {
 	else return true;
 }
 
-IndMemory <Individ*> Individ::whoIsNearby(Individ (*(*field)[W][H])) {
-	IndMemory <Individ*> result;
+IndMemory <long long int> Individ::whoIsNearby(Individ (*(*field)[W][H])) {
+	IndMemory <long long int> result;
 	
 	int delta[] = {-1, 0, 1};
 
@@ -334,9 +331,9 @@ IndMemory <Individ*> Individ::whoIsNearby(Individ (*(*field)[W][H])) {
 				Individ *he = (*field)[pos.x+delta[x]][pos.y+delta[y]];
 				if (he->ID != 0 && he->ID != ID && he->state != REPRODUCT && he->state !=EAT && he->live) {
 					if (he->dna.diet == dna.diet && he->gender != gender && he->state == MATURE)
-						result.partners.push_back(he);
+						result.partners.push_back(he->ID);
 					if (he->dna.diet != dna.diet)
-						result.enemies.push_back(he);
+						result.enemies.push_back(he->ID);
 				}
 			}
 		}
@@ -354,7 +351,11 @@ bool isLess(Individ *first, Individ *second) {
 	if (first->energy < second->energy) return true;
 	else return false;
 }
-void Individ::step(Individ (*(*field)[W][H]), std::vector <Individ> *cradle) {
+
+
+//раскидать индивидуальные методы по классам (автотрофы, гетеротрофы, самка, самец)
+//реализовать в дальнейшем через множественное наследование
+void Individ::step(Individ (*(*field)[W][H]), std::vector <Individ> *cradle, std::map <long long int, Individ> *population) {
 	isLive();
 
 	if (live == true) {
@@ -386,12 +387,12 @@ void Individ::step(Individ (*(*field)[W][H]), std::vector <Individ> *cradle) {
 			} else if (state == MATURE) {
 				if (gender == MALE) {
 					
-					IndMemory <Individ*> nearInd;
+					IndMemory <long long int> nearInd;
 					nearInd = whoIsNearby(field);
 					
 					if (!nearInd.partners.empty()) {
-						std::sort(nearInd.partners.begin(), nearInd.partners.end(), isLess);
-						beginReproduction(*nearInd.partners.begin());
+						//std::sort(nearInd.partners.begin(), nearInd.partners.end(), isLess);
+						beginReproduction(*nearInd.partners.begin(), population);
 					} 
 				}
 				//надо написать функцию поиска партнёров для спаривания
@@ -399,7 +400,7 @@ void Individ::step(Individ (*(*field)[W][H]), std::vector <Individ> *cradle) {
 				//в функции движения добавить обработку состояния WAIT, REPRODUCTION, EAT
 
 			} else if (state == REPRODUCT) {
-				reproduction(field, cradle);
+				reproduction(field, cradle, population);
 			} else if (state == EAT) {
 
 			} else if (state == WAIT) {
@@ -409,13 +410,12 @@ void Individ::step(Individ (*(*field)[W][H]), std::vector <Individ> *cradle) {
 
 		if (dna.diet == GETERO) {
 			if (state == HUNGRY) {
-				IndMemory <Individ*> nearInd;
-				nearInd = whoIsNearby(field);
-
-				if (!nearInd.enemies.empty()) {
-					std::sort(nearInd.enemies.begin(), nearInd.enemies.end(), isLess);
-					eat(*nearInd.enemies.end());
-				}
+				//IndMemory <long long int> nearInd;
+				//nearInd = whoIsNearby(field);
+				//if (!nearInd.enemies.empty()) {
+					//std::sort(nearInd.enemies.begin(), nearInd.enemies.end(), isLess);
+					//eat(nearInd.enemies.end());
+				//}
 			} else if (state == MATURE) {
 
 			} else if (state == REPRODUCT) {

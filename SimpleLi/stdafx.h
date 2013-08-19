@@ -18,6 +18,7 @@
 #include <windows.h>
 #include <vector>
 #include <algorithm>
+#include <map>
 
 
 // TODO: Установите здесь ссылки на дополнительные заголовки, требующиеся для программы

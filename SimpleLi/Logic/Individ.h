@@ -24,10 +24,8 @@ public:
 	
 	Individ_status	state;
 	
-	std::vector <Individ> ::iterator inPop;
-	Individ *spouse;
-
-	long long int	ID;
+	long long int spouse;
+	long long int ID;
 private:
 	bool collision;
 	IndMemory <Individ*> mem;
@@ -40,19 +38,19 @@ public:
 	bool operator==(Individ i);
 	bool operator!=(Individ i);
 
-	void step(Individ (*(*field)[W][H]), std::vector <Individ> *cradle);
+	void step(Individ (*(*field)[W][H]), std::vector <Individ> *cradle, std::map <long long int, Individ> *population);
 	void move(Individ (*(*field)[W][H]));
 	void look(Individ (*(*field)[W][H]));
 	void checkState();
 	void checkWay();
 	void eat(Individ *target);
 	void eat();
-	void reproduction(Individ (*(*field)[W][H]), std::vector <Individ> *cradle);
-	void beginReproduction(Individ *_spouse);
+	void reproduction(Individ (*(*field)[W][H]), std::vector <Individ> *cradle, std::map <long long int, Individ> *population);
+	void beginReproduction(long long int _spouse, std::map <long long int, Individ> *population);
 	void heal();
 	void isLive();
 	bool isNearby(Individ *target);
 	Point <int> getNearestEmpty(Individ (*(*field)[W][H]));
-	IndMemory <Individ*>  whoIsNearby(Individ (*(*field)[W][H]));
+	IndMemory <long long int>  whoIsNearby(Individ (*(*field)[W][H]));
 };
 

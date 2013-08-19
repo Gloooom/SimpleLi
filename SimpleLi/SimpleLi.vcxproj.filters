@@ -30,9 +30,6 @@
     <ClCompile Include="Logic\Functions.cpp">
       <Filter>Файлы исходного кода\Logic</Filter>
     </ClCompile>
-    <ClCompile Include="stdafx.cpp">
-      <Filter>Файлы исходного кода</Filter>
-    </ClCompile>
     <ClCompile Include="Logic\Logic.cpp">
       <Filter>Файлы исходного кода\Logic</Filter>
     </ClCompile>
