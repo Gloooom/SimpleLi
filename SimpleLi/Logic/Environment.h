@@ -11,7 +11,7 @@ public:
 	std::map <long long int, Individ> population;
 
 private:
-	std::vector <Individ> cradle;
+	std::deque <Individ> cradle;
 
 public:
 	Environment() {

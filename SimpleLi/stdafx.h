@@ -19,6 +19,7 @@
 #include <vector>
 #include <algorithm>
 #include <map>
+#include <deque>
 
 
 // TODO: Установите здесь ссылки на дополнительные заголовки, требующиеся для программы

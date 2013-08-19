@@ -27,7 +27,7 @@ void Environment::checkDead() {
 }
 
 void Environment::born() {
-	std::vector <Individ> ::iterator c = cradle.begin();
+	std::deque <Individ> ::iterator c = cradle.begin();
 	while (c != cradle.end()) {
 		population[c->ID] = *c;
 		c++;
