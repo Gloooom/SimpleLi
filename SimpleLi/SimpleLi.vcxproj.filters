@@ -77,9 +77,6 @@
     <ClInclude Include="HGE\hgevector.h">
       <Filter>Заголовочные файлы</Filter>
     </ClInclude>
-    <ClInclude Include="Types_gui.h">
-      <Filter>Файлы исходного кода</Filter>
-    </ClInclude>
     <ClInclude Include="Logic\Functions.h">
       <Filter>Файлы исходного кода\Logic</Filter>
     </ClInclude>
@@ -98,10 +95,13 @@
     <ClInclude Include="Logic\Environment.h">
       <Filter>Файлы исходного кода\Logic</Filter>
     </ClInclude>
-    <ClInclude Include="Functions_gui.h">
+    <ClInclude Include="targetver.h">
       <Filter>Файлы исходного кода</Filter>
     </ClInclude>
-    <ClInclude Include="targetver.h">
+    <ClInclude Include="Gui_functions.h">
+      <Filter>Файлы исходного кода</Filter>
+    </ClInclude>
+    <ClInclude Include="Gui_types.h">
       <Filter>Файлы исходного кода</Filter>
     </ClInclude>
   </ItemGroup>

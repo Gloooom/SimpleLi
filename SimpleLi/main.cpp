@@ -40,7 +40,7 @@ void			CreateGUI();
 void			InitEnvironment();
 void			addIndivid(Point <float> p, Mode_feeding diet); 
 
-#include "Functions_gui.h"
+#include "Gui_functions.h"
 
 bool FrameFunc()
 {
@@ -116,6 +116,7 @@ bool RenderFunc()
 
 	//gui->Render();
 
+	std::string statuses[] = {"HUNGRY", "EAT", "MATURE", "REPRODUCT", "WAIT"};
 	if (!env.population.empty())
 	fnt->printf(605, 5, HGETEXT_LEFT, 
 	"FPS: %d \nPopulation: %d\n\n\n"
@@ -125,7 +126,7 @@ bool RenderFunc()
 	"\nspeed: %f"
 	"\n\nlive_timer: %d"
 	"\nreproduction_timer: %d"
-	"\nstate: %d",
+	"\nstate: %s",
 		hge->Timer_GetFPS(), env.population.size(), 
 		selectInd->live,
 		selectInd->hp,
@@ -133,7 +134,7 @@ bool RenderFunc()
 		selectInd->speed,
 		selectInd->live_timer,
 		selectInd->reproduction_timer,
-		selectInd->state);
+		statuses[selectInd->state].c_str());
 		
 	hge->Gfx_EndScene();
 
@@ -184,9 +185,9 @@ void addIndivid(Point <float> p, Mode_feeding diet) {
 		g.phis[saturation] = 10;
 		g.phis[stamina] = 2;
 		g.phis[fertility] = 4;
-		g.phis[live_time] = 4000;
+		g.phis[live_time] = 400;
 		g.phis[reproduction_time] = 10; 
-		g.phis[reproduction_pause] = 30;
+		g.phis[reproduction_pause] = 100;
 		g.eyes.push_back(eye1);
 		g.eyes.push_back(eye2);	
 		g.diet=diet;
@@ -241,9 +242,7 @@ void InitEnvironment() {
 
 void InitEditor() {
 	int bgw, bgh;
-	hge->Resource_AttachPack("particleed.paq");
 
-	texGui=hge->Texture_Load("pgui.png");
 	texBut=hge->Texture_Load("Button.png");
 	texCell=hge->Texture_Load("cell.png");
 
@@ -277,11 +276,8 @@ void DoneEditor() {
 	delete fnt;
 	delete sprCell;
 
-	hge->Texture_Free(texGui);
 	hge->Texture_Free(texBut);
 	hge->Texture_Free(texCell);
-
-	hge->Resource_RemoveAllPacks();
 }
 
 void CreateGUI() {

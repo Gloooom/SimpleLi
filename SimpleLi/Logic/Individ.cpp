@@ -253,25 +253,30 @@ void Individ::beginReproduction(long long int _spouse, std::map <long long int, 
 	}
 }
 
-void Individ::reproduction(Individ (*(*field)[W][H]), std::vector <Individ> *cradle, std::map <long long int, Individ> *population) {
-	if (reproduction_timer < dna.phis[reproduction_time]) {
-		reproduction_timer++;
-	} else {
-		//Individ child(pos, dna.hibridization(target->dna, AVERAGE, SOC));
-		/*	if (gender == MALE) {
-		target->reproduction(this, population);
-		} else */
-		if (gender == FEMALE) {
-			//Individ child(pos, dna.hibridization(spouse->dna, AVERAGE));
-			cradle->push_back(
-				Individ(
+void Individ::reproduction(Individ (*(*field)[W][H]), std::deque <Individ> *cradle, std::map <long long int, Individ> *population) {
+	if (population->find(spouse) != population->end()) {
+		if (reproduction_timer < dna.phis[reproduction_time]) {
+			reproduction_timer++;
+		} else {
+			//Individ child(pos, dna.hibridization(target->dna, AVERAGE, SOC));
+			/*	if (gender == MALE) {
+			target->reproduction(this, population);
+			} else */
+			if (gender == FEMALE) {
+				//Individ child(pos, dna.hibridization(spouse->dna, AVERAGE));
+				cradle->push_back(
+					Individ(
 					getNearestEmpty(field), 
 					dna.hibridization((*population)[spouse].dna, AVERAGE).mutation(1, ONE)
 					)
-				);
-		}
+					);
+			}
 
-		energy -= dna.phis[reproduction_cost];
+			energy -= dna.phis[reproduction_cost];
+			reproduction_timer = 0;
+			state = WAIT;
+		}
+	} else {
 		reproduction_timer = 0;
 		state = WAIT;
 	}
@@ -355,7 +360,7 @@ bool isLess(Individ *first, Individ *second) {
 
 //раскидать индивидуальные методы по классам (автотрофы, гетеротрофы, самка, самец)
 //реализовать в дальнейшем через множественное наследование
-void Individ::step(Individ (*(*field)[W][H]), std::vector <Individ> *cradle, std::map <long long int, Individ> *population) {
+void Individ::step(Individ (*(*field)[W][H]), std::deque <Individ> *cradle, std::map <long long int, Individ> *population) {
 	isLive();
 
 	if (live == true) {
@@ -386,14 +391,15 @@ void Individ::step(Individ (*(*field)[W][H]), std::vector <Individ> *cradle, std
 			if (state == HUNGRY) {
 			} else if (state == MATURE) {
 				if (gender == MALE) {
-					
-					IndMemory <long long int> nearInd;
-					nearInd = whoIsNearby(field);
-					
-					if (!nearInd.partners.empty()) {
-						//std::sort(nearInd.partners.begin(), nearInd.partners.end(), isLess);
-						beginReproduction(*nearInd.partners.begin(), population);
-					} 
+					if (!mem.empty()) {
+						IndMemory <long long int> nearInd;
+						nearInd = whoIsNearby(field);
+
+						if (!nearInd.partners.empty()) {
+							//std::sort(nearInd.partners.begin(), nearInd.partners.end(), isLess);
+							beginReproduction(*nearInd.partners.begin(), population);
+						} 
+					}
 				}
 				//надо написать функцию поиска партнёров для спаривания
 				//что бы всё нормаьно работало - перелапатить функцию движения.

@@ -9,6 +9,8 @@ namespace func {
 
 	float randf(float start, float end);
 
+	long long int randi(long long int start, long long int end);
+
 	bool sign(double value);
 
 	long long int round(double value);

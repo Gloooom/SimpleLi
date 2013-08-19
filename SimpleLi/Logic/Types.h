@@ -2,8 +2,8 @@
 
 #pragma once
 
-#define W 40
-#define H 40
+#define W 100
+#define H 100
 #define POP_A 20
 #define POP_G 0
 
@@ -38,6 +38,10 @@ public:
 	void operator=(IndMemory m) { 
 		enemies = m.enemies;
 		partners = m.partners;
+	};
+	bool empty() {
+		if (enemies.empty() && partners.empty()) return true;
+		else return false;
 	};
 };
 
@@ -214,6 +218,11 @@ public:
 	double getLength() {
 		return sqrt((double)(x*x+y*y));
 	};
+
+	double getDot(Vector v) {
+		if (getLength()==0 || v.getLength()==0) return 0;
+		return acos((x*v.x + y*v.y)/sqrt((x*x+y*y)*(v.x*v.x+v.y*v.y)));
+	}
 };
 
 

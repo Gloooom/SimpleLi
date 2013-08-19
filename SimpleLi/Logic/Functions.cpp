@@ -12,6 +12,11 @@ float func::randf(float start, float end) {
 	return ((((float) rand())/(RAND_MAX/(end-start))) + start);
 }
 
+long long int func::randi(long long int start, long long int end) {
+	end++;
+	return ((((float) rand())/(RAND_MAX/(end-start))) + start);
+}
+
 bool func::sign(double value) {
 	if (value<0) return 0;
 	else return 1;

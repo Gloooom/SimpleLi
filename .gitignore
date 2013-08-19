@@ -84,7 +84,8 @@ build/
 *.lastbuildstate
 *.res
 .rc
-Bin
+Bin/Debug
+Bin/Release
 
 
 # Visual C++ cache files

@@ -5,7 +5,7 @@
 #include "..\Logic\Types.h"
 #include "..\Logic\GeneticCode.h"
 #include "..\Logic\Functions.h"
-#include "..\Types_gui.h"
+#include "..\Gui_types.h"
 
 enum Gender {MALE, FEMALE, NEUTER};
 
@@ -38,14 +38,14 @@ public:
 	bool operator==(Individ i);
 	bool operator!=(Individ i);
 
-	void step(Individ (*(*field)[W][H]), std::vector <Individ> *cradle, std::map <long long int, Individ> *population);
+	void step(Individ (*(*field)[W][H]), std::deque <Individ> *cradle, std::map <long long int, Individ> *population);
 	void move(Individ (*(*field)[W][H]));
 	void look(Individ (*(*field)[W][H]));
 	void checkState();
 	void checkWay();
 	void eat(Individ *target);
 	void eat();
-	void reproduction(Individ (*(*field)[W][H]), std::vector <Individ> *cradle, std::map <long long int, Individ> *population);
+	void reproduction(Individ (*(*field)[W][H]), std::deque <Individ> *cradle, std::map <long long int, Individ> *population);
 	void beginReproduction(long long int _spouse, std::map <long long int, Individ> *population);
 	void heal();
 	void isLive();

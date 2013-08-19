@@ -21,7 +21,7 @@
 
 extern HGE *hge;
 
-float Dot(hgeVector v1, hgeVector v2);
+double Dot(hgeVector hgev1, hgeVector hgev2);
 
 struct PEditorState {
 	Point <float> mp;

@@ -61,7 +61,10 @@ GeneticCode GeneticCode::mutation(float coef, Mode_mutation mode) {
 	result.diet = diet;
 	result.eyes = eyes;
 	for (int i=0; i<end_of_phis; i++)
-			result.phis[i] = phis[i];
+		result.phis[i] = phis[i];
+	for (int i=0; i<end_of_status; i++)
+		for (int j=0; j<end_of_soc; j++)
+			result.soc[i][j] = soc[i][j];
 
 	if (mode == ALL) {
 		for (int i=0; i<phis.size(); i++)
@@ -84,11 +87,8 @@ GeneticCode GeneticCode::mutation(float coef, Mode_mutation mode) {
 			result.eyes.push_back(temp_eye);
 		}
 	} else if (mode == ONE) {
-		result.soc[func::round(func::randf(0, end_of_status-1))]
-		[func::round(func::randf(0, end_of_soc-1))]
-		= getVariation(
-			soc[func::round(func::randf(0, end_of_status-1))]
-		[func::round(func::randf(0, end_of_soc-1))], coef);
+		result.soc[randi(0, end_of_status-1)][randi(0, end_of_soc-1)]
+		= getVariation(soc[randf(0, end_of_status-1)][randf(0, end_of_soc-1)], coef);
 	}
 	return result;
 }

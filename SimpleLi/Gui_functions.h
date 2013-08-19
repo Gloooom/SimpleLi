@@ -2,11 +2,12 @@
 
 #include "stdafx.h"
 
-#include "Types_gui.h"
+#include "Gui_types.h"
+#include "Logic\Types.h"
 
-float Dot(hgeVector v1, hgeVector v2) {
-	if (v1.Length()==0 || v2.Length()==0) return 0;
-	return acos((v1.x*v2.x + v1.y*v2.y)/sqrt((v1.x*v1.x+v1.y*v1.y)*(v2.x*v2.x+v2.y*v2.y)));
+double Dot(hgeVector hgev1, hgeVector hgev2) {
+	Vector <double> v1(hgev1.x, hgev1.y), v2(hgev2.x, hgev2.y);
+	return v1.getDot(v2);
 }
 
 bool HandleKeys(int key) {
