@@ -258,20 +258,13 @@ void Individ::reproduction(Individ (*(*field)[W][H]), std::deque <Individ> *crad
 		if (reproduction_timer < dna.phis[reproduction_time]) {
 			reproduction_timer++;
 		} else {
-			//Individ child(pos, dna.hibridization(target->dna, AVERAGE, SOC));
-			/*	if (gender == MALE) {
-			target->reproduction(this, population);
-			} else */
 			if (gender == FEMALE) {
-				//Individ child(pos, dna.hibridization(spouse->dna, AVERAGE));
 				cradle->push_back(
 					Individ(
 					getNearestEmpty(field), 
-					dna.hibridization((*population)[spouse].dna, AVERAGE).mutation(1, ONE)
-					)
+					dna.hibridization((*population)[spouse].dna, AVERAGE).mutation(1, ONE))
 					);
 			}
-
 			energy -= dna.phis[reproduction_cost];
 			reproduction_timer = 0;
 			state = WAIT;
@@ -396,14 +389,12 @@ void Individ::step(Individ (*(*field)[W][H]), std::deque <Individ> *cradle, std:
 						nearInd = whoIsNearby(field);
 
 						if (!nearInd.partners.empty()) {
-							//std::sort(nearInd.partners.begin(), nearInd.partners.end(), isLess);
+							//написать функцию поиска сильнейшей особи или осуществить какой-то отбор партнёров
 							beginReproduction(*nearInd.partners.begin(), population);
 						} 
 					}
 				}
-				//надо написать функцию поиска партнёров для спаривания
 				//что бы всё нормаьно работало - перелапатить функцию движения.
-				//в функции движения добавить обработку состояния WAIT, REPRODUCTION, EAT
 
 			} else if (state == REPRODUCT) {
 				reproduction(field, cradle, population);

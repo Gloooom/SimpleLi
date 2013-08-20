@@ -4,7 +4,7 @@
 
 #define W 100
 #define H 100
-#define POP_A 20
+#define POP_A 50
 #define POP_G 0
 
 #define _USE_MATH_DEFINES 
@@ -18,7 +18,6 @@ enum Mode_feeding {AUTO, GETERO};
 enum Type_eye {RADIUS, TRIANGLE, SECTOR};
 
 enum Individ_status {HUNGRY, EAT, MATURE, REPRODUCT, WAIT, end_of_status};
-
 
 struct FOV {
 	Type_eye type;

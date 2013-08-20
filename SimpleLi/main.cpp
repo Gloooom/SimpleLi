@@ -193,16 +193,16 @@ void addIndivid(Point <float> p, Mode_feeding diet) {
 		g.diet=diet;
 		for (int i=0; i<end_of_status; i++) {
 	if (diet==AUTO) {
-		g.soc[i][max_speed] = 2;
-		g.soc[i][rand_way] = 1;
-		g.soc[i][partner] = 1;
-		g.soc[i][cohesion_partner] = 1;
-		g.soc[i][separation_partner] = 0.5f;
-		g.soc[i][alignment_partner] = 1.5f;
-		g.soc[i][enemy] = 1;
-		g.soc[i][cohesion_enemy] = 0;
-		g.soc[i][separation_enemy] = 8;
-		g.soc[i][alignment_enemy] = 0.0f;
+		g.soc[i][max_speed] = func::randf(0, 5);
+		g.soc[i][rand_way] = func::randf(0, 10);
+		g.soc[i][partner] = func::randf(0, 10);
+		g.soc[i][cohesion_partner] = func::randf(0, 10);
+		g.soc[i][separation_partner] = func::randf(0, 10);
+		g.soc[i][alignment_partner] = func::randf(0, 10);
+		g.soc[i][enemy] = func::randf(0, 10);
+		g.soc[i][cohesion_enemy] = func::randf(0, 10);
+		g.soc[i][separation_enemy] = func::randf(0, 10);
+		g.soc[i][alignment_enemy] = func::randf(0, 10);
 		g.color = 0xFF009900;
 	}
 	if (diet==GETERO) {

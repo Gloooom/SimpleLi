@@ -24,9 +24,9 @@ public:
 	
 	Individ_status	state;
 	
-	long long int spouse;
 	long long int ID;
 private:
+	long long int spouse;
 	bool collision;
 	IndMemory <Individ*> mem;
 
