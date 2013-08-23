@@ -128,17 +128,19 @@ bool RenderFunc()
 	"\nspeed: %f"
 	"\n\nlive_timer: %d"
 	"\nreproduction_timer: %d"
-	"\nstate: %s",
+	//"\nstate: %s"
+	,
 		hge->Timer_GetFPS(), 
 		env.population.size(), 
-		env.stepCount,
+		(int) env.stepCount,
 		selectInd->live,
 		selectInd->hp,
 		selectInd->energy,
 		selectInd->speed,
-		selectInd->live_timer,
-		selectInd->reproduction_timer,
-		statuses[selectInd->state].c_str());
+		(int) selectInd->live_timer,
+		selectInd->reproduction_timer
+		//statuses[selectInd->state].c_str()
+		);
 		
 	hge->Gfx_EndScene();
 

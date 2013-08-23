@@ -49,7 +49,7 @@ public:
 	virtual float height() = 0;
 	virtual float width() = 0;
 
-	virtual FOV* mutation(Mode_mutation mode, float coef) = 0;
+	virtual FOV* mutation(float coef, Mode_mutation mode) = 0;
 };
 
 class FOV_Tri : public FOV {
@@ -57,6 +57,8 @@ private:
 	float _angle;
 	float _height;
 	float _width;
+private:
+	FOV_Tri() {};
 public:
 	FOV_Tri(float ang, float hgt, float wdt):
 		_angle(ang),
@@ -64,12 +66,12 @@ public:
 		_width(wdt)
 	{_type = TRIANGLE;};
 		
-	virtual float angle()	{return _angle;};
-	virtual float height()	{return _height;};
-	virtual float width()	{return _width;};
+	float angle()	{return _angle;};
+	float height()	{return _height;};
+	float width()	{return _width;};
 
-	FOV* mutation(Mode_mutation mode, float coef) {
-		FOV_Tri result(0,0,0);
+	FOV* mutation(float coef, Mode_mutation mode) {
+		FOV_Tri result;
 		if (mode == ONE) {
 			int seed = func::randi(0, 2);
 			switch(seed) {
@@ -85,16 +87,19 @@ public:
 		return new FOV_Tri(result);
 	};
 	FOV_Tri hibrid(FOV_Tri eye) {
-		FOV_Tri result(*this);
+		FOV_Tri result;
 		result._angle = (_angle + eye._angle)/2;
 		result._height = (_height + eye._height)/2;
 		result._width = (_width + eye._width)/2;
+		return result;
 	};
 };
 
 class FOV_Rad : public FOV {
 private:
 	float _height;
+private:
+	FOV_Rad() {};
 public:
 	FOV_Rad(float hgt):
 		_height(hgt)
@@ -104,14 +109,15 @@ public:
 	float height()	{return _height;};
 	float width()	{return 0;};
 
-	FOV* mutation(Mode_mutation mode, float coef) {
-		FOV_Rad result(0);
+	FOV* mutation(float coef, Mode_mutation mode) {
+		FOV_Rad result;
 		func::getVariation(_height, coef);
 		return new FOV_Rad(result);
 	};
 	FOV_Rad hibrid(FOV_Rad eye) {
-		FOV_Rad result(*this);
+		FOV_Rad result;
 		result._height = (_height + eye._height)/2;
+		return result;
 	};
 };
 
