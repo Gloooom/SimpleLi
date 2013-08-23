@@ -119,7 +119,9 @@ bool RenderFunc()
 	std::string statuses[] = {"HUNGRY", "EAT", "MATURE", "REPRODUCT", "WAIT"};
 	if (!env.population.empty())
 	fnt->printf(605, 5, HGETEXT_LEFT, 
-	"FPS: %d \nPopulation: %d\n\n\n"
+	"FPS: %d "
+	"\nPopulation: %d"
+	"\nStep: %d\n\n\n\n"
 	"\nlive: %d"
 	"\nhp: %d"
 	"\nenergy: %d"
@@ -127,7 +129,9 @@ bool RenderFunc()
 	"\n\nlive_timer: %d"
 	"\nreproduction_timer: %d"
 	"\nstate: %s",
-		hge->Timer_GetFPS(), env.population.size(), 
+		hge->Timer_GetFPS(), 
+		env.population.size(), 
+		env.stepCount,
 		selectInd->live,
 		selectInd->hp,
 		selectInd->energy,
@@ -173,11 +177,11 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 }
 
 void addIndivid(Point <float> p, Mode_feeding diet) {
-	FOV eye1, eye2;
-	eye1.height=30; eye2.height=3;
-	eye1.width=20; eye2.width=30;
-	eye1.angle=0; eye2.angle=0;
-	eye1.type=TRIANGLE; eye2.type=RADIUS;
+	//FOV eye1, eye2;
+	//eye1.height=30; eye2.height=3;
+	//eye1.width=20; eye2.width=30;
+	//eye1.angle=0; eye2.angle=0;
+	//eye1.type=TRIANGLE; eye2.type=RADIUS;
 	GeneticCode g;
 		g.phis[acceleration] = 0.3;
 		g.phis[hp_max] = 10; 
@@ -188,8 +192,8 @@ void addIndivid(Point <float> p, Mode_feeding diet) {
 		g.phis[live_time] = 400;
 		g.phis[reproduction_time] = 10; 
 		g.phis[reproduction_pause] = 100;
-		g.eyes.push_back(eye1);
-		g.eyes.push_back(eye2);	
+		g.eyes.push_back(new FOV_Tri(0, 30, 20));
+		g.eyes.push_back(new FOV_Rad(3));	
 		g.diet=diet;
 		for (int i=0; i<end_of_status; i++) {
 	if (diet==AUTO) {

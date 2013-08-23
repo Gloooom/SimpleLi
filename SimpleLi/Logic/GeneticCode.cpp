@@ -67,25 +67,7 @@ GeneticCode GeneticCode::mutation(float coef, Mode_mutation mode) {
 			result.soc[i][j] = soc[i][j];
 
 	if (mode == ALL) {
-		for (int i=0; i<phis.size(); i++)
-			result.phis[i] = getVariation(phis[i], coef);
-		for (int i=0; i<eyes.size(); i++) {
-			FOV temp_eye;
-			temp_eye.angle = getVariation(eyes[i].angle, coef);
-			temp_eye.height = getVariation(eyes[i].height, coef);
-			temp_eye.width = getVariation(eyes[i].width, coef);
-			result.eyes.push_back(temp_eye);
-		}
 	} else if (mode == HALF) {
-		for (int i=0; i<phis.size(); i++)
-			result.phis[i] = (randBool()) ? getVariation(phis[i], coef) : phis[i];
-		for (int i=0; i<eyes.size(); i++) {
-			FOV temp_eye;
-			temp_eye.angle = (randBool()) ? getVariation(eyes[i].angle, coef) : eyes[i].angle;
-			temp_eye.height = (randBool()) ? getVariation(eyes[i].height, coef): eyes[i].height;
-			temp_eye.width = (randBool()) ? getVariation(eyes[i].width, coef) : eyes[i].width;
-			result.eyes.push_back(temp_eye);
-		}
 	} else if (mode == ONE) {
 		result.soc[randi(0, end_of_status-1)][randi(0, end_of_soc-1)]
 		= getVariation(soc[randf(0, end_of_status-1)][randf(0, end_of_soc-1)], coef);

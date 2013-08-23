@@ -19,11 +19,68 @@ enum Type_eye {RADIUS, TRIANGLE, SECTOR};
 
 enum Individ_status {HUNGRY, EAT, MATURE, REPRODUCT, WAIT, end_of_status};
 
-struct FOV {
-	Type_eye type;
-	float angle;
-	float height;
-	float width;
+//class FOV {
+//public:
+////Переписать класс поля зрения
+//	Type_eye type;
+//	float angle;
+//	float height;
+//	float width;
+//};
+
+
+class FOV {
+protected:
+	Type_eye _type;
+public:
+	int type() {return _type;};
+	virtual float angle() = 0;
+	virtual float height() = 0;
+	virtual float width() = 0;
+};
+
+class FOV_Tri : public FOV {
+private:
+	float _angle;
+	float _height;
+	float _width;
+public:
+	FOV_Tri(float ang, float hgt, float wdt):
+		_angle(ang),
+		_height(hgt),
+		_width(wdt)
+	{_type = TRIANGLE;};
+		
+	virtual float angle()	{return _angle;};
+	virtual float height()	{return _height;};
+	virtual float width()	{return _width;};
+
+	FOV_Tri mutation() {
+
+	};
+	FOV_Tri hibrid(FOV_Tri eye) {
+
+	};
+};
+
+class FOV_Rad : public FOV {
+private:
+	float _height;
+public:
+	FOV_Rad(float hgt):
+		_height(hgt)
+	{_type = RADIUS;};
+
+	float angle()	{return 0;};
+	float height()	{return _height;};
+	float width()	{return 0;};
+
+	FOV_Rad mutation() {
+
+	};
+	FOV_Rad hibrid(FOV_Rad eye) {
+
+	};
 };
 
 template <typename Type> class IndMemory {

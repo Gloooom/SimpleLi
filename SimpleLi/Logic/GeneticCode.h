@@ -44,10 +44,8 @@ public:
 	std::vector <float> phis;
 	std::vector <std::vector <float> > soc;
 
-	//факторы поведения
-
 	DWORD color;
-	std::vector <FOV> eyes;
+	std::vector <FOV*> eyes;
 	Mode_feeding diet;
 public:
 	GeneticCode() {
@@ -62,7 +60,6 @@ public:
 
 	GeneticCode hibridization(GeneticCode person, Mode_hibrid mode);
 	GeneticCode mutation(float coef, Mode_mutation mode);
-	//void operator=(GeneticCode person);
 	bool save(std::string path);
 	bool load(std::string path);
 };

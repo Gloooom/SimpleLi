@@ -40,6 +40,7 @@ void Environment::addIndivid(Individ ind) {
 }
 
 void Environment::step() {
+	stepCount++;
 	checkDead();
 	born();
 	fill();

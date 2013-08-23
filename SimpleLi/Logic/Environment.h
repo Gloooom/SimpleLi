@@ -6,6 +6,7 @@
 
 class Environment {
 public:
+	long long int stepCount;
 	Individ empty;
 	Individ *field[W][H];
 	std::map <long long int, Individ> population;
@@ -15,6 +16,7 @@ private:
 
 public:
 	Environment() {
+		stepCount = 0;
 		for (int i=0; i<W; i++)
 			for (int j=0; j<H; j++)
 				field[i][j]=&empty;

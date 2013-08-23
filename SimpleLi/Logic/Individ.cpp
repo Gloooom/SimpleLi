@@ -66,6 +66,10 @@ void Individ::move(Individ (*(*field)[W][H])) {
 
 	pos.x+=func::round(tempPos.x);
 	pos.y+=func::round(tempPos.y);
+	if (pos.x >=W) pos.x = W-1;
+	if (pos.x <0) pos.x = 0;
+	if (pos.y >=H) pos.y = H-1;
+	if (pos.y <0) pos.y = 0;
 }
 
 //дописать обработку глаза типа сектор
@@ -74,11 +78,11 @@ void Individ::look(Individ (*(*field)[W][H])) {
 	mem.clear();
 
 	for (int i=0; i<dna.eyes.size(); i++) {
-		if (dna.eyes[i].type==TRIANGLE) {
+		if (dna.eyes[i]->type()==TRIANGLE) {
 			double wayAngle = way.getDeg();
-			double k1=tan(dna.eyes[i].angle + atan(dna.eyes[i].height/(dna.eyes[i].width/2)) - wayAngle), b1=0;
-			double k2=tan(dna.eyes[i].angle - atan(dna.eyes[i].height/(dna.eyes[i].width/2)) - wayAngle), b2=0;
-			double k3=tan(dna.eyes[i].angle - wayAngle),    b3=(dna.eyes[i].height/cos(dna.eyes[i].angle - wayAngle));
+			double k1=tan(dna.eyes[i]->angle() + atan(dna.eyes[i]->height()/(dna.eyes[i]->width()/2)) - wayAngle), b1=0;
+			double k2=tan(dna.eyes[i]->angle() - atan(dna.eyes[i]->height()/(dna.eyes[i]->width()/2)) - wayAngle), b2=0;
+			double k3=tan(dna.eyes[i]->angle() - wayAngle),    b3=(dna.eyes[i]->height()/cos(dna.eyes[i]->angle() - wayAngle));
 
 			Point <double> vert[3];
 			vert[0]=func::crossLine(k1,b1,k2,b2);
@@ -115,8 +119,8 @@ void Individ::look(Individ (*(*field)[W][H])) {
 					}
 				}
 			}
-		} else if (dna.eyes[i].type==RADIUS) {
-			double R = dna.eyes[i].height;
+		} else if (dna.eyes[i]->type()==RADIUS) {
+			double R = dna.eyes[i]->height();
 			Vector <double> P;
 			int start_x = (pos.x-R>0) ? pos.x-R : 0;
 			int start_y = (pos.y-R>0) ? pos.y-R : 0;
@@ -138,9 +142,9 @@ void Individ::look(Individ (*(*field)[W][H])) {
 					}
 				}
 			}
-		} else if (dna.eyes[i].type==SECTOR) {
+		} else if (dna.eyes[i]->type()==SECTOR) {
 			//Пока только копия радиуса. Дописать.
-			double R = dna.eyes[i].height;
+			double R = dna.eyes[i]->height();
 			Vector <double> P;
 			int start_x = (pos.x-R>0) ? pos.x-R : 0;
 			int start_y = (pos.y-R>0) ? pos.y-R : 0;
