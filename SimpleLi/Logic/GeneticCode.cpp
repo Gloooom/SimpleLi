@@ -69,7 +69,9 @@ GeneticCode GeneticCode::mutation(float coef, Mode_mutation mode) {
 	if (mode == ALL) {
 	} else if (mode == HALF) {
 	} else if (mode == ONE) {
-		result.soc[randi(0, end_of_status-1)][randi(0, end_of_soc-1)]
+		int seed = func::randi(0, 1);
+		if (seed == 0)
+			result.soc[randi(0, end_of_status-1)][randi(0, end_of_soc-1)]
 		= getVariation(soc[randf(0, end_of_status-1)][randf(0, end_of_soc-1)], coef);
 	}
 	return result;
