@@ -10,6 +10,7 @@
 #include "Logic\Individ.h"
 #include "Logic\Environment.h"
 #include "Logic\Types.h"
+#include "Gui_window.h"
 
 HGE *hge=0;
 
@@ -20,9 +21,10 @@ hgeGUI			*gui;
 HTEXTURE		texGui, texBut, texCell;
 
 hgeSprite		*sprLeftPane1, *sprLeftPane2, *sprRightPane1, *sprRightPane2;
-hgeSprite		*sprCell;
 
 PEditorState	state;
+
+GUI_window *test_w;
 
 Cell Field[W][H];
 double border=0;
@@ -49,9 +51,10 @@ bool FrameFunc()
 	
 	hge->Input_GetMousePos(&state.mp.x, &state.mp.y);
 
-	if(HandleKeys(hge->Input_GetKey())) return true;
+	//if(HandleKeys(hge->Input_GetKey())) return true;
 
-	if(DoCommands(gui->Update(dt))) return true;
+	//if(DoCommands(gui->Update(dt))) return true;
+	test_w->Update(dt);
 
 	if (play) {
 		timer+=dt;
@@ -90,14 +93,34 @@ bool RenderFunc()
 {
 	hge->Gfx_Clear(0);
 	hge->Gfx_BeginScene();
-
-
-
+	
+	hgeQuad cellQ;
 	for (int x=0; x<W; x++) {
 		for(int y=0; y<H; y++) {
-			//hgeColorRGB col(hge->Random_Float(0, 1),hge->Random_Float(0,1),hge->Random_Float(0,1), 1);
-			sprCell->SetColor(Field[x][y].color); 
-			sprCell->RenderStretch(Field[x][y].x, Field[x][y].y, Field[x][y].x+Field[x][y].width, Field[x][y].y+Field[x][y].height);
+			cellQ.v[0].x=Field[x][y].x;
+			cellQ.v[0].y=Field[x][y].y;
+			cellQ.v[0].col=Field[x][y].color;
+			cellQ.v[0].z=0.5f;
+
+			cellQ.v[1].x=Field[x][y].x;
+			cellQ.v[1].y=Field[x][y].y+Field[x][y].height;
+			cellQ.v[1].col=Field[x][y].color;
+			cellQ.v[1].z=0.5f;
+
+			cellQ.v[2].x=Field[x][y].x+Field[x][y].width;
+			cellQ.v[2].y=Field[x][y].y+Field[x][y].height;
+			cellQ.v[2].col=Field[x][y].color;
+			cellQ.v[2].z=0.5f;
+
+			cellQ.v[3].x=Field[x][y].x+Field[x][y].width;
+			cellQ.v[3].y=Field[x][y].y;
+			cellQ.v[3].col=Field[x][y].color;
+			cellQ.v[3].z=0.5f;
+
+			cellQ.blend=BLEND_COLORMUL | BLEND_ALPHABLEND | BLEND_NOZWRITE;
+			cellQ.tex=0;
+			
+			hge->Gfx_RenderQuad(&cellQ);
 		}
 	}
 
@@ -105,8 +128,8 @@ bool RenderFunc()
 	while (p != env.population.end()) {
 		Cell c = Field[p->second.pos.x][p->second.pos.y];
 		float x1, y1, x2, y2;
-		x1 = c.x+c.width/2;
-		y1 = c.y+c.height/2;
+		x1 = func::round(c.x+c.width/2);
+		y1 = func::round(c.y+c.height/2);
 		x2 = x1-p->second.way.x*20;
 		y2 = y1-p->second.way.y*20;
 		Line l(x1, y1, x2, y2, 5, 0x55009999);
@@ -114,7 +137,9 @@ bool RenderFunc()
 		p++;
 	}
 
+	
 	//gui->Render();
+	test_w->Render();
 
 	std::string statuses[] = {"HUNGRY", "EAT", "MATURE", "REPRODUCT", "WAIT"};
 	if (!env.population.empty())
@@ -127,20 +152,17 @@ bool RenderFunc()
 	"\nenergy: %d"
 	"\nspeed: %f"
 	"\n\nlive_timer: %d"
-	"\nreproduction_timer: %d"
-	//"\nstate: %s"
-	,
-		hge->Timer_GetFPS(), 
-		env.population.size(), 
-		(int) env.stepCount,
-		selectInd->live,
-		selectInd->hp,
-		selectInd->energy,
-		selectInd->speed,
-		(int) selectInd->live_timer,
-		selectInd->reproduction_timer
-		//statuses[selectInd->state].c_str()
-		);
+	"\nreproduction_timer: %d",
+	hge->Timer_GetFPS(), 
+	env.population.size(), 
+	(int) env.stepCount,
+	selectInd->live,
+	selectInd->hp,
+	selectInd->energy,
+	selectInd->speed,
+	(int) selectInd->live_timer,
+	selectInd->reproduction_timer
+	);
 		
 	hge->Gfx_EndScene();
 
@@ -179,11 +201,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 }
 
 void addIndivid(Point <float> p, Mode_feeding diet) {
-	//FOV eye1, eye2;
-	//eye1.height=30; eye2.height=3;
-	//eye1.width=20; eye2.width=30;
-	//eye1.angle=0; eye2.angle=0;
-	//eye1.type=TRIANGLE; eye2.type=RADIUS;
 	GeneticCode g;
 		g.phis[acceleration] = 0.3;
 		g.phis[hp_max] = 10; 
@@ -194,41 +211,41 @@ void addIndivid(Point <float> p, Mode_feeding diet) {
 		g.phis[live_time] = 400;
 		g.phis[reproduction_time] = 10; 
 		g.phis[reproduction_pause] = 100;
-		g.eyes.push_back(new FOV_Tri(0, 30, 20));
-		g.eyes.push_back(new FOV_Rad(3));	
+		g.radialEye.setHeight(3);
+		g.eyes.push_back(FOV_Tri(0, 30, 20));
 		g.diet=diet;
 		for (int i=0; i<end_of_status; i++) {
-	if (diet==AUTO) {
-		g.soc[i][max_speed] = func::randf(0, 5);
-		g.soc[i][rand_way] = func::randf(0, 10);
-		g.soc[i][partner] = func::randf(0, 10);
-		g.soc[i][cohesion_partner] = func::randf(0, 10);
-		g.soc[i][separation_partner] = func::randf(0, 10);
-		g.soc[i][alignment_partner] = func::randf(0, 10);
-		g.soc[i][enemy] = func::randf(0, 10);
-		g.soc[i][cohesion_enemy] = func::randf(0, 10);
-		g.soc[i][separation_enemy] = func::randf(0, 10);
-		g.soc[i][alignment_enemy] = func::randf(0, 10);
-		g.color = 0xFF009900;
-	}
-	if (diet==GETERO) {
-		g.soc[i][max_speed] = 3;
-		g.soc[i][rand_way] = 1;
-		g.soc[i][partner] = 1;
-		g.soc[i][cohesion_partner] = 1;
-		g.soc[i][separation_partner] = 0.6f;
-		g.soc[i][alignment_partner] = 1.6f;
-		g.soc[i][enemy] = 1;
-		g.soc[i][cohesion_enemy] = -5;
-		g.soc[i][separation_enemy] = 0;
-		g.soc[i][alignment_enemy] = 0.0f;
-		g.color = 0xFF990000;
+			if (diet==AUTO) {
+				g.soc[i][max_speed] = func::randf(0, 5);
+				g.soc[i][rand_way] = func::randf(0, 10);
+				g.soc[i][partner] = func::randf(0, 10);
+				g.soc[i][cohesion_partner] = func::randf(0, 10);
+				g.soc[i][separation_partner] = func::randf(0, 10);
+				g.soc[i][alignment_partner] = func::randf(0, 10);
+				g.soc[i][enemy] = func::randf(0, 10);
+				g.soc[i][cohesion_enemy] = func::randf(0, 10);
+				g.soc[i][separation_enemy] = func::randf(0, 10);
+				g.soc[i][alignment_enemy] = func::randf(0, 10);
+				g.color = 0xFF009900;
+			}
+			if (diet==GETERO) {
+				g.soc[i][max_speed] = 3;
+				g.soc[i][rand_way] = 1;
+				g.soc[i][partner] = 1;
+				g.soc[i][cohesion_partner] = 1;
+				g.soc[i][separation_partner] = 0.6f;
+				g.soc[i][alignment_partner] = 1.6f;
+				g.soc[i][enemy] = 1;
+				g.soc[i][cohesion_enemy] = -5;
+				g.soc[i][separation_enemy] = 0;
+				g.soc[i][alignment_enemy] = 0.0f;
+				g.color = 0xFF990000;
 
-	}
-}
-	hgeColor c(func::randf(0,1), func::randf(0,1), func::randf(0,1), 1);
-	g.color = c.GetHWColor();
-	env.addIndivid(Individ(func::round(p), g));
+			}
+		}
+		hgeColor c(func::randf(0,1), func::randf(0,1), func::randf(0,1), 1);
+		g.color = c.GetHWColor();
+		env.addIndivid(Individ(func::round(p), g));
 }
 
 void InitEnvironment() {
@@ -250,12 +267,10 @@ void InitEditor() {
 	int bgw, bgh;
 
 	texBut=hge->Texture_Load("Button.png");
-	texCell=hge->Texture_Load("cell.png");
+	texCell=hge->Texture_Load("closeBut.png");
 
 	fnt=new hgeFont("123.fnt");
 	fnt->SetScale(0.5);
-	sprCell=new hgeSprite(texCell, 0, 0, 32, 32);
-	sprCell->SetHotSpot(0, 0);
 
 	Cell typicCell;
 	hgeColor color(1, 1, 1, 1);
@@ -273,14 +288,15 @@ void InitEditor() {
 		}
 	}
 
-	gui=new hgeGUI();
-	CreateGUI();
+	//gui=new hgeGUI();
+	//CreateGUI();
+	test_w = new GUI_window(hge, 10, 10, 200, 200, 0xFFAAAAAA, 0xFF999999, &texCell);
+	//test_w->moveWindow(200, 200);
 }
 
 void DoneEditor() {
 	delete gui;
 	delete fnt;
-	delete sprCell;
 
 	hge->Texture_Free(texBut);
 	hge->Texture_Free(texCell);
@@ -295,4 +311,17 @@ void CreateGUI() {
 	button=new hgeGUIButton(CMD_HELP, 0, 18, 73, 17, texBut, 0, 0);
 	button->SetMode(true);
 	gui->AddCtrl(button);
+
+	slider = new hgeGUISlider(GUI_SLIDER, 610, 400, 180, 10, texCell, 0, 0, 30, 30);
+	slider->SetMode(0, 100, HGESLIDER_BAR);
+	slider->SetValue(1);
+	gui->AddCtrl(slider);
+
+	text=new hgeGUIText(GUI_TEXT, 610, 390, 180, 10, fnt);
+	text->SetMode(HGETEXT_LEFT);
+	text->SetColor(0xFFFFFFFF);
+	text->SetText("O");
+	gui->AddCtrl(text);
+	text->SetText("GG");
+	//GetTextCtrl(GUI_TEXT)->printf("OLOLOLO");
 }

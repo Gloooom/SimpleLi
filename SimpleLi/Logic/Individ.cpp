@@ -77,97 +77,71 @@ void Individ::move(Individ (*(*field)[W][H])) {
 void Individ::look(Individ (*(*field)[W][H])) {
 	mem.clear();
 
-	for (int i=0; i<dna.eyes.size(); i++) {
-		if (dna.eyes[i]->type()==TRIANGLE) {
-			double wayAngle = way.getDeg();
-			double k1=tan(dna.eyes[i]->angle() + atan(dna.eyes[i]->height()/(dna.eyes[i]->width()/2)) - wayAngle), b1=0;
-			double k2=tan(dna.eyes[i]->angle() - atan(dna.eyes[i]->height()/(dna.eyes[i]->width()/2)) - wayAngle), b2=0;
-			double k3=tan(dna.eyes[i]->angle() - wayAngle),    b3=(dna.eyes[i]->height()/cos(dna.eyes[i]->angle() - wayAngle));
-
-			Point <double> vert[3];
-			vert[0]=func::crossLine(k1,b1,k2,b2);
-			vert[1]=func::crossLine(k2,b2,k3,b3);
-			vert[2]=func::crossLine(k1,b1,k3,b3);
-
-			Vector <double> vectorR(vert[2].x, vert[2].y);
-			double R = vectorR.getLength();
-
-			Vector <double> P;
-			int start_x = (pos.x-R>0) ? pos.x-R : 0;
-			int start_y = (pos.y-R>0) ? pos.y-R : 0;
-
-			for (int _x=start_x; _x<pos.x+R, _x<W; _x++) { 
-				P.x=_x-pos.x;
-				for (int _y=start_y; _y<pos.y+R, _y<H; _y++) {
-					P.y=_y-pos.y;
-					double pl1, pl2, pl3;
-					pl1 = (vert[0].x - P.y)*(vert[1].y - vert[0].y)-(vert[1].x - vert[0].x)*(vert[0].y - P.x);
-					pl2 = (vert[1].x - P.y)*(vert[2].y - vert[1].y)-(vert[2].x - vert[1].x)*(vert[1].y - P.x);
-					pl3 = (vert[2].x - P.y)*(vert[0].y - vert[2].y)-(vert[0].x - vert[2].x)*(vert[2].y - P.x);
-					if ((pl1 >= 0 && pl2 >= 0 && pl3 >= 0) || (pl1 <= 0 && pl2 <= 0 && pl3 <= 0)) {
-						Point <int> absP;
-						absP.x=func::round(P.x+pos.x);
-						absP.y=func::round(P.y+pos.y);
-
-						Individ *he = (*field)[absP.x][absP.y];
-						if (he->ID != 0 && *he != *this) {
-							if (he->dna.diet != dna.diet && !func::isIn(mem.enemies, he)) 
-								mem.enemies.push_back(he);
-							if (he->dna.diet == dna.diet && !func::isIn(mem.partners, he))
-								mem.partners.push_back(he);
-						}
-					}
-				}
-			}
-		} else if (dna.eyes[i]->type()==RADIUS) {
-			double R = dna.eyes[i]->height();
-			Vector <double> P;
-			int start_x = (pos.x-R>0) ? pos.x-R : 0;
-			int start_y = (pos.y-R>0) ? pos.y-R : 0;
-			for (int _x=start_x; _x<pos.x+R, _x<W; _x++) { 
-				P.x=_x-pos.x;
-				for (int _y=start_y; _y<pos.y+R, _y<H; _y++) {
-					P.y=_y-pos.y;
-					if (P.y*P.y+P.x*P.x<R*R) {
-						Point <int> absP;
-						absP.x=func::round(P.x+pos.x);
-						absP.y=func::round(P.y+pos.y);
-						Individ *he = (*field)[absP.x][absP.y];
-						if (he->ID != 0 && *he != *this) {
-							if (he->dna.diet != dna.diet && !func::isIn(mem.enemies, he)) 
-								mem.enemies.push_back(he);
-							if (he->dna.diet == dna.diet && !func::isIn(mem.partners, he))
-								mem.partners.push_back(he);
-						}
-					}
-				}
-			}
-		} else if (dna.eyes[i]->type()==SECTOR) {
-			//Пока только копия радиуса. Дописать.
-			double R = dna.eyes[i]->height();
-			Vector <double> P;
-			int start_x = (pos.x-R>0) ? pos.x-R : 0;
-			int start_y = (pos.y-R>0) ? pos.y-R : 0;
-			for (int _x=start_x; _x<pos.x+R, _x<W; _x++) { 
-				P.x=_x-pos.x;
-				for (int _y=start_y; _y<pos.y+R, _y<H; _y++) {
-					P.y=_y-pos.y;
-					if (P.y*P.y+P.x*P.x<R*R) {
-						Point <int> absP;
-						absP.x=func::round(P.x+pos.x);
-						absP.y=func::round(P.y+pos.y);
-						Individ *he = (*field)[absP.x][absP.y];
-						if (he->ID != 0 && *he != *this) {
-							if (he->dna.diet != dna.diet && !func::isIn(mem.enemies, he)) 
-								mem.enemies.push_back(he);
-							if (he->dna.diet == dna.diet && !func::isIn(mem.partners, he))
-								mem.partners.push_back(he);
-						}
-					}
+	double R = dna.radialEye.height();
+	Vector <double> P;
+	int start_x = (pos.x-R>0) ? pos.x-R : 0;
+	int start_y = (pos.y-R>0) ? pos.y-R : 0;
+	for (int _x=start_x; _x<pos.x+R, _x<W; _x++) { 
+		P.x=_x-pos.x;
+		for (int _y=start_y; _y<pos.y+R, _y<H; _y++) {
+			P.y=_y-pos.y;
+			if (P.y*P.y+P.x*P.x<R*R) {
+				Point <int> absP;
+				absP.x=func::round(P.x+pos.x);
+				absP.y=func::round(P.y+pos.y);
+				Individ *he = (*field)[absP.x][absP.y];
+				if (he->ID != 0 && *he != *this) {
+					if (he->dna.diet != dna.diet && !func::isIn(mem.enemies, he)) 
+						mem.enemies.push_back(he);
+					if (he->dna.diet == dna.diet && !func::isIn(mem.partners, he))
+						mem.partners.push_back(he);
 				}
 			}
 		}
 	}
+
+	for (int i=0; i<dna.eyes.size(); i++) {
+		double wayAngle = way.getDeg();
+		double k1=tan(dna.eyes[i].angle() + atan(dna.eyes[i].height()/(dna.eyes[i].width()/2)) - wayAngle), b1=0;
+		double k2=tan(dna.eyes[i].angle() - atan(dna.eyes[i].height()/(dna.eyes[i].width()/2)) - wayAngle), b2=0;
+		double k3=tan(dna.eyes[i].angle() - wayAngle),    b3=(dna.eyes[i].height()/cos(dna.eyes[i].angle() - wayAngle));
+
+		Point <double> vert[3];
+		vert[0]=func::crossLine(k1,b1,k2,b2);
+		vert[1]=func::crossLine(k2,b2,k3,b3);
+		vert[2]=func::crossLine(k1,b1,k3,b3);
+
+		Vector <double> vectorR(vert[2].x, vert[2].y);
+		double R = vectorR.getLength();
+
+		Vector <double> P;
+		int start_x = (pos.x-R>0) ? pos.x-R : 0;
+		int start_y = (pos.y-R>0) ? pos.y-R : 0;
+
+		for (int _x=start_x; _x<pos.x+R, _x<W; _x++) { 
+			P.x=_x-pos.x;
+			for (int _y=start_y; _y<pos.y+R, _y<H; _y++) {
+				P.y=_y-pos.y;
+				double pl1, pl2, pl3;
+				pl1 = (vert[0].x - P.y)*(vert[1].y - vert[0].y)-(vert[1].x - vert[0].x)*(vert[0].y - P.x);
+				pl2 = (vert[1].x - P.y)*(vert[2].y - vert[1].y)-(vert[2].x - vert[1].x)*(vert[1].y - P.x);
+				pl3 = (vert[2].x - P.y)*(vert[0].y - vert[2].y)-(vert[0].x - vert[2].x)*(vert[2].y - P.x);
+				if ((pl1 >= 0 && pl2 >= 0 && pl3 >= 0) || (pl1 <= 0 && pl2 <= 0 && pl3 <= 0)) {
+					Point <int> absP;
+					absP.x=func::round(P.x+pos.x);
+					absP.y=func::round(P.y+pos.y);
+
+					Individ *he = (*field)[absP.x][absP.y];
+					if (he->ID != 0 && *he != *this) {
+						if (he->dna.diet != dna.diet && !func::isIn(mem.enemies, he)) 
+							mem.enemies.push_back(he);
+						if (he->dna.diet == dna.diet && !func::isIn(mem.partners, he))
+							mem.partners.push_back(he);
+					}
+				}
+			}
+		}
+	} 
 }
 
 

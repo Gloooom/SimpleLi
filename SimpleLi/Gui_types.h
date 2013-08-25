@@ -33,6 +33,9 @@ struct Cell {
 	double width, height;
 };
 
+
+
+
 class Line {
 private:
 	float width;
@@ -133,3 +136,5 @@ extern GeneticCode g;
 
 #define CMD_EXIT				1
 #define CMD_HELP				2
+#define GUI_SLIDER				3
+#define GUI_TEXT				4

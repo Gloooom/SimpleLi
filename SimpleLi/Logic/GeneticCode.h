@@ -57,9 +57,11 @@ private:
 	float _angle;
 	float _height;
 	float _width;
-private:
-	FOV_Tri() {};
 public:
+	FOV_Tri():
+		_angle(0),
+		_height(0),
+		_width(0) {};
 	FOV_Tri(float ang, float hgt, float wdt):
 		_angle(ang),
 		_height(hgt),
@@ -98,9 +100,9 @@ public:
 class FOV_Rad : public FOV {
 private:
 	float _height;
-private:
-	FOV_Rad() {};
 public:
+	FOV_Rad(): 
+	  _height(0) {};
 	FOV_Rad(float hgt):
 		_height(hgt)
 	{_type = RADIUS;};
@@ -108,6 +110,7 @@ public:
 	float angle()	{return 0;};
 	float height()	{return _height;};
 	float width()	{return 0;};
+	void setHeight(float hgt) {_height = hgt;};
 
 	FOV* mutation(float coef, Mode_mutation mode) {
 		FOV_Rad result;
@@ -128,7 +131,8 @@ public:
 	std::vector <std::vector <float> > soc;
 
 	DWORD color;
-	std::vector <FOV*> eyes;
+	FOV_Rad radialEye;
+	std::vector <FOV_Tri> eyes;
 	Mode_feeding diet;
 public:
 	GeneticCode() {

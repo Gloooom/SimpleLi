@@ -82,6 +82,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Gui_window.cpp" />
     <ClCompile Include="Logic\Environment.cpp" />
     <ClCompile Include="Logic\Functions.cpp" />
     <ClCompile Include="Logic\GeneticCode.cpp" />
@@ -91,6 +92,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Gui_functions.h" />
+    <ClInclude Include="Gui_window.h" />
     <ClInclude Include="HGE\hge.h" />
     <ClInclude Include="HGE\hgeanim.h" />
     <ClInclude Include="HGE\hgecolor.h" />

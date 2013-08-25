@@ -36,6 +36,9 @@
     <ClCompile Include="Logic\Environment.cpp">
       <Filter>Файлы исходного кода\Logic</Filter>
     </ClCompile>
+    <ClCompile Include="Gui_window.cpp">
+      <Filter>Файлы исходного кода</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="HGE\hge.h">
@@ -102,6 +105,9 @@
       <Filter>Файлы исходного кода</Filter>
     </ClInclude>
     <ClInclude Include="Gui_types.h">
+      <Filter>Файлы исходного кода</Filter>
+    </ClInclude>
+    <ClInclude Include="Gui_window.h">
       <Filter>Файлы исходного кода</Filter>
     </ClInclude>
   </ItemGroup>
