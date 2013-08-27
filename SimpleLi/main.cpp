@@ -54,7 +54,7 @@ bool FrameFunc()
 	//if(HandleKeys(hge->Input_GetKey())) return true;
 
 	//if(DoCommands(gui->Update(dt))) return true;
-	test_w->Update(dt);
+	test_w->Update(dt, state.mp.x, state.mp.y);
 
 	if (play) {
 		timer+=dt;
@@ -290,8 +290,7 @@ void InitEditor() {
 
 	//gui=new hgeGUI();
 	//CreateGUI();
-	test_w = new GUI_window(hge, 10, 10, 200, 200, 0xFFAAAAAA, 0xFF999999, &texCell);
-	//test_w->moveWindow(200, 200);
+	test_w = new GUI_window(hge, 10, 10, 200, 200, "OLOLO", fnt, 0xFFAAAAAA, 0xFF999999, &texCell);
 }
 
 void DoneEditor() {

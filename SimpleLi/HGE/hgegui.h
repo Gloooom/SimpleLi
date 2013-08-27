@@ -49,6 +49,7 @@ public:
 	virtual bool	KeyClick(int key, int chr) { return false; }
 
 	virtual void	SetColor(DWORD _color) { color=_color; }
+	virtual void	SetPos(float _x, float _y);
 	
 	int				id;
 	bool			bStatic;

@@ -37,6 +37,7 @@ public:
 	void			SetMode(int _align);
 	void			SetText(const char *_text);
 	void			printf(const char *format, ...);
+	void			SetPos(float _x, float _y);
 
 	virtual void	Render();
 

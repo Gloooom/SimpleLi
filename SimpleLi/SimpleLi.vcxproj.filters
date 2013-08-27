@@ -56,12 +56,6 @@
     <ClInclude Include="HGE\hgefont.h">
       <Filter>Заголовочные файлы</Filter>
     </ClInclude>
-    <ClInclude Include="HGE\hgegui.h">
-      <Filter>Заголовочные файлы</Filter>
-    </ClInclude>
-    <ClInclude Include="HGE\hgeguictrls.h">
-      <Filter>Заголовочные файлы</Filter>
-    </ClInclude>
     <ClInclude Include="HGE\hgeparticle.h">
       <Filter>Заголовочные файлы</Filter>
     </ClInclude>
@@ -109,6 +103,12 @@
     </ClInclude>
     <ClInclude Include="Gui_window.h">
       <Filter>Файлы исходного кода</Filter>
+    </ClInclude>
+    <ClInclude Include="HGE\hgegui.h">
+      <Filter>Заголовочные файлы</Filter>
+    </ClInclude>
+    <ClInclude Include="HGE\hgeguictrls.h">
+      <Filter>Заголовочные файлы</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
