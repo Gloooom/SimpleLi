@@ -1,11 +1,13 @@
 #include "Gui_window.h"
 
+int GUI_window::objCount = 3;
+
 GUI_window::GUI_window(HGE *_hge, 
-	float _x, float _y, float _w, float _h, 
+	float _w, float _h, 
 	std::string _title, hgeFont *fnt, 
 	DWORD _colorBar, DWORD _colorBack, HTEXTURE *_texCloseBut):
-	x(_x),
-	y(_y),
+	x(0),
+	y(0),
 	w(_w),
 	h(_h),
 	hge(_hge),
@@ -25,7 +27,7 @@ GUI_window::GUI_window(HGE *_hge,
 	titleBar = new hgeGUIButton(1, x, y, w, 20, texBar, 0, 0);
 	closeBut->SetMode(false);
 	
-	titleText = new hgeGUIText(2, x, y, 1, 1, fnt);	
+	titleText = new hgeGUIText(2, x+5, y+5, w, 20, fnt);	
 	titleText->SetMode(HGETEXT_LEFT);
 	titleText->SetColor(0xFFFFFFFF);
 	titleText->SetText(title.c_str());
@@ -79,7 +81,12 @@ void GUI_window::setPos(int _x, int _y) {
 	setQuadPos(&background, _x, _y);
 	gui->MoveCtrl(0, _x+w-20, _y);
 	gui->MoveCtrl(1, _x, _y);
-	gui->MoveCtrl(2, _x, _y);
+	gui->MoveCtrl(2, _x+5, _y+5);
+	std::map <std::string, objInfo> ::iterator p = objectsID.begin();
+	while (p != objectsID.end()) {
+		gui->MoveCtrl(p->second.ID, _x+p->second.x, _y+p->second.y);
+		p++;
+	}
 }
 
 void GUI_window::Update(float dt, float mx, float my) {
@@ -96,3 +103,20 @@ void GUI_window::Update(float dt, float mx, float my) {
 		} else {touchFlag = false;}
 	}
 }
+
+void GUI_window::addCtrl(hgeGUIObject* obj, float _x, float _y, std::string name) {
+	if (objectsID.find(name) == objectsID.end()) {
+		objectsID[name].ID = objCount;
+		objectsID[name].x = _x;
+		objectsID[name].y = _y;
+	}
+	obj->id = objCount;
+	objects.push_back(obj);
+	gui->AddCtrl(obj);
+	objCount++;
+}
+
+hgeGUIObject *GUI_window::getCtrl(std::string name) {
+	return gui->GetCtrl(objectsID[name].ID);
+}
+

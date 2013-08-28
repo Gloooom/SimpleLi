@@ -42,6 +42,7 @@ public:
 	virtual void	Render();
 
 private:
+	float			dh;
 	hgeFont*		font;
 	float			tx, ty;
 	int				align;

@@ -24,7 +24,7 @@ hgeSprite		*sprLeftPane1, *sprLeftPane2, *sprRightPane1, *sprRightPane2;
 
 PEditorState	state;
 
-GUI_window *test_w;
+GUI_manager *test_m;
 
 Cell Field[W][H];
 double border=0;
@@ -54,7 +54,7 @@ bool FrameFunc()
 	//if(HandleKeys(hge->Input_GetKey())) return true;
 
 	//if(DoCommands(gui->Update(dt))) return true;
-	test_w->Update(dt, state.mp.x, state.mp.y);
+	test_m->Update(dt, state.mp.x, state.mp.y);
 
 	if (play) {
 		timer+=dt;
@@ -139,7 +139,7 @@ bool RenderFunc()
 
 	
 	//gui->Render();
-	test_w->Render();
+	test_m->Render();
 
 	std::string statuses[] = {"HUNGRY", "EAT", "MATURE", "REPRODUCT", "WAIT"};
 	if (!env.population.empty())
@@ -290,7 +290,24 @@ void InitEditor() {
 
 	//gui=new hgeGUI();
 	//CreateGUI();
-	test_w = new GUI_window(hge, 10, 10, 200, 200, "OLOLO", fnt, 0xFFAAAAAA, 0xFF999999, &texCell);
+	Pixel *test_p = new Pixel(0xFFFF0000, hge);
+	hgeGUISlider *slider;
+	slider = new hgeGUISlider(GUI_SLIDER, 610, 400, 180, 10, test_p->getPix(), 0, 0, 1, 1);
+	slider->SetMode(0, 100, HGESLIDER_BARRELATIVE);
+	slider->SetValue(0);
+
+	GUI_window *test_w_1;
+	test_w_1 = new GUI_window(hge, 200, 200, "Title", fnt, 0xFFAAAAAA, 0xFF999999, &texCell);
+	test_w_1->addCtrl(slider, 100, 100, "slider");
+	GUI_window *test_w_2;
+	test_w_2 = new GUI_window(hge, 200, 200, "Tiiitle", fnt, 0xFFAAAAAA, 0xFF999999, &texCell);
+	test_w_2->setPos(300,100);
+
+	test_m = new GUI_manager(hge);
+	test_m->addWindow(*test_w_1, 1);
+	test_m->addWindow(*test_w_2, 2);
+	test_m->setActive(2);
+	test_m->setActive(1);
 }
 
 void DoneEditor() {
