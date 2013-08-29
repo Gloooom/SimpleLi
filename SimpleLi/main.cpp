@@ -11,6 +11,8 @@
 #include "Logic\Environment.h"
 #include "Logic\Types.h"
 #include "Gui_win_manager.h"
+#include "Gui_types.h"
+#include "Gui_color.h"
 
 HGE *hge=0;
 
@@ -21,10 +23,11 @@ hgeGUI			*gui;
 HTEXTURE		texGui, texBut, texCell;
 
 hgeSprite		*sprLeftPane1, *sprLeftPane2, *sprRightPane1, *sprRightPane2;
-
+hgeSprite		*testSpr;
+		
 PEditorState	state;
 
-GUI_win_manager *test_m;
+GUI_win_manager *winManager;
 
 Cell Field[W][H];
 double border=0;
@@ -43,7 +46,20 @@ void			CreateGUI();
 void			InitEnvironment();
 void			addIndivid(Point <float> p, Mode_feeding diet); 
 
-#include "Gui_functions.h"
+
+void nullF() {};
+
+
+
+void fff() {
+		GUI_window *test_w_new = new GUI_window(
+			((hgeGUISlider*)winManager->getWin(1)->getCtrl("w"))->GetValue(), 
+			((hgeGUISlider*)winManager->getWin(1)->getCtrl("h"))->GetValue(), 
+			"Title_new", fnt, 0xFFAAAAAA, 0xFF999999, &texCell);
+		winManager->addWindow(test_w_new, wincount);
+		winManager->setActive(wincount);
+		wincount++;
+};
 
 bool FrameFunc()
 {
@@ -52,21 +68,15 @@ bool FrameFunc()
 	
 	hge->Input_GetMousePos(&state.mp.x, &state.mp.y);
 
-	//if(HandleKeys(hge->Input_GetKey())) return true;
+	winManager->Update(dt, state.mp.x, state.mp.y);
 
-	//if(DoCommands(gui->Update(dt))) return true;
-	test_m->Update(dt, state.mp.x, state.mp.y);
-
-	if(((hgeGUIButton*)test_m->getWin(1)->getCtrl("but"))->GetState()) {
-		GUI_window *test_w_new = new GUI_window(
-			((hgeGUISlider*)test_m->getWin(1)->getCtrl("w"))->GetValue(), 
-			((hgeGUISlider*)test_m->getWin(1)->getCtrl("h"))->GetValue(), 
-			"Title_new", fnt, 0xFFAAAAAA, 0xFF999999, &texCell);
-		test_m->addWindow(test_w_new, wincount);
-		test_m->setActive(wincount);
-		((hgeGUIButton*)test_m->getWin(1)->getCtrl("but"))->SetState(false);
-		wincount++;
-	}
+	gui->Update(dt);
+	
+	HSVColor color(0xFFFF0000);
+	color.setHue((((hgeGUISlider*)winManager->getWin(1)->getCtrl("h"))->GetValue()/100.00f)*360.00f);
+	color.setSaturation(((hgeGUISlider*)winManager->getWin(1)->getCtrl("s"))->GetValue()/100.00f);
+	color.setValue(((hgeGUISlider*)winManager->getWin(1)->getCtrl("v"))->GetValue()/100.00f);
+	winManager->getWin(1)->setColor(color);
 
 	if (play) {
 		timer+=dt;
@@ -84,14 +94,6 @@ bool FrameFunc()
 					} else {
 						Field[_x][_y].color=0xFFFFFFFF;
 					}
-			//Vector <int> tempP;
-			//tempP.x=state.mp.x/(Field[0][0].width+border);
-			//tempP.y=state.mp.y/(Field[0][0].height+border);
-			//Vector <double> v (tempP.x - env.population[0].pos.x, tempP.y - env.population[0].pos.y);
-			//env.population[0].way=v.getNorm();
-			//env.population[0].move(&env.field, env.empty);
-			
-
 
 			timer=0;
 		}
@@ -150,8 +152,8 @@ bool RenderFunc()
 	}
 
 	
-	//gui->Render();
-	test_m->Render();
+	gui->Render();
+	winManager->Render();
 
 	std::string statuses[] = {"HUNGRY", "EAT", "MATURE", "REPRODUCT", "WAIT"};
 	if (!env.population.empty())
@@ -299,29 +301,43 @@ void InitEditor() {
 			Field[x][y]=typicCell;
 		}
 	}
+	
+	ButtonTex butTex(40, 40, 0xFFFF0000);
 
-	//gui=new hgeGUI();
-	//CreateGUI();
-	Pixel *test_p = new Pixel(0xFF00DD00);
+	gui=new hgeGUI();
+	CreateGUI();
+
+	RGBColor colPix(0xFF00DD00);
+
+	Pixel *test_p = new Pixel(colPix);
+
 	hgeGUISlider *slider;
 	slider = new hgeGUISlider(GUI_SLIDER, 0, 0, 180, 10, test_p->getPix(), 0, 0, 1, 1);
-	slider->SetMode(0, 400, HGESLIDER_BAR);
+	slider->SetMode(0, 100, HGESLIDER_BAR);
 	slider->SetValue(100);
 
 	hgeGUIButton *button;
-	button = new hgeGUIButton(CMD_EXIT, 0, 0, hge->Texture_GetWidth(texBut)/2, hge->Texture_GetHeight(texBut), texBut, 0, 0);
+	button = new hgeGUIButton(CMD_EXIT, 0, 0, 40, 40, butTex.getTexture(), 0, 0);
 	button->SetMode(false);
+
+	hgeGUIListbox *list;
+	list = new hgeGUIListbox(0, 0, 0, 100, 100, fnt, 0xFFFF0000, 0xFF00FF00, 0xFF0000FF);
+	list->AddItem("bla-bla1");
+	list->AddItem("bla-bla2");
+	list->AddItem("bla-bla3");
+	list->AddItem("bla-bla4");
 
 	GUI_window *test_w_1;
 	test_w_1 = new GUI_window(200, 200, "Make Windows!", fnt, 0xFFAAAAAA, 0xFF999999, &texCell);
-	test_w_1->addCtrl(slider, 10, 100, "h");
-	test_w_1->addCtrl(slider, 10, 120, "w");
-	test_w_1->addCtrl(button, 10, 180, "but");
-
-	test_m = new GUI_win_manager();
-	test_m->addWindow(test_w_1, 1);
-	test_m->setActive(1);
-	test_m->setWinPos(1, 200, 200);
+	test_w_1->addCtrl(slider, 10, 100, "h", fff);
+	test_w_1->addCtrl(slider, 10, 120, "s", fff);
+	test_w_1->addCtrl(slider, 10, 140, "v", fff);
+	//test_w_1->addCtrl(button, 10, 180, "but", fff);
+	//test_w_1->addCtrl(list, 10, 50, "list", nullF); 
+	winManager = new GUI_win_manager();
+	winManager->addWindow(test_w_1, 1);
+	winManager->setActive(1);
+	winManager->setWinPos(1, 200, 200);
 }
 
 void DoneEditor() {
@@ -337,15 +353,10 @@ void CreateGUI() {
 	hgeGUISlider *slider;
 	hgeGUIText	 *text;
 
-	gui->AddCtrl(new hgeGUIButton(CMD_EXIT, 0, 0, 73, 17, texBut, 0, 0));
-	button=new hgeGUIButton(CMD_HELP, 0, 18, 73, 17, texBut, 0, 0);
-	button->SetMode(true);
+	ButtonTex butTex(40,10,0xFFFFFF22);
+	button=new hgeGUIButton(CMD_HELP, 700, 500, 40, 10, butTex.getTexture(), 0, 0);
+	button->SetMode(false);
 	gui->AddCtrl(button);
-
-	slider = new hgeGUISlider(GUI_SLIDER, 610, 400, 180, 10, texCell, 0, 0, 30, 30);
-	slider->SetMode(0, 100, HGESLIDER_BAR);
-	slider->SetValue(1);
-	gui->AddCtrl(slider);
 
 	text=new hgeGUIText(GUI_TEXT, 610, 390, 180, 10, fnt);
 	text->SetMode(HGETEXT_LEFT);

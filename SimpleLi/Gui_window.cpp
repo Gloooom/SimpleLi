@@ -11,9 +11,10 @@ GUI_window::GUI_window(
 	w(_w),
 	h(_h),
 	visible(true),
+	buttonDoneFlag(false),
+	buttonPressFlag(false),
 	title(_title)
 {
-
 	gui = new hgeGUI();
 
 	texBar = hge->Texture_Create(1, 1);
@@ -90,18 +91,30 @@ void GUI_window::setPos(int _x, int _y) { //баг: перемещается кнопка закрытия ок
 }
 
 void GUI_window::Update(float dt, float mx, float my) {
-	if (visible) {
-		gui->Update(dt);
-		if (closeBut->GetState()) visible = false;
-		if (titleBar->GetState()) {
-			if (!touchFlag) {
-				touchFlag = true;
-				m_dx = mx - x;
-				m_dy = my - y;
+	gui->Update(dt);
+	std::map <std::string, objInfo> ::iterator p = objectsID.begin();
+	while (p != objectsID.end()) {
+		if(hgeButtonGetState(gui,p->second.ID)) {
+			if (p->second.doneFlag && !buttonPressFlag) {
+				p->second.doneFlag = false;
+				buttonPressFlag = true;
 			}
-			setPos(mx - m_dx, my - m_dy);
-		} else {touchFlag = false;}
+		} else if (!p->second.doneFlag) {
+			p->second.func();
+			p->second.doneFlag = true;
+			buttonPressFlag = false;
+		}
+		p++;
 	}
+	if (closeBut->GetState()) visible = false;
+	if (titleBar->GetState()) {
+		if (!touchFlag) {
+			touchFlag = true;
+			m_dx = mx - x;
+			m_dy = my - y;
+		}
+		setPos(mx - m_dx, my - m_dy);
+	} else {touchFlag = false;}
 }
 
 template <typename abstractParent> 
@@ -109,11 +122,14 @@ abstractParent *getNewObj(abstractParent *ptrParent) {
 	return new typeid(*ptrParent)(*((typeid(*ptrParent))ptrParent))
 }
 
-void GUI_window::addCtrl(hgeGUIObject* obj, float _x, float _y, std::string name) {
+
+void GUI_window::addCtrl(hgeGUIObject* obj, float _x, float _y, std::string name, void (*func)()) {
 	if (objectsID.find(name) == objectsID.end()) {
 		objectsID[name].ID = objCount;
 		objectsID[name].x = _x;
 		objectsID[name].y = _y;
+		objectsID[name].func = func;
+		objectsID[name].doneFlag = true;
 	}
 
 	obj->id = objCount;
@@ -125,6 +141,8 @@ void GUI_window::addCtrl(hgeGUIObject* obj, float _x, float _y, std::string name
 		objects.push_back(new hgeGUIButton(*((hgeGUIButton*)obj)));
 	if (typeid(*obj).name() == typeid(hgeGUIText).name())
 		objects.push_back(new hgeGUIText(*((hgeGUIText*)obj)));
+	if (typeid(*obj).name() == typeid(hgeGUIListbox).name())
+		objects.push_back(new hgeGUIListbox(*((hgeGUIListbox*)obj)));
 
 	gui->AddCtrl(*(--objects.end()));
 	objCount++;
@@ -134,9 +152,14 @@ hgeGUIObject *GUI_window::getCtrl(std::string name) {
 	return gui->GetCtrl(objectsID[name].ID);
 }
 
+void GUI_window::setColor(DWORD color) {
+	for(int i=0;i<4;i++) {
+		background.v[i].col = color;
+	}
+}
+
 void GUI_window::setAColor(BYTE alpha) {
-	union
-	{
+	union {
 		DWORD dw;
 		unsigned char b[4];
 	} _col;

@@ -9,6 +9,7 @@
 #include "..\HGE\hgeguictrls.h"
 #include "Gui_types.h"
 #include "Gui_window.h"
+#include "Gui_color.h"
 
 class GUI_win_manager {
 private:
@@ -43,6 +44,7 @@ public:
 		std::deque <int> ::iterator futureFrontID = std::find(activeWindows.begin(), activeWindows.end(), ID);
 		if (futureFrontID != activeWindows.end()) {
 			windows.at(*activeWindows.begin())->setAColor(0x99);
+
 			activeWindows.erase(futureFrontID);
 			activeWindows.push_front(ID);
 
@@ -52,10 +54,10 @@ public:
 
 	void Update(float dt, float mx, float my) {
 		if (!activeWindows.empty()) {
-			gui->Update(dt);
 			getFocusWin()->Update(dt, mx, my);
 			gui->MoveCtrl(getFocusWinID(), windows[getFocusWinID()]->x, windows[getFocusWinID()]->y);
 
+			gui->Update(dt);
 			GUI_window *top = getFocusWin();
 			if (mx < top->x || mx > top->x + top->w ||
 				my < top->y || my > top->y + top->h) { 
@@ -86,15 +88,18 @@ public:
 	void setActive(int ID) {
 		std::deque <int> ::iterator futureFrontID = std::find(activeWindows.begin(), activeWindows.end(), ID);
 		if (futureFrontID == activeWindows.end()) {
-			activeWindows.push_front(ID);
-		} else {
-			activeWindows.erase(futureFrontID);
-			activeWindows.push_front(ID);
-		}
-		gui->EnableCtrl(ID, true);
+			windows.at(ID)->visible = true;
+			if (activeWindows.empty()) 
+				windows.at(ID)->setAColor(0xFF); 
+			else 
+				windows.at(ID)->setAColor(0x99);
+			activeWindows.push_back(ID);
+			gui->EnableCtrl(ID, true);
+		} 
 	};
 	void Deactive(int ID) {
 		activeWindows.erase(std::find(activeWindows.begin(), activeWindows.end(), ID));
+		windows.at(ID)->visible = false;
 		gui->EnableCtrl(ID, false);
 	}
 

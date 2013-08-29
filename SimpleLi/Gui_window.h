@@ -17,6 +17,8 @@ extern HGE *hge;
 struct objInfo {
 	int ID;
 	float x, y;
+	void (*func)();
+	bool doneFlag;
 };
 
 class GUI_window {
@@ -32,6 +34,8 @@ private:
 	hgeGUI *gui;
 	float m_dx, m_dy;
 	bool touchFlag;
+	bool buttonDoneFlag;
+	bool buttonPressFlag;
 	hgeQuad background;
 	hgeGUIButton *titleBar;
 	hgeGUIButton *closeBut;
@@ -52,11 +56,12 @@ public:
 	~GUI_window() {
 	};
 
+	void setColor(DWORD color);
 	void setAColor(BYTE alpha);
 	void Update(float dt, float mx, float my);
 	void Render();
 	void setPos(int _x, int _y);
-	void addCtrl(hgeGUIObject* obj, float _x, float _y, std::string name);
+	void addCtrl(hgeGUIObject* obj, float _x, float _y, std::string name, void (*func)());
 	hgeGUIObject *getCtrl(std::string name);
 };
 
