@@ -93,6 +93,7 @@
   <ItemGroup>
     <ClInclude Include="Gui_functions.h" />
     <ClInclude Include="Gui_window.h" />
+    <ClInclude Include="GUI_win_manager.h" />
     <ClInclude Include="HGE\hge.h" />
     <ClInclude Include="HGE\hgeanim.h" />
     <ClInclude Include="HGE\hgecolor.h" />

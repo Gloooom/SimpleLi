@@ -63,8 +63,8 @@ public:
 	hgeGUIObject	*prev;
 
 protected:
-	hgeGUIObject(const hgeGUIObject &go);
-	hgeGUIObject&	operator= (const hgeGUIObject &go);
+	//hgeGUIObject(const hgeGUIObject &go);
+	//hgeGUIObject&	operator= (const hgeGUIObject &go);
 
 	static HGE		*hge;
 };

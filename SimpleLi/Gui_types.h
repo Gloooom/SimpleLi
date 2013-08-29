@@ -33,8 +33,29 @@ struct Cell {
 	double width, height;
 };
 
+class Pixel {
+private:
+	HTEXTURE pix;
+public:
+	Pixel(DWORD color) {
+		pix = hge->Texture_Create(1, 1);
+		setCol(color);
+	};
+	Pixel() {
+		pix = hge->Texture_Create(1, 1);
+		setCol(0xFFFFFFFF);
+	};
+	~Pixel() {
+		hge->Texture_Free(pix);
+	};
 
-
+	HTEXTURE getPix() {return pix;};
+	void	 setCol(DWORD color) {
+		DWORD *ptr = hge->Texture_Lock(pix, false, 0, 0, 1, 1);
+		ptr[0] = color;
+		hge->Texture_Unlock(pix);
+	};
+};
 
 class Line {
 private:

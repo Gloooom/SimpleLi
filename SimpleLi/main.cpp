@@ -10,7 +10,7 @@
 #include "Logic\Individ.h"
 #include "Logic\Environment.h"
 #include "Logic\Types.h"
-#include "Gui_window.h"
+#include "Gui_win_manager.h"
 
 HGE *hge=0;
 
@@ -24,7 +24,7 @@ hgeSprite		*sprLeftPane1, *sprLeftPane2, *sprRightPane1, *sprRightPane2;
 
 PEditorState	state;
 
-GUI_manager *test_m;
+GUI_win_manager *test_m;
 
 Cell Field[W][H];
 double border=0;
@@ -36,6 +36,7 @@ float			psx=400, psy=300;
 float			timer=0;
 bool			play=true;
 
+int wincount = 3;
 void			InitEditor();
 void			DoneEditor();
 void			CreateGUI();
@@ -56,10 +57,21 @@ bool FrameFunc()
 	//if(DoCommands(gui->Update(dt))) return true;
 	test_m->Update(dt, state.mp.x, state.mp.y);
 
+	if(((hgeGUIButton*)test_m->getWin(1)->getCtrl("but"))->GetState()) {
+		GUI_window *test_w_new = new GUI_window(
+			((hgeGUISlider*)test_m->getWin(1)->getCtrl("w"))->GetValue(), 
+			((hgeGUISlider*)test_m->getWin(1)->getCtrl("h"))->GetValue(), 
+			"Title_new", fnt, 0xFFAAAAAA, 0xFF999999, &texCell);
+		test_m->addWindow(test_w_new, wincount);
+		test_m->setActive(wincount);
+		((hgeGUIButton*)test_m->getWin(1)->getCtrl("but"))->SetState(false);
+		wincount++;
+	}
+
 	if (play) {
 		timer+=dt;
 		if (timer>0.1) {
-			
+
 			env.step();
 			
 			for (int _x=0; _x<W; _x++) 
@@ -290,24 +302,26 @@ void InitEditor() {
 
 	//gui=new hgeGUI();
 	//CreateGUI();
-	Pixel *test_p = new Pixel(0xFFFF0000, hge);
+	Pixel *test_p = new Pixel(0xFF00DD00);
 	hgeGUISlider *slider;
-	slider = new hgeGUISlider(GUI_SLIDER, 610, 400, 180, 10, test_p->getPix(), 0, 0, 1, 1);
-	slider->SetMode(0, 100, HGESLIDER_BARRELATIVE);
-	slider->SetValue(0);
+	slider = new hgeGUISlider(GUI_SLIDER, 0, 0, 180, 10, test_p->getPix(), 0, 0, 1, 1);
+	slider->SetMode(0, 400, HGESLIDER_BAR);
+	slider->SetValue(100);
+
+	hgeGUIButton *button;
+	button = new hgeGUIButton(CMD_EXIT, 0, 0, hge->Texture_GetWidth(texBut)/2, hge->Texture_GetHeight(texBut), texBut, 0, 0);
+	button->SetMode(false);
 
 	GUI_window *test_w_1;
-	test_w_1 = new GUI_window(hge, 200, 200, "Title", fnt, 0xFFAAAAAA, 0xFF999999, &texCell);
-	test_w_1->addCtrl(slider, 100, 100, "slider");
-	GUI_window *test_w_2;
-	test_w_2 = new GUI_window(hge, 200, 200, "Tiiitle", fnt, 0xFFAAAAAA, 0xFF999999, &texCell);
-	test_w_2->setPos(300,100);
+	test_w_1 = new GUI_window(200, 200, "Make Windows!", fnt, 0xFFAAAAAA, 0xFF999999, &texCell);
+	test_w_1->addCtrl(slider, 10, 100, "h");
+	test_w_1->addCtrl(slider, 10, 120, "w");
+	test_w_1->addCtrl(button, 10, 180, "but");
 
-	test_m = new GUI_manager(hge);
-	test_m->addWindow(*test_w_1, 1);
-	test_m->addWindow(*test_w_2, 2);
-	test_m->setActive(2);
+	test_m = new GUI_win_manager();
+	test_m->addWindow(test_w_1, 1);
 	test_m->setActive(1);
+	test_m->setWinPos(1, 200, 200);
 }
 
 void DoneEditor() {
