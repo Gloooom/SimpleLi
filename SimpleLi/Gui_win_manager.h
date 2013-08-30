@@ -50,7 +50,9 @@ public:
 	};
 
 	int getFocusWinID() {
-		return activeWindows.front();
+		if (!activeWindows.empty())
+			return activeWindows.front();
+		else return 0;
 	};
 	void setFocus(int ID) {
 		std::deque <int> ::iterator futureFrontID = std::find(activeWindows.begin(), activeWindows.end(), ID);
@@ -86,6 +88,7 @@ public:
 				if (!windows.at(*p)->visible) {
 					gui->EnableCtrl(*p, false);
 					p = activeWindows.erase(p);
+					windows.at(*activeWindows.begin())->setAColor(0xFF);
 				} else p++;
 			}
 		}

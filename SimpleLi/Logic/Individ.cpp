@@ -305,7 +305,7 @@ IndMemory <long long int> Individ::whoIsNearby(Individ (*(*field)[W][H])) {
 			if (pos.x+delta[x] >=0 && pos.y+delta[y] >=0 
 				&& pos.x+delta[x] <W && pos.y+delta[y] <H) {
 				Individ *he = (*field)[pos.x+delta[x]][pos.y+delta[y]];
-				if (he->ID != 0 && he->ID != ID && he->state != REPRODUCT && he->state !=EAT && he->live) {
+				if (he->ID != 0 && he->ID != ID && he->state != REPRODUCT && he->live) {
 					if (he->dna.diet == dna.diet && he->gender != gender && he->state == MATURE)
 						result.partners.push_back(he->ID);
 					if (he->dna.diet != dna.diet)
@@ -338,7 +338,7 @@ void Individ::step(Individ (*(*field)[W][H]), std::deque <Individ> *cradle, std:
 		if (reproduction_timer < dna.phis[reproduction_pause] && state != REPRODUCT) 
 			reproduction_timer++;
 
-		if (state != EAT && state != REPRODUCT) {
+		if (state != REPRODUCT) {
 			look(field);
 			checkState();
 			checkWay();
@@ -376,8 +376,6 @@ void Individ::step(Individ (*(*field)[W][H]), std::deque <Individ> *cradle, std:
 
 			} else if (state == REPRODUCT) {
 				reproduction(field, cradle, population);
-			} else if (state == EAT) {
-
 			} else if (state == WAIT) {
 
 			}
@@ -394,8 +392,6 @@ void Individ::step(Individ (*(*field)[W][H]), std::deque <Individ> *cradle, std:
 			} else if (state == MATURE) {
 
 			} else if (state == REPRODUCT) {
-
-			} else if (state == EAT) {
 
 			} else if (state == WAIT) {
 

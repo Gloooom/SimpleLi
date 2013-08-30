@@ -6,6 +6,8 @@
 
 extern HGE *hge;
 
+float isRight(float that);
+
 class Pixel {
 private:
 	HTEXTURE pix;
@@ -36,12 +38,6 @@ class HSVColor;
 class RGBColor {
 private:
 	float a, r, g, b;
-private:
-	float isRight(float that) {
-		if (that<=0) return 0;
-		if (that>=1) return 1;
-		return that;
-	}
 public:
 	RGBColor(): 
 	a(0), r(0), g(0), b(0) {};
@@ -69,11 +65,6 @@ private:
 private:
 	float getMin(float a, float b) {return a<b ? a : b;};
 	float getMax(float a, float b) {return a>b ? a : b;};
-	float isRight(float that) {
-		if (that<=0) return 0;
-		if (that>=1) return 1;
-		return that;
-	}
 public:	
 	HSVColor():
 	h(0), s(0), v(0) {};

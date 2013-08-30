@@ -27,7 +27,7 @@ enum Mode_mutation {ONE, ALL, HALF};
 enum Mode_feeding {AUTO, GETERO};
 enum Type_eye {RADIUS, TRIANGLE, SECTOR};
 
-enum Individ_status {HUNGRY, EAT, MATURE, REPRODUCT, WAIT, end_of_status};
+enum Individ_status {HUNGRY, MATURE, REPRODUCT, WAIT, end_of_status};
 
 template <typename Type> class IndMemory {
 public:

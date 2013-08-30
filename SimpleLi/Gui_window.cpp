@@ -94,16 +94,17 @@ void GUI_window::Update(float dt, float mx, float my) {
 	gui->Update(dt);
 	std::map <std::string, objInfo> ::iterator p = objectsID.begin();
 	while (p != objectsID.end()) {
-		if(hgeButtonGetState(gui,p->second.ID)) {
-			if (p->second.doneFlag && !buttonPressFlag) {
-				p->second.doneFlag = false;
-				buttonPressFlag = true;
+		if (p->second.check)
+			if(hgeButtonGetState(gui,p->second.ID)) {
+				if (p->second.doneFlag && !buttonPressFlag) {
+					p->second.doneFlag = false;
+					buttonPressFlag = true;
+				}
+			} else if (!p->second.doneFlag) {
+				p->second.func();
+				p->second.doneFlag = true;
+				buttonPressFlag = false;
 			}
-		} else if (!p->second.doneFlag) {
-			p->second.func();
-			p->second.doneFlag = true;
-			buttonPressFlag = false;
-		}
 		p++;
 	}
 	if (closeBut->GetState()) visible = false;
@@ -130,6 +131,7 @@ void GUI_window::addCtrl(hgeGUIObject* obj, float _x, float _y, std::string name
 		objectsID[name].y = _y;
 		objectsID[name].func = func;
 		objectsID[name].doneFlag = true;
+		objectsID[name].check = false;
 	}
 
 	obj->id = objCount;
@@ -137,12 +139,14 @@ void GUI_window::addCtrl(hgeGUIObject* obj, float _x, float _y, std::string name
 
 	if (typeid(*obj).name() == typeid(hgeGUISlider).name())
 		objects.push_back(new hgeGUISlider(*((hgeGUISlider*)obj)));
-	if (typeid(*obj).name() == typeid(hgeGUIButton).name())
-		objects.push_back(new hgeGUIButton(*((hgeGUIButton*)obj)));
 	if (typeid(*obj).name() == typeid(hgeGUIText).name())
 		objects.push_back(new hgeGUIText(*((hgeGUIText*)obj)));
 	if (typeid(*obj).name() == typeid(hgeGUIListbox).name())
 		objects.push_back(new hgeGUIListbox(*((hgeGUIListbox*)obj)));
+	if (typeid(*obj).name() == typeid(hgeGUIButton).name()) {
+		objects.push_back(new hgeGUIButton(*((hgeGUIButton*)obj)));
+		objectsID[name].check = true;
+	}
 
 	gui->AddCtrl(*(--objects.end()));
 	objCount++;

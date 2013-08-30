@@ -101,7 +101,8 @@ void Environment::load(std::string path) {
 
 	std::ifstream inf(path, std::ios::binary);
 	UnionVal val;
-	
+	if(inf.is_open()) {
+
 	loadVal(&inf, &val);
 	stepCount = val.li;
 
@@ -166,6 +167,7 @@ void Environment::load(std::string path) {
 
 		population[ind.ID] = ind;
 		inf.clear();
+	}
 	}
 	inf.close();
 }

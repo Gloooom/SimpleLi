@@ -21,6 +21,8 @@ hgeFont			*fnt;
 hgeGUI			*mainGUI;
 
 HTEXTURE		closeButton;
+RGBColor		objsColor;
+
 Pixel			*sliderTexture;
 hgeSprite		*testSpr;
 		
@@ -38,6 +40,7 @@ float			psx=400, psy=300;
 float			timer=0;
 bool			play=true;
 int				wincount = 3;
+int				testVal = 0;
 
 void			InitEditor();
 void			DoneEditor();
@@ -49,10 +52,27 @@ void			addIndivid(Point <float> p, Mode_feeding diet);
 
 
 void save_func() {
-	env.save("save.bin");
+	int selectSlot = GetWinListboxSelect(winManager, WIN_S_L, "slot_list");
+	switch(selectSlot) {
+	case 0: env.save("save0.bin"); break;
+	case 1: env.save("save1.bin"); break;
+	case 2: env.save("save2.bin"); break;
+	case 3: env.save("save3.bin"); break;
+	case 4: env.save("save4.bin"); break;
+	case 5: env.save("save5.bin"); break;
+	}
 };
+
 void load_func() {
-	env.load("save.bin");
+	int selectSlot = GetWinListboxSelect(winManager, WIN_S_L, "slot_list");
+	switch(selectSlot) {
+	case 0: env.load("save0.bin"); break;
+	case 1: env.load("save1.bin"); break;
+	case 2: env.load("save2.bin"); break;
+	case 3: env.load("save3.bin"); break;
+	case 4: env.load("save4.bin"); break;
+	case 5: env.load("save5.bin"); break;
+	}
 };
 
 bool FrameFunc()
@@ -65,14 +85,15 @@ bool FrameFunc()
 	winManager->Update(dt, state.mp.x, state.mp.y);
 
 	mainGUI->Update(dt);
-	
-	HSVColor color(0xFFFF0000);
-	color.setHue(GetWinSliderValue(winManager, 1, "h")/100.00f*360.00f);
-	color.setSaturation(GetWinSliderValue(winManager, 1, "s")/100.00f);
-	color.setValue(GetWinSliderValue(winManager, 1, "v")/100.00f);
-	winManager->getWin(1)->setColor(color);
 
-	if (hgeButtonGetState(mainGUI, CMD_HELP)) winManager->setActive(1);
+	if (hgeButtonGetState(mainGUI, CMD_WIN_S_L)) {
+		winManager->setActive(WIN_S_L);
+		winManager->setFocus(WIN_S_L);
+	}
+	if (hgeButtonGetState(mainGUI, CMD_WIN_ADD_IND)) {
+		winManager->setActive(WIN_ADD_IND);
+		winManager->setFocus(WIN_ADD_IND);
+	}
 
 	if (state.play) {
 		timer+=dt;
@@ -144,20 +165,21 @@ bool RenderFunc()
 	}
 	
 	mainGUI->Render();
-	
-	winManager->Render();
 
-	std::string statuses[] = {"HUNGRY", "EAT", "MATURE", "REPRODUCT", "WAIT"};
+	std::string statuses[] = {"HUNGRY", "MATURE", "REPRODUCT", "WAIT"};
 	if (!env.population.empty())
 	fnt->printf(605, 5, HGETEXT_LEFT, 
 	"FPS: %d "
 	"\nPopulation: %d"
-	"\nStep: %d",
+	"\nStep: %d"
+	"\nTESTVAL:%d",
 	hge->Timer_GetFPS(), 
 	env.population.size(), 
-	(int) env.stepCount
+	(int) env.stepCount,
+	testVal 
 	);
 	
+	winManager->Render();
 
 	hge->Gfx_EndScene();
 
@@ -259,7 +281,9 @@ void InitEnvironment() {
 }
 
 void InitEditor() {
-	closeButton=hge->Texture_Load("closeBut.png");
+	objsColor = 0xFF111177;
+
+	closeButton = getButtonTex(15, 15, objsColor);
 
 	fnt = new hgeFont("123.fnt");
 	fnt->SetScale(0.5);
@@ -298,62 +322,157 @@ void CreateGUI() {
 	hgeGUISlider *slider;
 	hgeGUIText	 *text;
 
-	HTEXTURE butTex = getButtonTex(40,10,0xFFFFFF22);
-	button=new hgeGUIButton(CMD_HELP, 700, 500, 40, 10, butTex, 0, 0);
+	HTEXTURE butTex = getButtonTex(150, 20, objsColor);
+
+	button=new hgeGUIButton(CMD_WIN_S_L, 620, 400, 150, 20, butTex, 0, 0);
 	button->SetMode(false);
 	mainGUI->AddCtrl(button);
 
-	text=new hgeGUIText(GUI_TEXT, 610, 390, 180, 10, fnt);
-	text->SetMode(HGETEXT_LEFT);
+	text = new hgeGUIText(GUI_TEXT, 620, 400, 150, 30, fnt);
+	text->SetMode(HGETEXT_CENTER);
 	text->SetColor(0xFFFFFFFF);
-	text->SetText("O");
+	text->SetText("Save/Load");
+	text->bEnabled = false;
 	mainGUI->AddCtrl(text);
-	text->SetText("GG");
+
+	button=new hgeGUIButton(CMD_WIN_ADD_IND, 620, 430, 150, 20, butTex, 0, 0);
+	button->SetMode(false);
+	mainGUI->AddCtrl(button);
+
+	text = new hgeGUIText(GUI_TEXT, 620, 430, 150, 30, fnt);
+	text->SetMode(HGETEXT_CENTER);
+	text->SetColor(0xFFFFFFFF);
+	text->SetText("Add Individ");
+	text->bEnabled = false;
+	mainGUI->AddCtrl(text);
 }
 
 void CreateWinManager() {
-
-	HTEXTURE butTex = getButtonTex(60,15,0xFF111177);
-
 	RGBColor colPix(0xFF00DD00);
 
-	sliderTexture = new Pixel(colPix);
-
-	hgeGUIText *text;
-	text = new hgeGUIText(GUI_TEXT, 0, 0, 60, 15, fnt);
-	text->SetMode(HGETEXT_CENTER);
-	text->SetColor(0xFFFFFFFF);
-	text->bEnabled = false;
-
-	hgeGUISlider *slider;
-	slider = new hgeGUISlider(GUI_SLIDER, 0, 0, 180, 10, sliderTexture->getTex(), 0, 0, 1, 1);
-	slider->SetMode(0, 100, HGESLIDER_BAR);
-	slider->SetValue(50);
-
+	HTEXTURE butTex = getButtonTex(80,15,objsColor);
 	hgeGUIButton *button;
-	button = new hgeGUIButton(CMD_EXIT, 0, 0, 60, 15, butTex, 0, 0);
+	button = new hgeGUIButton(0, 0, 0, 80, 15, butTex, 0, 0);
 	button->SetMode(false);
 
-	hgeGUIListbox *list;
-	list = new hgeGUIListbox(0, 0, 0, 100, 100, fnt, 0xFFFF0000, 0xFF00FF00, 0xFF0000FF);
-	list->AddItem("bla-bla1");
-	list->AddItem("bla-bla2");
-	list->AddItem("bla-bla3");
-	list->AddItem("bla-bla4");
+	////////////////////////////////////////////////////
+	////////////////WINDOW SAVE AND LOAD////////////////
+	////////////////////////////////////////////////////
+	GUI_window *winSaveLoad;
+	winSaveLoad = new GUI_window(200, 200, "Save/Load", fnt, 0xFF999999, 0xFF666666, &closeButton);
 
-	GUI_window *test_w_1;
-	test_w_1 = new GUI_window(200, 200, "Make Windows!", fnt, 0xFFAAAAAA, 0xFF999999, &closeButton);
-	test_w_1->addCtrl(slider, 10, 100, "h");
-	test_w_1->addCtrl(slider, 10, 120, "s");
-	test_w_1->addCtrl(slider, 10, 140, "v");
-	test_w_1->addCtrl(button, 10, 180, "but_save", save_func);
-	test_w_1->addCtrl(button, 80, 180, "but_load", load_func);
-	text->SetText("Save");
-	test_w_1->addCtrl(text, 10, 185, "but_save_text");
-	text->SetText("Load");
-	test_w_1->addCtrl(text, 80, 185, "but_load_text");
+	hgeGUIText *buttonText;
+	buttonText = new hgeGUIText(GUI_TEXT, 0, 0, 80, 15, fnt);
+	buttonText->SetMode(HGETEXT_CENTER);
+	buttonText->SetColor(0xFFFFFFFF);
+	buttonText->bEnabled = false;
 
-	winManager->addWindow(test_w_1, 1);
-	winManager->setActive(1);
-	winManager->setWinPos(1, 200, 200);
+	hgeGUIListbox *slotList;
+	slotList = new hgeGUIListbox(0, 0, 0, 200, 170, fnt, 0xFFFFFFFF, 0xFFFFFFFF, objsColor);
+	slotList->AddItem("Slot 1");
+	slotList->AddItem("Slot 2");
+	slotList->AddItem("Slot 3");
+	slotList->AddItem("Slot 4");
+	slotList->AddItem("Slot 5");
+	slotList->AddItem("Slot 6");
+	winSaveLoad->addCtrl(slotList, 0, 20, "slot_list");
+
+	buttonText->SetText("Save");
+	winSaveLoad->addCtrl(button, 10, 180, "but_save", save_func);
+	winSaveLoad->addCtrl(buttonText, 10, 185, "but_save_text");
+	buttonText->SetText("Load");
+	winSaveLoad->addCtrl(button, 110, 180, "but_load", load_func);
+	winSaveLoad->addCtrl(buttonText, 110, 185, "but_load_text");
+
+	winManager->addWindow(winSaveLoad, WIN_S_L);
+	winManager->setWinPos(WIN_S_L, 200, 200);
+	////////////////////////////////////////////////////
+	////////////////WINDOW ADD INDIVID//////////////////
+	////////////////////////////////////////////////////
+	GUI_window *winAddIndivid;
+	winAddIndivid = new GUI_window(340, 285, "Add individ", fnt, 0xFF999999, 0xFF666666, &closeButton);
+
+	hgeGUIListbox *stateList;
+	stateList = new hgeGUIListbox(0, 0, 0, 100, 100, fnt, 0xFFFFFFFF, 0xFFFFFFFF, objsColor);
+	stateList->AddItem("HUNGRY");
+	stateList->AddItem("MATURE");
+	stateList->AddItem("REPRODUCT");
+	stateList->AddItem("WAIT");
+	winAddIndivid->addCtrl(stateList, 0, 50, "state_list");
+
+	sliderTexture = new Pixel(objsColor);
+	hgeGUISlider *indSlider;
+	indSlider = new hgeGUISlider(GUI_SLIDER, 0, 0, 200, 10, sliderTexture->getTex(), 0, 0, 1, 1);
+	indSlider->SetMode(-20, 20, HGESLIDER_BARRELATIVE);
+	indSlider->SetValue(10);
+	
+	winAddIndivid->addCtrl(indSlider, 120, 35, "max_speed_s");
+	winAddIndivid->addCtrl(indSlider, 120, 60, "rand_way_s");
+	winAddIndivid->addCtrl(indSlider, 120, 85, "partner_s");
+	winAddIndivid->addCtrl(indSlider, 120, 110, "cohesion_partner_s");
+	winAddIndivid->addCtrl(indSlider, 120, 135, "separation_partner_s");
+	winAddIndivid->addCtrl(indSlider, 120, 160, "alignment_partner_s");
+	winAddIndivid->addCtrl(indSlider, 120, 185, "enemy_s");
+	winAddIndivid->addCtrl(indSlider, 120, 210, "cohesion_enemy_s");
+	winAddIndivid->addCtrl(indSlider, 120, 235, "separation_enemy_s");
+	winAddIndivid->addCtrl(indSlider, 120, 260, "alignment_enemy_s");
+
+	hgeGUIText *slidersStaticText;
+	slidersStaticText = new hgeGUIText(0, 0, 0, 100, 20, fnt);
+	slidersStaticText->SetMode(HGETEXT_LEFT);
+	slidersStaticText->bEnabled = false;
+
+	slidersStaticText->SetText("Max speed:");
+	winAddIndivid->addCtrl(slidersStaticText, 120, 25, "max_speed_t");
+	slidersStaticText->SetText("Rand way:");
+	winAddIndivid->addCtrl(slidersStaticText, 120, 50, "rand_way_t");
+	slidersStaticText->SetText("Partners effect:");
+	winAddIndivid->addCtrl(slidersStaticText, 120, 75, "partner_t");
+	slidersStaticText->SetText("Partners cohesion:");
+	winAddIndivid->addCtrl(slidersStaticText, 120, 100, "cohesion_partner_t");
+	slidersStaticText->SetText("Partners separation:");
+	winAddIndivid->addCtrl(slidersStaticText, 120, 125, "separation_partner_t");
+	slidersStaticText->SetText("Partners alignment:");
+	winAddIndivid->addCtrl(slidersStaticText, 120, 150, "alignment_partner_t");
+	slidersStaticText->SetText("Enemies effect:");
+	winAddIndivid->addCtrl(slidersStaticText, 120, 175, "enemy_t");
+	slidersStaticText->SetText("Enemies cohesion:");
+	winAddIndivid->addCtrl(slidersStaticText, 120, 200, "cohesion_enemy_t");
+	slidersStaticText->SetText("Enemies separation:");
+	winAddIndivid->addCtrl(slidersStaticText, 120, 225, "separation_enemy_t");
+	slidersStaticText->SetText("Enemies alignment:");
+	winAddIndivid->addCtrl(slidersStaticText, 120, 250, "alignment_enemy_t");
+
+	
+	hgeGUIText *slidersValText;
+	slidersValText = new hgeGUIText(0, 0, 0, 100, 20, fnt);
+	slidersValText->SetMode(HGETEXT_RIGHT);
+	slidersValText->bEnabled = false;
+	
+	slidersValText->SetText("0");
+	winAddIndivid->addCtrl(slidersValText, 220, 25, "max_speed_val");
+	slidersValText->SetText("0");
+	winAddIndivid->addCtrl(slidersValText, 220, 50, "rand_way_val");
+	slidersValText->SetText("0");
+	winAddIndivid->addCtrl(slidersValText, 220, 75, "partner_val");
+	slidersValText->SetText("0");
+	winAddIndivid->addCtrl(slidersValText, 220, 100, "cohesion_partner_val");
+	slidersValText->SetText("0");
+	winAddIndivid->addCtrl(slidersValText, 220, 125, "separation_partner_val");
+	slidersValText->SetText("0");
+	winAddIndivid->addCtrl(slidersValText, 220, 150, "alignment_partner_val");
+	slidersValText->SetText("0");
+	winAddIndivid->addCtrl(slidersValText, 220, 175, "enemy_val");
+	slidersValText->SetText("0");
+	winAddIndivid->addCtrl(slidersValText, 220, 200, "cohesion_enemy_val");
+	slidersValText->SetText("0");
+	winAddIndivid->addCtrl(slidersValText, 220, 225, "separation_enemy_val");
+	slidersValText->SetText("0");
+	winAddIndivid->addCtrl(slidersValText, 220, 250, "alignment_enemy_val");
+
+	winManager->addWindow(winAddIndivid, WIN_ADD_IND);
+	winManager->setWinPos(WIN_ADD_IND, 200, 200);
+	////////////////////////////////////////////////////
+	////////////////WINDOW EDIT PHIS////////////////////
+	////////////////////////////////////////////////////
 }

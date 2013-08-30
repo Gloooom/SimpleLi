@@ -15,10 +15,11 @@
 extern HGE *hge;
 
 struct objInfo {
-	int ID;
-	float x, y;
-	void (*func)();
-	bool doneFlag;
+	int		ID;
+	float	x, y;
+	void	(*func)();
+	bool	doneFlag;
+	bool	check;
 };
 
 void nullf();

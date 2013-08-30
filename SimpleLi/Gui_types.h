@@ -128,7 +128,10 @@ public:
 	}
 };
 
-#define CMD_EXIT				1
-#define CMD_HELP				2
+#define CMD_WIN_S_L				1
+#define CMD_WIN_ADD_IND			2
 #define GUI_SLIDER				3
 #define GUI_TEXT				4
+
+#define WIN_S_L					1
+#define WIN_ADD_IND				2
