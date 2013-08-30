@@ -98,9 +98,6 @@
     <ClInclude Include="Logic\Environment.h">
       <Filter>Файлы исходного кода\Logic</Filter>
     </ClInclude>
-    <ClInclude Include="targetver.h">
-      <Filter>Файлы исходного кода</Filter>
-    </ClInclude>
     <ClInclude Include="Gui_functions.h">
       <Filter>Файлы исходного кода</Filter>
     </ClInclude>

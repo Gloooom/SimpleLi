@@ -10,6 +10,16 @@
 #define _USE_MATH_DEFINES 
 #include <math.h>
 
+union UnionVal {
+	DWORD dw;
+	BYTE by[8];
+	double d;
+	long long int li;
+	float f;
+	int i;
+	bool b;
+	
+};
 
 enum Mode_hibrid {HALF_TO_HALF, AVERAGE};
 enum Mode_change_what {SOC, SOC_PHIS, PHIS};

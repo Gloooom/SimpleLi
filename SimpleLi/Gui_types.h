@@ -24,6 +24,8 @@ extern HGE *hge;
 
 double Dot(hgeVector hgev1, hgeVector hgev2);
 
+HTEXTURE getButtonTex(int w, int h, DWORD color);
+
 struct PEditorState {
 	Point <float> mp;
 };

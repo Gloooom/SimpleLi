@@ -52,13 +52,14 @@ void nullF() {};
 
 
 void fff() {
-		GUI_window *test_w_new = new GUI_window(
-			((hgeGUISlider*)winManager->getWin(1)->getCtrl("w"))->GetValue(), 
-			((hgeGUISlider*)winManager->getWin(1)->getCtrl("h"))->GetValue(), 
-			"Title_new", fnt, 0xFFAAAAAA, 0xFF999999, &texCell);
-		winManager->addWindow(test_w_new, wincount);
-		winManager->setActive(wincount);
-		wincount++;
+	env.save("fff.bin");
+		//GUI_window *test_w_new = new GUI_window(
+		//	((hgeGUISlider*)winManager->getWin(1)->getCtrl("w"))->GetValue(), 
+		//	((hgeGUISlider*)winManager->getWin(1)->getCtrl("h"))->GetValue(), 
+		//	"Title_new", fnt, 0xFFAAAAAA, 0xFF999999, &texCell);
+		//winManager->addWindow(test_w_new, wincount);
+		//winManager->setActive(wincount);
+		//wincount++;
 };
 
 bool FrameFunc()
@@ -160,22 +161,10 @@ bool RenderFunc()
 	fnt->printf(605, 5, HGETEXT_LEFT, 
 	"FPS: %d "
 	"\nPopulation: %d"
-	"\nStep: %d\n\n\n\n"
-	"\nlive: %d"
-	"\nhp: %d"
-	"\nenergy: %d"
-	"\nspeed: %f"
-	"\n\nlive_timer: %d"
-	"\nreproduction_timer: %d",
+	"\nStep: %d",
 	hge->Timer_GetFPS(), 
 	env.population.size(), 
-	(int) env.stepCount,
-	selectInd->live,
-	selectInd->hp,
-	selectInd->energy,
-	selectInd->speed,
-	(int) selectInd->live_timer,
-	selectInd->reproduction_timer
+	(int) env.stepCount
 	);
 		
 	hge->Gfx_EndScene();
@@ -279,7 +268,7 @@ void InitEnvironment() {
 
 void InitEditor() {
 	int bgw, bgh;
-
+	
 	texBut=hge->Texture_Load("Button.png");
 	texCell=hge->Texture_Load("closeBut.png");
 
@@ -302,7 +291,7 @@ void InitEditor() {
 		}
 	}
 	
-	ButtonTex butTex(40, 40, 0xFFFF0000);
+	HTEXTURE butTex = getButtonTex(40,10,0xFFFFFF22);
 
 	gui=new hgeGUI();
 	CreateGUI();
@@ -317,7 +306,7 @@ void InitEditor() {
 	slider->SetValue(100);
 
 	hgeGUIButton *button;
-	button = new hgeGUIButton(CMD_EXIT, 0, 0, 40, 40, butTex.getTexture(), 0, 0);
+	button = new hgeGUIButton(CMD_EXIT, 0, 0, 40, 10, butTex, 0, 0);
 	button->SetMode(false);
 
 	hgeGUIListbox *list;
@@ -332,7 +321,7 @@ void InitEditor() {
 	test_w_1->addCtrl(slider, 10, 100, "h", fff);
 	test_w_1->addCtrl(slider, 10, 120, "s", fff);
 	test_w_1->addCtrl(slider, 10, 140, "v", fff);
-	//test_w_1->addCtrl(button, 10, 180, "but", fff);
+	test_w_1->addCtrl(button, 10, 180, "but", fff);
 	//test_w_1->addCtrl(list, 10, 50, "list", nullF); 
 	winManager = new GUI_win_manager();
 	winManager->addWindow(test_w_1, 1);
@@ -353,8 +342,8 @@ void CreateGUI() {
 	hgeGUISlider *slider;
 	hgeGUIText	 *text;
 
-	ButtonTex butTex(40,10,0xFFFFFF22);
-	button=new hgeGUIButton(CMD_HELP, 700, 500, 40, 10, butTex.getTexture(), 0, 0);
+	HTEXTURE butTex = getButtonTex(40,10,0xFFFFFF22);
+	button=new hgeGUIButton(CMD_HELP, 700, 500, 40, 10, butTex, 0, 0);
 	button->SetMode(false);
 	gui->AddCtrl(button);
 

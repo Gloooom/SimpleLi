@@ -20,6 +20,6 @@
 #include <algorithm>
 #include <map>
 #include <deque>
-
+#include <fstream>
 
 // TODO: Установите здесь ссылки на дополнительные заголовки, требующиеся для программы

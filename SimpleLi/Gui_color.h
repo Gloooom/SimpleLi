@@ -94,31 +94,3 @@ public:
 
 	operator DWORD() {return RGBColor(*this);};
 };
-
-class ButtonTex {
-private:
-	HTEXTURE tex;
-	int w, h;
-public:
-	ButtonTex(int _w, int _h, DWORD color) {
-		w = _w; h = _h;
-		tex = hge->Texture_Create(w*2, h);
-		DWORD *ptr = hge->Texture_Lock(tex, false, 0, 0, w*2, h);
-		HSVColor tempCol(color);
-		for (int x = 0; x<w*2; x++) 
-			for (int y = 0; y<h; y++) {
-				if (x == w-1 || x == w || ((x<w*2-1 && x>w-1) && y == 0) || ((x>0 && x<w-1) && y == h-1)) {
-					ptr[y*w*2 + x] = tempCol.setValue(tempCol.getValue()/2);
-					tempCol = color;
-				} else if (x == 0 || x == w*2-1 || (x<w-1 && y == 0) || (x>w && y == h-1)) {
-					ptr[y*w*2 + x] = tempCol.setValue(tempCol.getValue()*1.5);
-					tempCol = color;
-				} else if (x>w) {
-					ptr[y*w*2 + x] = tempCol.setValue(tempCol.getValue()/1.5);
-					tempCol = color;
-				} else ptr[y*w*2 + x] = tempCol;
-			}
-		hge->Texture_Unlock(tex);
-	};
-	HTEXTURE getTexture() {return tex;};
-};
