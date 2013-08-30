@@ -122,7 +122,7 @@ abstractParent *getNewObj(abstractParent *ptrParent) {
 	return new typeid(*ptrParent)(*((typeid(*ptrParent))ptrParent))
 }
 
-
+void nullf() {};
 void GUI_window::addCtrl(hgeGUIObject* obj, float _x, float _y, std::string name, void (*func)()) {
 	if (objectsID.find(name) == objectsID.end()) {
 		objectsID[name].ID = objCount;

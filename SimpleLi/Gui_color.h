@@ -22,7 +22,9 @@ public:
 		hge->Texture_Free(pix);
 	};
 
-	HTEXTURE getPix() {return pix;};
+	HTEXTURE getTex() {return pix;};
+	operator HTEXTURE() {return pix;};
+
 	void	 setCol(DWORD color) {
 		DWORD *ptr = hge->Texture_Lock(pix, false, 0, 0, 1, 1);
 		ptr[0] = color;

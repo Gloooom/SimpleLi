@@ -72,6 +72,10 @@ public:
 	float height()	{return _height;};
 	float width()	{return _width;};
 
+	void setAngle(float _a)		{_angle = _a;};
+	void setHeight(float _h)	{_height = _h;};
+	void setWidth(float _w)		{_width = _w;};
+
 	FOV* mutation(float coef, Mode_mutation mode) {
 		FOV_Tri result;
 		if (mode == ONE) {
@@ -110,6 +114,7 @@ public:
 	float angle()	{return 0;};
 	float height()	{return _height;};
 	float width()	{return 0;};
+
 	void setHeight(float hgt) {_height = hgt;};
 
 	FOV* mutation(float coef, Mode_mutation mode) {
@@ -133,7 +138,7 @@ public:
 	DWORD color;
 	FOV_Rad radialEye;
 	std::vector <FOV_Tri> eyes;
-	Mode_feeding diet;
+	int diet;
 public:
 	GeneticCode() {
 		color=0xFFFFFFFF;

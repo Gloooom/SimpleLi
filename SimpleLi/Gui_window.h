@@ -21,28 +21,31 @@ struct objInfo {
 	bool doneFlag;
 };
 
+void nullf();
+
 class GUI_window {
 public:
-	int ID;
-	float x, y; //левый верхний угол
-	float w, h;
+	int				ID;
+	float			x, y;
+	float			w, h;
 public:
-	bool visible;
+	bool			visible;
 private:
-	std::string title;
-	hgeGUIText *titleText;
-	hgeGUI *gui;
-	float m_dx, m_dy;
-	bool touchFlag;
-	bool buttonDoneFlag;
-	bool buttonPressFlag;
-	hgeQuad background;
-	hgeGUIButton *titleBar;
-	hgeGUIButton *closeBut;
-	HTEXTURE texBar;
+	std::string		title;
+	hgeGUIText		*titleText;
+	hgeGUI			*gui;
+	float			m_dx, m_dy;
+	bool			touchFlag;
+	bool			buttonDoneFlag;
+	bool			buttonPressFlag;
+	hgeQuad			background;
+	hgeGUIButton	*titleBar;
+	hgeGUIButton	*closeBut;
+	HTEXTURE		texBar;
+	static int		objCount;
 	std::vector <hgeGUIObject*> objects;
 	std::map <std::string, objInfo> objectsID;
-	static int objCount;
+
 private:
 	void setQuadPos(hgeQuad *quad, float _x, float _y);
 
@@ -61,7 +64,7 @@ public:
 	void Update(float dt, float mx, float my);
 	void Render();
 	void setPos(int _x, int _y);
-	void addCtrl(hgeGUIObject* obj, float _x, float _y, std::string name, void (*func)());
+	void addCtrl(hgeGUIObject* obj, float _x, float _y, std::string name, void (*func)() = nullf);
 	hgeGUIObject *getCtrl(std::string name);
 };
 

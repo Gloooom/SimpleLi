@@ -13,7 +13,7 @@ class Individ {
 public:
 	bool			live;
 	GeneticCode		dna;
-	Gender			gender;
+	int				gender;
 	int				hp;
 	int				energy;
 	double			speed;
@@ -22,7 +22,7 @@ public:
 	int				live_timer;
 	int				reproduction_timer;
 	
-	Individ_status	state;
+	int				state;
 	
 	long long int ID;
 	long long int spouse;

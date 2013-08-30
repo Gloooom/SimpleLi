@@ -10,6 +10,10 @@ double Dot(hgeVector hgev1, hgeVector hgev2) {
 	return v1.getDot(v2);
 }
 
+float getValueFromY(float Y, float startY, float length, float startV, float endV) {
+	return (((Y-startY)/length)*(endV-startV))+startV;
+}
+
 HTEXTURE getButtonTex(int w, int h, DWORD color) {
 	HTEXTURE tex = hge->Texture_Create(w*2, h);
 	DWORD *ptr = hge->Texture_Lock(tex, false, 0, 0, w*2, h);
@@ -17,15 +21,18 @@ HTEXTURE getButtonTex(int w, int h, DWORD color) {
 	for (int x = 0; x<w*2; x++) 
 		for (int y = 0; y<h; y++) {
 			if (x == w-1 || x == w || ((x<w*2-1 && x>w-1) && y == 0) || ((x>0 && x<w-1) && y == h-1)) {
-				ptr[y*w*2 + x] = tempCol.setValue(tempCol.getValue()/2);
+				ptr[y*w*2 + x] = tempCol.setValue(0.15);
 				tempCol = color;
 			} else if (x == 0 || x == w*2-1 || (x<w-1 && y == 0) || (x>w && y == h-1)) {
-				ptr[y*w*2 + x] = tempCol.setValue(tempCol.getValue()*1.5);
+				ptr[y*w*2 + x] = tempCol.setValue(1);
 				tempCol = color;
 			} else if (x>w) {
-				ptr[y*w*2 + x] = tempCol.setValue(tempCol.getValue()/1.5);
+				ptr[y*w*2 + x] = tempCol.setValue(getValueFromY(y,0,h,0.7,1));
 				tempCol = color;
-			} else ptr[y*w*2 + x] = tempCol;
+			} else { 
+				ptr[y*w*2 + x] = tempCol.setValue(getValueFromY(y,0,h,1,0.7));
+				tempCol = color;
+			}
 		}
 		hge->Texture_Unlock(tex);
 	return tex;

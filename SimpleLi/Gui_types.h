@@ -26,8 +26,11 @@ double Dot(hgeVector hgev1, hgeVector hgev2);
 
 HTEXTURE getButtonTex(int w, int h, DWORD color);
 
-struct PEditorState {
+struct EditorState {
 	Point <float> mp;
+	bool play;
+	EditorState():
+	play(true) {};
 };
 
 struct Cell {
@@ -124,16 +127,6 @@ public:
 		*this=t;
 	}
 };
-
-
-extern hgeFont		*fnt;
-extern hgeGUI		*gui;
-extern hgeSprite	*sprCell;
-extern HTEXTURE		texGui, texBut, texCell;
-
-extern PEditorState state;
-extern GeneticCode g;
-
 
 #define CMD_EXIT				1
 #define CMD_HELP				2
