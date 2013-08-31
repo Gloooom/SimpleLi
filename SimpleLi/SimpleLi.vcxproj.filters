@@ -16,6 +16,9 @@
     <Filter Include="Файлы исходного кода\Logic">
       <UniqueIdentifier>{b241d0b1-3bcd-40cb-8754-0936ddb0bed1}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Файлы исходного кода\GUI">
+      <UniqueIdentifier>{058c555b-b3f8-42c3-98b6-eb78b79a43dc}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -30,20 +33,17 @@
     <ClCompile Include="Logic\Functions.cpp">
       <Filter>Файлы исходного кода\Logic</Filter>
     </ClCompile>
-    <ClCompile Include="Logic\Logic.cpp">
-      <Filter>Файлы исходного кода\Logic</Filter>
-    </ClCompile>
     <ClCompile Include="Logic\Environment.cpp">
       <Filter>Файлы исходного кода\Logic</Filter>
     </ClCompile>
-    <ClCompile Include="Gui_window.cpp">
-      <Filter>Файлы исходного кода</Filter>
+    <ClCompile Include="GUI\Gui_color.cpp">
+      <Filter>Файлы исходного кода\GUI</Filter>
     </ClCompile>
-    <ClCompile Include="Gui_types.cpp">
-      <Filter>Файлы исходного кода</Filter>
+    <ClCompile Include="GUI\Gui_types.cpp">
+      <Filter>Файлы исходного кода\GUI</Filter>
     </ClCompile>
-    <ClCompile Include="Gui_color.cpp">
-      <Filter>Файлы исходного кода</Filter>
+    <ClCompile Include="GUI\Gui_window.cpp">
+      <Filter>Файлы исходного кода\GUI</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -92,20 +92,8 @@
     <ClInclude Include="Logic\Types.h">
       <Filter>Файлы исходного кода\Logic</Filter>
     </ClInclude>
-    <ClInclude Include="stdafx.h">
-      <Filter>Файлы исходного кода</Filter>
-    </ClInclude>
     <ClInclude Include="Logic\Environment.h">
       <Filter>Файлы исходного кода\Logic</Filter>
-    </ClInclude>
-    <ClInclude Include="Gui_functions.h">
-      <Filter>Файлы исходного кода</Filter>
-    </ClInclude>
-    <ClInclude Include="Gui_types.h">
-      <Filter>Файлы исходного кода</Filter>
-    </ClInclude>
-    <ClInclude Include="Gui_window.h">
-      <Filter>Файлы исходного кода</Filter>
     </ClInclude>
     <ClInclude Include="HGE\hgegui.h">
       <Filter>Заголовочные файлы</Filter>
@@ -113,11 +101,20 @@
     <ClInclude Include="HGE\hgeguictrls.h">
       <Filter>Заголовочные файлы</Filter>
     </ClInclude>
-    <ClInclude Include="GUI_win_manager.h">
-      <Filter>Файлы исходного кода</Filter>
+    <ClInclude Include="GUI\Gui_color.h">
+      <Filter>Файлы исходного кода\GUI</Filter>
     </ClInclude>
-    <ClInclude Include="Gui_color.h">
-      <Filter>Файлы исходного кода</Filter>
+    <ClInclude Include="GUI\Gui_inclusion.h">
+      <Filter>Файлы исходного кода\GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="GUI\Gui_types.h">
+      <Filter>Файлы исходного кода\GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="GUI\Gui_win_manager.h">
+      <Filter>Файлы исходного кода\GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="GUI\Gui_window.h">
+      <Filter>Файлы исходного кода\GUI</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

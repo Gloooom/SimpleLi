@@ -82,21 +82,21 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Gui_color.cpp" />
-    <ClCompile Include="Gui_types.cpp" />
-    <ClCompile Include="Gui_window.cpp" />
+    <ClCompile Include="GUI\Gui_color.cpp" />
+    <ClCompile Include="GUI\Gui_types.cpp" />
+    <ClCompile Include="GUI\Gui_window.cpp" />
     <ClCompile Include="Logic\Environment.cpp" />
     <ClCompile Include="Logic\Functions.cpp" />
     <ClCompile Include="Logic\GeneticCode.cpp" />
     <ClCompile Include="Logic\Individ.cpp" />
-    <ClCompile Include="Logic\Logic.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Gui_color.h" />
-    <ClInclude Include="Gui_functions.h" />
-    <ClInclude Include="Gui_window.h" />
-    <ClInclude Include="GUI_win_manager.h" />
+    <ClInclude Include="GUI\Gui_color.h" />
+    <ClInclude Include="GUI\Gui_inclusion.h" />
+    <ClInclude Include="GUI\Gui_types.h" />
+    <ClInclude Include="GUI\Gui_window.h" />
+    <ClInclude Include="GUI\Gui_win_manager.h" />
     <ClInclude Include="HGE\hge.h" />
     <ClInclude Include="HGE\hgeanim.h" />
     <ClInclude Include="HGE\hgecolor.h" />
@@ -115,8 +115,6 @@
     <ClInclude Include="Logic\GeneticCode.h" />
     <ClInclude Include="Logic\Individ.h" />
     <ClInclude Include="Logic\Types.h" />
-    <ClInclude Include="stdafx.h" />
-    <ClInclude Include="Gui_types.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ClassDiagram1.cd" />
