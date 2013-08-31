@@ -85,6 +85,7 @@
     <ClCompile Include="GUI\Gui_color.cpp" />
     <ClCompile Include="GUI\Gui_types.cpp" />
     <ClCompile Include="GUI\Gui_window.cpp" />
+    <ClCompile Include="GUI\Gui_win_manager.cpp" />
     <ClCompile Include="Logic\Environment.cpp" />
     <ClCompile Include="Logic\Functions.cpp" />
     <ClCompile Include="Logic\GeneticCode.cpp" />
@@ -115,6 +116,7 @@
     <ClInclude Include="Logic\GeneticCode.h" />
     <ClInclude Include="Logic\Individ.h" />
     <ClInclude Include="Logic\Types.h" />
+    <ClInclude Include="Main_inclusion.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ClassDiagram1.cd" />

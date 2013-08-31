@@ -1,4 +1,3 @@
-
 #include "Gui_types.h"
 
 double Dot(hgeVector hgev1, hgeVector hgev2) {

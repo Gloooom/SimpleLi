@@ -10,13 +10,20 @@
 
 #include "GUI\Gui_win_manager.h"
 
+#define CMD_WIN_S_L				1
+#define CMD_WIN_ADD_IND			2
+#define GUI_SLIDER				3
+#define GUI_TEXT				4
+
+#define WIN_S_L					1
+#define WIN_ADD_IND				2
+
 HGE *hge=0;
 
 
 hgeFont			*fnt;
 hgeGUI			*mainGUI;
 
-HTEXTURE		closeButton;
 RGBColor		objsColor;
 
 Pixel			*sliderTexture;
@@ -82,11 +89,11 @@ bool FrameFunc()
 	mainGUI->Update(dt);
 
 	if (hgeButtonGetState(mainGUI, CMD_WIN_S_L)) {
-		winManager->setActive(WIN_S_L);
+		winManager->Activate(WIN_S_L);
 		winManager->setFocus(WIN_S_L);
 	}
 	if (hgeButtonGetState(mainGUI, CMD_WIN_ADD_IND)) {
-		winManager->setActive(WIN_ADD_IND);
+		winManager->Activate(WIN_ADD_IND);
 		winManager->setFocus(WIN_ADD_IND);
 	}
 
@@ -278,8 +285,6 @@ void InitEnvironment() {
 void InitEditor() {
 	objsColor = 0xFF111177;
 
-	closeButton = getButtonTex(15, 15, objsColor);
-
 	fnt = new hgeFont("123.fnt");
 	fnt->SetScale(0.5);
 
@@ -308,15 +313,13 @@ void InitEditor() {
 
 void DoneEditor() {
 	delete fnt;
-
-	hge->Texture_Free(closeButton);
 }
 
 void CreateGUI() {
 	hgeGUIButton *button;
 	hgeGUIText	 *text;
 
-	HTEXTURE butTex = getButtonTex(150, 20, objsColor);
+	HTEXTURE butTex = getButtonTex(150, 20, objsColor, 0.15);
 
 	button=new hgeGUIButton(CMD_WIN_S_L, 620, 400, 150, 20, butTex, 0, 0);
 	button->SetMode(false);
@@ -344,7 +347,7 @@ void CreateGUI() {
 void CreateWinManager() {
 	RGBColor colPix(0xFF00DD00);
 
-	HTEXTURE butTex = getButtonTex(80,15,objsColor);
+	HTEXTURE butTex = getButtonTex(80, 15, objsColor, 0.15);
 	hgeGUIButton *button;
 	button = new hgeGUIButton(0, 0, 0, 80, 15, butTex, 0, 0);
 	button->SetMode(false);
@@ -353,7 +356,7 @@ void CreateWinManager() {
 	////////////////WINDOW SAVE AND LOAD////////////////
 	////////////////////////////////////////////////////
 	GUI_window *winSaveLoad;
-	winSaveLoad = new GUI_window(200, 200, "Save/Load", fnt, 0xFF999999, 0xFF666666, &closeButton);
+	winSaveLoad = new GUI_window(200, 200, "Save/Load", fnt, 0xFF999999, 0xFF666666, objsColor);
 
 	hgeGUIText *buttonText;
 	buttonText = new hgeGUIText(GUI_TEXT, 0, 0, 80, 15, fnt);
@@ -384,7 +387,7 @@ void CreateWinManager() {
 	////////////////WINDOW ADD INDIVID//////////////////
 	////////////////////////////////////////////////////
 	GUI_window *winAddIndivid;
-	winAddIndivid = new GUI_window(340, 285, "Add individ", fnt, 0xFF999999, 0xFF666666, &closeButton);
+	winAddIndivid = new GUI_window(340, 285, "Add individ", fnt, 0xFF999999, 0xFF666666, objsColor);
 
 	hgeGUIListbox *stateList;
 	stateList = new hgeGUIListbox(0, 0, 0, 100, 100, fnt, 0xFFFFFFFF, 0xFFFFFFFF, objsColor);

@@ -31,6 +31,7 @@ private:
 	hgeGUIButton	*titleBar;
 	hgeGUIButton	*closeBut;
 	HTEXTURE		texBar;
+	HTEXTURE		closeButTex;
 	static int		objCount;
 	std::vector <hgeGUIObject*> objects;
 	std::map <std::string, objInfo> objectsID;
@@ -43,7 +44,7 @@ public:
 	GUI_window( 
 		float _w, float _h, 
 		std::string _title, hgeFont *fnt,
-		DWORD _colorBar, DWORD _colorBack, HTEXTURE *_texCloseBut);
+		DWORD _colorBar, DWORD _colorBack, DWORD _colorCloseBut);
 
 	~GUI_window() {
 	};

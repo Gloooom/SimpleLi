@@ -97,12 +97,12 @@ float getValueFromY(float Y, float startY, float length, float startV, float end
 	return (((Y-startY)/length)*(endV-startV))+startV;
 }
 
-HTEXTURE getButtonTex(int w, int h, DWORD color) {
+HTEXTURE getButtonTex(int w, int h, DWORD color, float gardientDelta) {
 	HTEXTURE tex = hge->Texture_Create(w*2, h);
 	DWORD *ptr = hge->Texture_Lock(tex, false, 0, 0, w*2, h);
 	HSVColor tempCol(color);
-	float uV = isRight(tempCol.getValue()-0.15);
-	float dV = isRight(tempCol.getValue()+0.15);
+	float uV = isRight(tempCol.getValue()-gardientDelta);
+	float dV = isRight(tempCol.getValue()+gardientDelta);
 
 	for (int x = 0; x<w*2; x++) 
 		for (int y = 0; y<h; y++) {
@@ -122,4 +122,4 @@ HTEXTURE getButtonTex(int w, int h, DWORD color) {
 		}
 		hge->Texture_Unlock(tex);
 	return tex;
-};
+}

@@ -1,11 +1,12 @@
 #include "Gui_window.h"
+#include "Gui_color.h"
 
 int GUI_window::objCount = 3;
 
 GUI_window::GUI_window(
 	float _w, float _h, 
 	std::string _title, hgeFont *fnt, 
-	DWORD _colorBar, DWORD _colorBack, HTEXTURE *_texCloseBut):
+	DWORD _colorBar, DWORD _colorBack, DWORD _colorCloseBut):
 	x(0),
 	y(0),
 	w(_w),
@@ -17,12 +18,14 @@ GUI_window::GUI_window(
 {
 	gui = new hgeGUI();
 
+	closeButTex = getButtonTex(15, 15, _colorCloseBut, 0.15);
+
 	texBar = hge->Texture_Create(1, 1);
 	DWORD *b_ptr = hge->Texture_Lock(texBar, false, 0, 0, 1, 1);
 	b_ptr[0] = _colorBar;
 	hge->Texture_Unlock(texBar);
 	
-	closeBut = new hgeGUIButton(0, x+w-15, y, 15, 15, *_texCloseBut, 0, 0);
+	closeBut = new hgeGUIButton(0, x+w-15, y, 15, 15, closeButTex, 0, 0);
 	closeBut->SetMode(false);
 	
 	titleBar = new hgeGUIButton(1, x, y, w, 15, texBar, 0, 0);

@@ -5,6 +5,7 @@
 extern HGE *hge;
 
 float isRight(float that);
+HTEXTURE getButtonTex(int w, int h, DWORD color, float gardientDelta);
 
 class Pixel {
 private:
