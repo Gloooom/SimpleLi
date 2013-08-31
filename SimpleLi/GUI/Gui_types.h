@@ -1,15 +1,4 @@
-#include "stdafx.h"
-
-#include "..\HGE\hge.h"
-#include "..\HGE\hgefont.h"
-#include "..\HGE\hgegui.h"
-#include "..\HGE\hgerect.h"
-#include "..\HGE\hgecolor.h"
-#include "..\HGE\hgeparticle.h"
-#include "..\HGE\hgevector.h"
-#include "..\HGE\hgeanim.h"
-#include "..\HGE\hgegui.h"
-#include "..\HGE\hgeguictrls.h"
+#include "Gui_inclusion.h"
 
 #define ButtonGetState(id)		((hgeGUIButton*)gui->GetCtrl(id))->GetState()
 #define ButtonSetState(id,b)	((hgeGUIButton*)gui->GetCtrl(id))->SetState(b)
@@ -26,7 +15,7 @@ double Dot(hgeVector hgev1, hgeVector hgev2);
 HTEXTURE getButtonTex(int w, int h, DWORD color);
 
 struct EditorState {
-	Point <float> mp;
+	hgeVector mp;
 	bool play;
 	EditorState():
 	play(true) {};

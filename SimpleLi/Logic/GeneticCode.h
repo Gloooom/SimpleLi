@@ -1,10 +1,7 @@
-#include "..\stdafx.h"
 
 #pragma once
 
-#include "..\Logic\Types.h"
-#include "..\Logic\Functions.h"
-#include "..\HGE\hgecolor.h"
+#include "Functions.h"
 
 enum Phis { 
 	acceleration,
@@ -143,11 +140,11 @@ public:
 	GeneticCode() {
 		color=0xFFFFFFFF;
 
-		phis.resize(Phis::end_of_phis, 0);
+		phis.resize(end_of_phis, 0);
 
 		std::vector <float> one_of_soc;
-		one_of_soc.resize(Soc::end_of_soc, 0);
-		soc.resize(Individ_status::end_of_status, one_of_soc);
+		one_of_soc.resize(end_of_soc, 0);
+		soc.resize(end_of_status, one_of_soc);
 	};
 
 	GeneticCode hibridization(GeneticCode person, Mode_hibrid mode);

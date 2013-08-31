@@ -1,9 +1,5 @@
-#include "..\stdafx.h"
 
-#include "Functions.h"
 #include "GeneticCode.h"
-
-
 
 using namespace func;
 

@@ -1,11 +1,7 @@
 
 #pragma once
 
-
-#include "..\Logic\Types.h"
-#include "..\Logic\GeneticCode.h"
-#include "..\Logic\Functions.h"
-#include "..\Gui_types.h"
+#include "GeneticCode.h"
 
 enum Gender {MALE, FEMALE, NEUTER};
 

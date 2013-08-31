@@ -1,4 +1,4 @@
-#include "..\stdafx.h"
+#include "inclusion.h"
 
 #pragma once
 
@@ -7,8 +7,7 @@
 #define POP_A 50
 #define POP_G 0
 
-#define _USE_MATH_DEFINES 
-#include <math.h>
+#define M_PI       3.14159265358979323846
 
 union UnionVal {
 	DWORD dw;
@@ -123,6 +122,12 @@ public:
 		Vector v = *this;
 		*a=v.getDeg();
 	};
+	Point <int> round() {
+		Point <int> result;
+		result.x=(int) floor(x + 0.5);
+		result.y=(int) floor(y + 0.5);
+		return result;
+	}
 };
 
 template <typename T> class Vector: public Point <T> {

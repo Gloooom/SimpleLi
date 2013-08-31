@@ -1,7 +1,6 @@
+#include "Types.h"
 
 #pragma once
-
-#include "..\Logic\Types.h"
 
 namespace func {
 
@@ -15,8 +14,6 @@ namespace func {
 
 	long long int round(double value);
 
-	Point <int> round(Point <float> P);
-
 	Point <double> crossLine(double k1, double b1, double k2, double b2);
 
 	template <typename F>
@@ -24,6 +21,7 @@ namespace func {
 		//coef определяет максимально возможное отклонение в процентах.
 		if (d!=0) return (d + d*(((((double) rand())/(RAND_MAX/2)) - 1) * coef));
 		if (d==0) return (((((double) rand())/(RAND_MAX/2)) - 1) * coef);
+		return 0;
 	}
 
 	template <typename Type>

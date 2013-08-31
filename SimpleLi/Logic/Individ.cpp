@@ -1,11 +1,8 @@
-#include "..\stdafx.h"
+#include "inclusion.h"
 
 #pragma once
 
-#include "..\Logic\Individ.h"
-#include "..\Logic\Functions.h"
-#include "..\Logic\Types.h"
-
+#include "Individ.h"
 
 long long int Individ::count=0;
 

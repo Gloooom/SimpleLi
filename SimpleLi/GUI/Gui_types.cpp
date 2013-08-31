@@ -1,10 +1,7 @@
-#include "Logic\Individ.h"
-#include "Logic\Environment.h"
-#include "Logic\Types.h"
+
 #include "Gui_types.h"
-#include "Gui_color.h"
 
 double Dot(hgeVector hgev1, hgeVector hgev2) {
-	Vector <double> v1(hgev1.x, hgev1.y), v2(hgev2.x, hgev2.y);
-	return v1.getDot(v2);
+	if (hgev1.Length()==0 || hgev2.Length()==0) return 0;
+	return acos((hgev1.x*hgev2.x + hgev1.y*hgev2.y)/sqrt((hgev1.x*hgev1.x+hgev1.y*hgev1.y)*(hgev2.x*hgev2.x+hgev2.y*hgev2.y)));
 }

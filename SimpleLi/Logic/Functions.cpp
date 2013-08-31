@@ -1,11 +1,11 @@
-#include "..\stdafx.h"
+#include "inclusion.h"
 
 #pragma once
 
-#include "..\Logic\Functions.h"
+#include "Functions.h"
 
 bool func::randBool() {
-	return (rand()/(RAND_MAX/2));
+	return (bool)(rand()/(RAND_MAX/2));
 }
 
 float func::randf(float start, float end) {
@@ -31,11 +31,4 @@ Point <double> func::crossLine(double k1, double b1, double k2, double b2) {
 
 long long int func::round(double value) {
 	return (long long int) floor(value + 0.5);
-}
-
-Point <int> func::round(Point <float> P) {
-	Vector <int> result;
-	result.x=(int) floor(P.x + 0.5);
-	result.y=(int) floor(P.y + 0.5);
-	return result;
 }

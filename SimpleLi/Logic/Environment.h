@@ -1,7 +1,6 @@
 #pragma once
 
-#include "..\Logic\Types.h"
-#include "..\Logic\Individ.h"
+#include "Individ.h"
 
 
 class Environment {

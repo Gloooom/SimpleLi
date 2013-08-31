@@ -1,6 +1,4 @@
-#include "..\stdafx.h"
-
-#include "..\Logic\Environment.h"
+#include "Environment.h"
 
 #pragma once
 
@@ -24,6 +22,8 @@ void loadVal(std::ifstream *in, UnionVal *val) {
 
 void Environment::save(std::string path) {
 	std::ofstream outf(path, std::ios::binary);
+	outf.clear();
+	
 	UnionVal val;
 
 	val.li = stepCount;

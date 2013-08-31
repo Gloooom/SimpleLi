@@ -1,12 +1,3 @@
-#include "stdafx.h"
-
-#include "..\HGE\hge.h"
-#include "..\HGE\hgefont.h"
-#include "..\HGE\hgegui.h"
-#include "..\HGE\hgerect.h"
-#include "..\HGE\hgecolor.h"
-#include "..\HGE\hgegui.h"
-#include "..\HGE\hgeguictrls.h"
 #include "Gui_types.h"
 #include "Gui_window.h"
 #include "Gui_color.h"

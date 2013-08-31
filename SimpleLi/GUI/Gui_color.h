@@ -1,6 +1,4 @@
-#include "stdafx.h"
-
-#include "..\HGE\hge.h"
+#include "Gui_inclusion.h"
 
 #pragma once
 
@@ -41,7 +39,7 @@ private:
 public:
 	RGBColor(): 
 	a(0), r(0), g(0), b(0) {};
-	RGBColor(float _r, float _g, float _b): r(_r), g(_g), b(_b) {};
+	RGBColor(float _a, float _r, float _g, float _b): a(_a), r(_r), g(_g), b(_b) {};
 	RGBColor(DWORD color);
 	RGBColor(HSVColor color);
 

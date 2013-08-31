@@ -1,17 +1,5 @@
-#include "stdafx.h"
+#include "Gui_inclusion.h"
 
-#include "..\HGE\hge.h"
-#include "..\HGE\hgefont.h"
-#include "..\HGE\hgegui.h"
-#include "..\HGE\hgerect.h"
-#include "..\HGE\hgecolor.h"
-#include "..\HGE\hgegui.h"
-#include "..\HGE\hgeguictrls.h"
-
-#define CTRL_SLIDER		0 
-#define	CTRL_BUTTON		1
-#define	CTRL_TEXT		2
-#define CTRL_LISTBOX	3
 extern HGE *hge;
 
 struct objInfo {

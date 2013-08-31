@@ -18,7 +18,7 @@ RGBColor::RGBColor(HSVColor color) {
 	float s = color.getSaturation();
 	float v = color.getValue();
 
-	int Hi = h/60;
+	int Hi = (int)(h/60);
 	if (Hi == 6) Hi = 5;
 	float Vmin = (1-s)*v;
 	float A = (v-Vmin)*(((float)((int)h % 60))/60);
@@ -56,10 +56,10 @@ DWORD RGBColor::getDWORD() {
 		unsigned char c[4];
 	} tempCol;
 
-	tempCol.c[A] = a*255.0f;
-	tempCol.c[R] = r*255.0f;
-	tempCol.c[G] = g*255.0f;
-	tempCol.c[B] = b*255.0f;
+	tempCol.c[A] = (char)(a*255.0f);
+	tempCol.c[R] = (char)(r*255.0f);
+	tempCol.c[G] = (char)(g*255.0f);
+	tempCol.c[B] = (char)(b*255.0f);
 	return tempCol.dw;
 };
 

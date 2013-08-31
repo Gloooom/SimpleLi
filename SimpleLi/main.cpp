@@ -1,18 +1,14 @@
 
-#include "stdafx.h"
-
+#include "Main_inclusion.h"
 
 #pragma comment (lib, "hge.lib")
 #pragma comment (lib, "hgehelp.lib")
 
 #pragma once
 
-#include "Logic\Individ.h"
 #include "Logic\Environment.h"
-#include "Logic\Types.h"
-#include "Gui_win_manager.h"
-#include "Gui_types.h"
-#include "Gui_color.h"
+
+#include "GUI\Gui_win_manager.h"
 
 HGE *hge=0;
 
@@ -77,7 +73,6 @@ void load_func() {
 
 bool FrameFunc()
 {
-	float		px, py;
 	float		dt=hge->Timer_GetDelta();
 	
 	hge->Input_GetMousePos(&state.mp.x, &state.mp.y);
@@ -260,9 +255,9 @@ void addIndivid(Point <float> p, Mode_feeding diet) {
 
 			}
 		}
-		hgeColor c(func::randf(0,1), func::randf(0,1), func::randf(0,1), 1);
-		g.color = c.GetHWColor();
-		env.addIndivid(Individ(func::round(p), g));
+		RGBColor c(func::randf(0,1), func::randf(0,1), func::randf(0,1), 1);
+		g.color = c;
+		env.addIndivid(Individ(p.round(), g));
 }
 
 void InitEnvironment() {
@@ -295,8 +290,8 @@ void InitEditor() {
 	CreateWinManager();
 
 	Cell typicCell;
-	hgeColor color(1, 1, 1, 1);
-	typicCell.color=color.GetHWColor();
+	RGBColor color(1, 1, 1, 1);
+	typicCell.color=color;
 	typicCell.height=(600-border*(H+1))/H;
 	typicCell.width=(600-border*(W+1))/W;
 	typicCell.x=0;
@@ -319,7 +314,6 @@ void DoneEditor() {
 
 void CreateGUI() {
 	hgeGUIButton *button;
-	hgeGUISlider *slider;
 	hgeGUIText	 *text;
 
 	HTEXTURE butTex = getButtonTex(150, 20, objsColor);
