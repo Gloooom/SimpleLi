@@ -1,4 +1,3 @@
-
 #include "Logic\Individ.h"
 #include "Logic\Environment.h"
 #include "Logic\Types.h"
