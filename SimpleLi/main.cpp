@@ -17,6 +17,7 @@
 
 #define WIN_S_L					1
 #define WIN_ADD_IND				2
+#define WIN_EDIT_EYE			3
 
 HGE *hge=0;
 
@@ -346,6 +347,7 @@ void CreateGUI() {
 
 void CreateWinManager() {
 	RGBColor colPix(0xFF00DD00);
+	sliderTexture = new Pixel(objsColor);
 
 	HTEXTURE butTex = getButtonTex(80, 15, objsColor, 0.15);
 	hgeGUIButton *button;
@@ -397,9 +399,8 @@ void CreateWinManager() {
 	stateList->AddItem("WAIT");
 	winAddIndivid->addCtrl(stateList, 0, 50, "state_list");
 
-	sliderTexture = new Pixel(objsColor);
 	hgeGUISlider *indSlider;
-	indSlider = new hgeGUISlider(GUI_SLIDER, 0, 0, 200, 10, sliderTexture->getTex(), 0, 0, 1, 1);
+	indSlider = new hgeGUISlider(0, 0, 0, 200, 10, sliderTexture->getTex(), 0, 0, 1, 1);
 	indSlider->SetMode(-20, 20, HGESLIDER_BARRELATIVE);
 	indSlider->SetValue(10);
 	
@@ -470,6 +471,54 @@ void CreateWinManager() {
 	winManager->addWindow(winAddIndivid, WIN_ADD_IND);
 	winManager->setWinPos(WIN_ADD_IND, 200, 200);
 	////////////////////////////////////////////////////
-	////////////////WINDOW EDIT PHIS////////////////////
+	////////////////WINDOW EDIT EYE/////////////////////
 	////////////////////////////////////////////////////
+	GUI_window *winEditEye;
+	winEditEye = new GUI_window(360, 500, "Edit eye", fnt, 0xFF999999, 0xFF666666, objsColor);
+
+	hgeQuad cellQ;
+	RGBColor pixCol(1, 1, 0, 0);
+	int w = 6, h = 6, b = 1;
+	int pos_x=5, pos_y=20;
+	for(int y=0; y<50; y++) {		
+		for (int x=0; x<50; x++) {
+			cellQ.v[0].x=b*x+w*x+pos_x;
+			cellQ.v[0].y=b*y+h*y+pos_y;
+			cellQ.v[0].col=objsColor;
+			cellQ.v[0].z=0.5f;
+
+			cellQ.v[1].x=b*x+w*x+w+pos_x;
+			cellQ.v[1].y=b*y+h*y+pos_y;
+			cellQ.v[1].col=objsColor;
+			cellQ.v[1].z=0.5f;
+
+			cellQ.v[2].x=b*x+w*x+w+pos_x;
+			cellQ.v[2].y=b*y+h*y+h+pos_y;
+			cellQ.v[2].col=objsColor;
+			cellQ.v[2].z=0.5f;
+
+			cellQ.v[3].x=b*x+w*x+pos_x;
+			cellQ.v[3].y=b*y+h*y+h+pos_y;
+			cellQ.v[3].col=objsColor;
+			cellQ.v[3].z=0.5f;
+
+			cellQ.blend=BLEND_COLORMUL | BLEND_ALPHABLEND | BLEND_NOZWRITE;
+			cellQ.tex=0;
+			
+			winEditEye->graphic.push_back(cellQ);
+		}
+	}
+
+	hgeGUISlider *eyeSlider;
+	eyeSlider = new hgeGUISlider(0, 0, 0, 200, 10, sliderTexture->getTex(), 0, 0, 1, 1);
+	eyeSlider->SetMode(0, 100, HGESLIDER_BAR);
+	eyeSlider->SetValue(10);
+	
+	winEditEye->addCtrl(eyeSlider, 6, 385, "height_rad_s");
+	winEditEye->addCtrl(eyeSlider, 6, 425, "height_s");
+	winEditEye->addCtrl(eyeSlider, 6, 450, "width_s");
+	winEditEye->addCtrl(eyeSlider, 6, 475, "angle_s");
+
+	winManager->addWindow(winEditEye, WIN_EDIT_EYE);
+	winManager->Activate(WIN_EDIT_EYE);
 }

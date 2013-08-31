@@ -19,6 +19,8 @@ public:
 	float			w, h;
 public:
 	bool			visible;
+public:
+	std::vector	<hgeQuad> graphic;
 private:
 	std::string		title;
 	hgeGUIText		*titleText;

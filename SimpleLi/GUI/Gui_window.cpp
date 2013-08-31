@@ -75,13 +75,16 @@ void GUI_window::setQuadPos(hgeQuad *quad, float _x, float _y) {
 void GUI_window::Render() {
 	if (visible) {
 		hge->Gfx_RenderQuad(&background);
+		std::vector <hgeQuad> ::iterator q = graphic.begin();
+		while(q != graphic.end()) {
+			hge->Gfx_RenderQuad(&*q);
+			q++;
+		}
 		gui->Render();
 	}
 }
 
 void GUI_window::setPos(int _x, int _y) { //баг: перемещаетс€ кнопка закрыти€ окна в левый верхний угол
-	x = _x;
-	y = _y;
 	setQuadPos(&background, _x, _y);
 	gui->MoveCtrl(0, _x+w-15, _y);
 	gui->MoveCtrl(1, _x, _y);
@@ -91,6 +94,13 @@ void GUI_window::setPos(int _x, int _y) { //баг: перемещаетс€ кнопка закрыти€ ок
 		gui->MoveCtrl(p->second.ID, _x+p->second.x, _y+p->second.y);
 		p++;
 	}
+	std::vector <hgeQuad> ::iterator q = graphic.begin();
+	while(q != graphic.end()) {
+		setQuadPos(&*q, q->v[0].x - x +_x, q->v[0].y - y + _y);
+		q++;
+	}
+	x = _x;
+	y = _y;
 }
 
 void GUI_window::Update(float dt, float mx, float my) {
