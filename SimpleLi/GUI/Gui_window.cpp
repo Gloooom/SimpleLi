@@ -107,7 +107,7 @@ void GUI_window::Update(float dt, float mx, float my) {
 	gui->Update(dt);
 	std::map <std::string, objInfo> ::iterator p = objectsID.begin();
 	while (p != objectsID.end()) {
-		if (p->second.check)
+		if (p->second.type == "class hgeGUIButton")
 			if(hgeButtonGetState(gui,p->second.ID)) {
 				if (p->second.doneFlag && !buttonPressFlag) {
 					p->second.doneFlag = false;
@@ -118,6 +118,13 @@ void GUI_window::Update(float dt, float mx, float my) {
 				p->second.doneFlag = true;
 				buttonPressFlag = false;
 			}
+		if (p->second.type == "class hgeGUIListbox") {
+			int selectItem = ((hgeGUIListbox*)gui->GetCtrl(p->second.ID))->GetSelectedItem();
+			if(p->second.check != selectItem) {
+				p->second.check = selectItem;
+				p->second.func();
+			}
+		}
 		p++;
 	}
 	if (closeBut->GetState()) visible = false;
@@ -131,12 +138,11 @@ void GUI_window::Update(float dt, float mx, float my) {
 	} else {touchFlag = false;}
 }
 
-template <typename abstractParent> 
-abstractParent *getNewObj(abstractParent *ptrParent) {
-	return new typeid(*ptrParent)(*((typeid(*ptrParent))ptrParent))
-}
 
 void nullf() {};
+
+//При добавлении кнопки, и передачи в метод ссылки на функцию, она будет выполнена по нажатию на кнопку.
+//При добавлении листбокса, и передачи в метод ссылки на функцию, она будет выполнена после смены выбранного элемента.
 void GUI_window::addCtrl(hgeGUIObject* obj, float _x, float _y, std::string name, void (*func)()) {
 	if (objectsID.find(name) == objectsID.end()) {
 		objectsID[name].ID = objCount;
@@ -144,22 +150,32 @@ void GUI_window::addCtrl(hgeGUIObject* obj, float _x, float _y, std::string name
 		objectsID[name].y = _y;
 		objectsID[name].func = func;
 		objectsID[name].doneFlag = true;
-		objectsID[name].check = false;
+		objectsID[name].check = 0;
+		objectsID[name].type = typeid(*obj).name();
 	}
 
-	obj->id = objCount;
-	obj->SetPos(_x, _y);
-
-	if (typeid(*obj).name() == typeid(hgeGUISlider).name())
-		objects.push_back(new hgeGUISlider(*((hgeGUISlider*)obj)));
-	if (typeid(*obj).name() == typeid(hgeGUIText).name())
+	if (typeid(*obj).name() == typeid(hgeGUISlider).name()) {
+		hgeGUISlider *slid;
+		slid = new hgeGUISlider(*((hgeGUISlider*)obj));
+		slid->sprSlider = new hgeSprite (*((hgeGUISlider*)obj)->sprSlider);
+		objects.push_back(slid);
+	} else if (typeid(*obj).name() == typeid(hgeGUIListbox).name()) {
+		hgeGUIListbox *listbox;
+		listbox = new hgeGUIListbox(*((hgeGUIListbox*)obj));
+		listbox->sprHighlight = new hgeSprite (*((hgeGUIListbox*)obj)->sprHighlight);
+		objects.push_back(listbox);
+	} else if (typeid(*obj).name() == typeid(hgeGUIButton).name()) {
+		hgeGUIButton *but;
+		but = new hgeGUIButton(*((hgeGUIButton*)obj));
+		but->sprUp = new hgeSprite (*((hgeGUIButton*)obj)->sprUp);
+		but->sprDown = new hgeSprite (*((hgeGUIButton*)obj)->sprDown);
+		objects.push_back(but);
+	} else if (typeid(*obj).name() == typeid(hgeGUIText).name())
 		objects.push_back(new hgeGUIText(*((hgeGUIText*)obj)));
-	if (typeid(*obj).name() == typeid(hgeGUIListbox).name())
-		objects.push_back(new hgeGUIListbox(*((hgeGUIListbox*)obj)));
-	if (typeid(*obj).name() == typeid(hgeGUIButton).name()) {
-		objects.push_back(new hgeGUIButton(*((hgeGUIButton*)obj)));
-		objectsID[name].check = true;
-	}
+	
+	
+	(*(--objects.end()))->id = objCount;
+	(*(--objects.end()))->SetPos(_x, _y);
 
 	gui->AddCtrl(*(--objects.end()));
 	objCount++;

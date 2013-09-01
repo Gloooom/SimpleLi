@@ -66,11 +66,11 @@ public:
 	virtual void	Render();
 	virtual bool	MouseLButton(bool bDown);
 
+	hgeSprite		*sprUp, *sprDown;
 private:
 	bool			bTrigger;
 	bool			bPressed;
 	bool			bOldState;
-	hgeSprite		*sprUp, *sprDown;
 };
 
 
@@ -95,13 +95,14 @@ public:
 	virtual bool	MouseMove(float x, float y);
 	virtual bool	MouseLButton(bool bDown);
 
+	
+	hgeSprite		*sprSlider;
 private:
 	bool			bPressed;
 	bool			bVertical;
 	int				mode;
 	float			fMin, fMax, fVal;
 	float			sl_w, sl_h;
-	hgeSprite		*sprSlider;
 };
 
 
@@ -138,14 +139,15 @@ public:
 	virtual bool	MouseWheel(int nNotches);
 	virtual bool	KeyClick(int key, int chr);
 
-private:
+	
 	hgeSprite		*sprHighlight;
+private:
+	hgeGUIListboxItem	*pItems;
 	hgeFont			*font;
 	DWORD			textColor, texthilColor;
 
 	int					nItems, nSelectedItem, nTopItem;
 	float				mx, my;
-	hgeGUIListboxItem	*pItems;
 };
 
 

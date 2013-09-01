@@ -7,7 +7,8 @@ struct objInfo {
 	float	x, y;
 	void	(*func)();
 	bool	doneFlag;
-	bool	check;
+	int	check;
+	std::string type;
 };
 
 void nullf();
