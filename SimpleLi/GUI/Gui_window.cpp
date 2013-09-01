@@ -29,7 +29,6 @@ GUI_window::GUI_window(
 	closeBut->SetMode(false);
 	
 	titleBar = new hgeGUIButton(1, x, y, w, 15, texBar, 0, 0);
-	closeBut->SetMode(false);
 	
 	titleText = new hgeGUIText(2, x+5, y+5, w, 15, fnt);	
 	titleText->SetMode(HGETEXT_LEFT);
@@ -127,7 +126,11 @@ void GUI_window::Update(float dt, float mx, float my) {
 		}
 		p++;
 	}
-	if (closeBut->GetState()) visible = false;
+	if (closeBut->GetState()) {
+		visible = false;
+		buttonPressFlag = false;
+		closeBut->SetState(false);
+	}
 	if (titleBar->GetState()) {
 		if (!touchFlag) {
 			touchFlag = true;
@@ -178,6 +181,7 @@ void GUI_window::addCtrl(hgeGUIObject* obj, float _x, float _y, std::string name
 	(*(--objects.end()))->SetPos(_x, _y);
 
 	gui->AddCtrl(*(--objects.end()));
+
 	objCount++;
 }
 

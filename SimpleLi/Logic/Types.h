@@ -136,7 +136,6 @@ public:
 	Vector() : Point() {};
 	Vector(Point <T> p) : Point(p) {};
 
-	//using Point::operator=;
 	void operator=(Point <T> p) {
 		x=p.x;
 		y=p.y;
@@ -204,6 +203,21 @@ public:
 		if (x!=0 || y!=0)
 			return acos((x*v.x+y*v.y)/(sqrt(x*x+y*y)*sqrt(v.x*v.x+v.y*v.y)));
 		else return 0;
+	};
+
+	void setAngle(double angle) {
+		double length = getLength();
+		fromDeg(angle);
+		x*=length;
+		y*=length;
+	};
+
+	void rotate(double angle) {
+		Vector <T> result;
+		double cost = cos(angle), sint = sin(angle);
+		result.x = x * cost - y * sint;
+		result.y = x * sint + y * cost;
+		*this = result;
 	};
 
 	double getDeg() const {

@@ -15,6 +15,7 @@
 #define CMD_WIN_S_L				1
 #define CMD_WIN_ADD_IND			2
 #define CMD_WIN_EDIT_PHIS		3
+#define CMD_PAUSE				4
 
 #define WIN_S_L					1
 #define WIN_ADD_IND				2
@@ -113,6 +114,9 @@ bool FrameFunc()
 		winManager->Activate(WIN_EDIT_PHIS);
 		winManager->setFocus(WIN_EDIT_PHIS);
 	}
+	if (hgeButtonGetState(mainGUI, CMD_PAUSE)) {
+		state.play = false;
+	} else state.play = true;
 
 	if (state.play) {
 		timer+=dt;
@@ -121,6 +125,80 @@ bool FrameFunc()
 			timer=0;
 		}
 	}
+
+
+	//заготовка для метода look индивида.
+	//какая-то странаня херня с поворотом шаблона. Возможно дело в округлении точек при повороте. А возможно и нет.
+	Point <int> pos(35, 35);
+
+	std::vector <hgeQuad> ::iterator p = winManager->getWin(WIN_EDIT_EYE)->graphic.begin();
+	while(p != winManager->getWin(WIN_EDIT_EYE)->graphic.end()) {
+		setQuadColor(&*p, objsColor);
+		p++;
+	}
+
+	std::vector <Vector <double> > mem;
+
+	FOV_Tri eee(0, (GetWinSliderValue(winManager, WIN_EDIT_EYE, "height_s")), 
+					(GetWinSliderValue(winManager, WIN_EDIT_EYE, "width_s")));
+	double wayAngle = 0; //(GetWinSliderValue(winManager, WIN_EDIT_EYE, "angle_s")/100)*M_PI;
+	double k1=tan(eee.angle() + atan(eee.height()/(eee.width()/2)) - wayAngle), b1=0;
+	double k2=tan(eee.angle() - atan(eee.height()/(eee.width()/2)) - wayAngle), b2=0;
+	double k3=tan(eee.angle() - wayAngle),    b3=(eee.height()/cos(eee.angle() - wayAngle));
+
+	Point <double> vert[3];
+	vert[0]=func::crossLine(k1,b1,k2,b2);
+	vert[1]=func::crossLine(k2,b2,k3,b3);
+	vert[2]=func::crossLine(k1,b1,k3,b3);
+
+	Vector <double> vectorR(vert[2].x, vert[2].y);
+	double R = vectorR.getLength();
+
+	Vector <double> P;
+	int start_x = (pos.x-R>0) ? pos.x-R : 0;
+	int start_y = (pos.y-R>0) ? pos.y-R : 0;
+
+	for (int _x=start_x; _x<pos.x+R, _x<W; _x++) { 
+		P.x=_x-pos.x;
+		for (int _y=start_y; _y<pos.y+R, _y<H; _y++) {
+			P.y=_y-pos.y;
+			double pl1, pl2, pl3;
+			pl1 = (vert[0].x - P.y)*(vert[1].y - vert[0].y)-(vert[1].x - vert[0].x)*(vert[0].y - P.x);
+			pl2 = (vert[1].x - P.y)*(vert[2].y - vert[1].y)-(vert[2].x - vert[1].x)*(vert[1].y - P.x);
+			pl3 = (vert[2].x - P.y)*(vert[0].y - vert[2].y)-(vert[0].x - vert[2].x)*(vert[2].y - P.x);
+			if ((pl1 >= 0 && pl2 >= 0 && pl3 >= 0) || (pl1 <= 0 && pl2 <= 0 && pl3 <= 0)) {
+				Point <int> absP;
+				absP.x=func::round(P.x+pos.x);
+				absP.y=func::round(P.y+pos.y);
+
+				mem.push_back(Vector <double> (P.x, P.y));
+			}
+		}
+	}
+
+	std::vector <Vector <int> > mem_2;
+	std::vector <Vector <double> > ::iterator m = mem.begin();
+	while (m != mem.end()) {
+		m->rotate((GetWinSliderValue(winManager, WIN_EDIT_EYE, "angle_s")/100)*M_PI*2);
+		
+		Vector <int> g(m->x, m->y);
+		mem_2.push_back(g);
+		g.x+=35;
+		g.y*=(-1);
+		g.y+=35;
+		
+		if (g.x + g.y*70 >= 0 && g.x + g.y*70 < 70*70) 
+			setQuadColor(&(winManager->getWin(WIN_EDIT_EYE)->graphic[g.x + g.y*70]), 0xFFFF0000);
+		m++;
+	}
+
+	testVal = 0;
+	std::vector <hgeQuad> ::iterator t = winManager->getWin(WIN_EDIT_EYE)->graphic.begin();
+	while (t != winManager->getWin(WIN_EDIT_EYE)->graphic.end()) {
+		if (t->v[0].col == 0xFFFF0000) testVal++;
+		t++;
+	}
+
 
 	return false;
 }
@@ -285,6 +363,8 @@ void addIndivid(Point <float> p, Mode_feeding diet) {
 }
 
 void InitEnvironment() {
+	env.setMutation(1, 1, 1, 0.1, ONE);
+
 	Point <float> p;
 
 	for(int i=0; i<POP_A; i++) {
@@ -310,6 +390,8 @@ void InitEditor() {
 
 	winManager = new GUI_win_manager();
 	CreateWinManager();
+
+
 
 	Cell typicCell;
 	RGBColor color(1, 1, 1, 1);
@@ -368,6 +450,18 @@ void CreateGUI() {
 	text->SetMode(HGETEXT_CENTER);
 	text->SetColor(0xFFFFFFFF);
 	text->SetText("Edit phis attributes");
+	text->bEnabled = false;
+	mainGUI->AddCtrl(text);
+
+	button=new hgeGUIButton(CMD_PAUSE, 610, 560, 180, 20, butTex, 0, 0);
+	button->SetMode(true);
+	button->SetState(true);
+	mainGUI->AddCtrl(button);
+
+	text = new hgeGUIText(GUI_TEXT, 610, 560, 180, 30, fnt);
+	text->SetMode(HGETEXT_CENTER);
+	text->SetColor(0xFFFFFFFF);
+	text->SetText("Pause");
 	text->bEnabled = false;
 	mainGUI->AddCtrl(text);
 }
@@ -514,10 +608,13 @@ void CreateWinManager() {
 
 	hgeQuad cellQ;
 	RGBColor pixCol(1, 1, 0, 0);
-	int w = 6, h = 6, b = 1;
+	int areaW = 350, areaH = 350;
+	int countW = 70, countH = 70;
+	int b = 1;
+	int w = areaW/countW - b, h = areaH/countH - b;
 	int pos_x=10, pos_y=25;
-	for(int y=0; y<50; y++) {		
-		for (int x=0; x<50; x++) {
+	for(int y=0; y<countH; y++) {		
+		for (int x=0; x<countW; x++) {
 			cellQ.v[0].x=b*x+w*x+pos_x;
 			cellQ.v[0].y=b*y+h*y+pos_y;
 
@@ -562,11 +659,11 @@ void CreateWinManager() {
 	
 	slidersValText->SetText("Radial eye height:");
 	winEditEye->addCtrl(slidersValText, 10, 385, "height_rad_t");
-	slidersValText->SetText("Eye height:");
+	slidersValText->SetText("Eye angle:");
 	winEditEye->addCtrl(slidersValText, 10, 425, "angle_t");
 	slidersValText->SetText("Eye width:");
 	winEditEye->addCtrl(slidersValText, 10, 450, "width_t");
-	slidersValText->SetText("Eye angle:");
+	slidersValText->SetText("Eye height:");
 	winEditEye->addCtrl(slidersValText, 10, 475, "height_t");
 
 	slidersValText = new hgeGUIText(0, 0, 0, 100, 20, fnt);
@@ -689,13 +786,35 @@ void CreateWinManager() {
 	winEditPhis->addCtrl(editPhisButText, 10, 345, "edit_phis_but_t");
 
 	winManager->addWindow(winEditPhis, WIN_EDIT_PHIS);
+	////////////////////////////////////////////////////
+	///////////////WINDOW EDIT MUTATION/////////////////
+	////////////////////////////////////////////////////
+
+	////////////////////////////////////////////////////
+	//////////////////WINDOW STATISTIC//////////////////
+	////////////////////////////////////////////////////
+	//На потом.//
+	/////////////
+
+	
+	GetWinSlider(winManager, WIN_EDIT_EYE, "angle_s")->SetValue(0);
+	GetWinSlider(winManager, WIN_EDIT_EYE, "width_s")->SetValue(10);
+	GetWinSlider(winManager, WIN_EDIT_EYE, "height_s")->SetValue(20);
+	winManager->Activate(WIN_EDIT_EYE);
+
+
 
 	delete indSlider;
 	delete slidersValText; 
+	delete slidersStaticText;
 	delete stateList;
+
 	delete callEyeEditButText;
 	delete callEyeEditBut;
+	delete eyeSlider;
+	delete eyesList;
+
+	delete phisSlider;
 	delete editPhisBut;
 	delete editPhisButText;
-	//Уху-ху! Всё удаляется, ура!
 }

@@ -123,3 +123,10 @@ HTEXTURE getButtonTex(int w, int h, DWORD color, float gardientDelta) {
 		hge->Texture_Unlock(tex);
 	return tex;
 }
+
+void setQuadColor(hgeQuad *q, DWORD color) {
+	q->v[0].col=
+	q->v[1].col=
+	q->v[2].col=
+	q->v[3].col=color;
+}

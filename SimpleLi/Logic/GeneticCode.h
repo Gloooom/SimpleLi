@@ -45,8 +45,6 @@ public:
 	virtual float angle() = 0;
 	virtual float height() = 0;
 	virtual float width() = 0;
-
-	virtual FOV* mutation(float coef, Mode_mutation mode) = 0;
 };
 
 class FOV_Tri : public FOV {
@@ -73,21 +71,21 @@ public:
 	void setHeight(float _h)	{_height = _h;};
 	void setWidth(float _w)		{_width = _w;};
 
-	FOV* mutation(float coef, Mode_mutation mode) {
+	FOV_Tri mutation(float coef, int mutation_mode) {
 		FOV_Tri result;
-		if (mode == ONE) {
+		if (mutation_mode == ONE) {
 			int seed = func::randi(0, 2);
 			switch(seed) {
 			case 0: result._angle = func::getVariation(_angle, coef); break;
 			case 1: result._height = func::getVariation(_height, coef); break;
 			case 2: result._width = func::getVariation(_width, coef); break;
 			}
-		} else if (mode == ALL || mode == HALF) {
+		} else if (mutation_mode == ALL || mutation_mode == HALF) {
 			result._angle = func::getVariation(_angle, coef);
 			result._height = func::getVariation(_height, coef);
 			result._width = func::getVariation(_width, coef); 
 		}
-		return new FOV_Tri(result);
+		return result;
 	};
 	FOV_Tri hibrid(FOV_Tri eye) {
 		FOV_Tri result;
@@ -114,10 +112,10 @@ public:
 
 	void setHeight(float hgt) {_height = hgt;};
 
-	FOV* mutation(float coef, Mode_mutation mode) {
+	FOV_Rad mutation(float coef, int mutation_mode) {
 		FOV_Rad result;
 		func::getVariation(_height, coef);
-		return new FOV_Rad(result);
+		return result;
 	};
 	FOV_Rad hibrid(FOV_Rad eye) {
 		FOV_Rad result;
@@ -148,7 +146,8 @@ public:
 	};
 
 	GeneticCode hibridization(GeneticCode person, Mode_hibrid mode);
-	GeneticCode mutation(float coef, Mode_mutation mode);
+	GeneticCode mutation(float maxDelta, float eyeAddChance, float eyeMutationChance, 
+						 float radEyeMutationChance, int mutation_mode);
 	bool save(std::string path);
 	bool load(std::string path);
 };

@@ -23,7 +23,7 @@ private:
 public:
 	GUI_win_manager();
 
-	void addWindow(GUI_window *win, int ID);
+	void addWindow(GUI_window *win, int ID, float startPosX = 0, float startPosY = 0);
 	void setWinPos(int ID, float _x, float _y);
 
 	int getFocus();

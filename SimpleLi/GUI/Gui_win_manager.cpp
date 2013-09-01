@@ -5,12 +5,15 @@ GUI_win_manager::GUI_win_manager() {
 	gui = new hgeGUI();
 };
 
-void GUI_win_manager::addWindow(GUI_window *win, int ID) {
+void GUI_win_manager::addWindow(GUI_window *win, int ID, float startPosX, float startPosY) {
 	win->ID = ID;
 	windows[ID] = win;
 
-	gui->AddCtrl(new hgeGUIButton(ID, win->x, win->y, win->x+win->w, win->y+win->h, diaTex, 0, 0));
+	gui->AddCtrl(new hgeGUIButton(ID, win->x, win->y, win->w, win->h, diaTex, 0, 0));
 	((hgeGUIButton*)gui->GetCtrl(ID))->SetMode(false);
+	gui->EnableCtrl(ID, false);
+
+	setWinPos(ID, startPosX, startPosY);
 };
 
 GUI_window* GUI_win_manager::getFocusWin() {
@@ -41,21 +44,26 @@ void GUI_win_manager::setFocus(int ID) {
 
 void GUI_win_manager::Update(float dt, float mx, float my) {
 	if (!activeWindows.empty()) {
-		getFocusWin()->Update(dt, mx, my);
-		gui->MoveCtrl(getFocus(), windows[getFocus()]->x, windows[getFocus()]->y);
-
-		gui->Update(dt);
 		GUI_window *top = getFocusWin();
-		if (mx < top->x || mx > top->x + top->w ||
-			my < top->y || my > top->y + top->h) { 
+		
+		top->Update(dt, mx, my);
+		
+		gui->Update(dt);
+		gui->MoveCtrl(getFocus(), windows[getFocus()]->x, windows[getFocus()]->y);
+		
+
+		if (!(mx > top->x && mx < (top->x + top->w) &&
+			my > top->y && my < (top->y + top->h))) { 
 				std::deque <int> ::reverse_iterator but = activeWindows.rbegin();
 				while (but != activeWindows.rend()) {
 					if(hgeButtonGetState(gui, *but)) {
 						setFocus(*but);
+						hgeButtonSetState(gui, *but, false);
 						break;
 					} else but++;
 				}
 		}
+
 		std::deque <int> ::iterator p = activeWindows.begin();
 		while (p != activeWindows.end()) {
 			if (!windows.at(*p)->visible) {
@@ -76,8 +84,8 @@ void GUI_win_manager::Render() {
 };
 
 void GUI_win_manager::Activate(int ID) {
-	std::deque <int> ::iterator futureFrontID = std::find(activeWindows.begin(), activeWindows.end(), ID);
-	if (futureFrontID == activeWindows.end()) {
+	std::deque <int> ::iterator futureActive = std::find(activeWindows.begin(), activeWindows.end(), ID);
+	if (futureActive == activeWindows.end()) {
 		windows.at(ID)->visible = true;
 		if (activeWindows.empty()) 
 			windows.at(ID)->setAColor(0xFF); 
