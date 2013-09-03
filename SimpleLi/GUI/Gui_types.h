@@ -21,12 +21,6 @@ struct EditorState {
 	play(true) {};
 };
 
-struct Cell {
-	double x, y;
-	DWORD color;
-	double width, height;
-};
-
 class Line {
 private:
 	float width;

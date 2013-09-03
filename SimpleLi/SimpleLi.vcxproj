@@ -94,6 +94,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GUI\Gui_color.h" />
+    <ClInclude Include="GUI\Gui_graphic_area.h" />
     <ClInclude Include="GUI\Gui_inclusion.h" />
     <ClInclude Include="GUI\Gui_types.h" />
     <ClInclude Include="GUI\Gui_window.h" />

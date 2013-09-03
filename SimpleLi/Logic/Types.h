@@ -17,7 +17,6 @@ union UnionVal {
 	float f;
 	int i;
 	bool b;
-	
 };
 
 enum Mode_hibrid {HALF_TO_HALF, AVERAGE};
@@ -43,55 +42,6 @@ public:
 	bool empty() {
 		if (enemies.empty() && partners.empty()) return true;
 		else return false;
-	};
-};
-
-template <typename cellType> class row {
-public:
-	int colCount;
-	cellType *cells;
-public:
-	row() {
-		colCount=1;
-		cells = new cellType;
-	};
-	row(int c) {
-		colCount=c;
-		cells = new cellType[c];
-	};
-	~row() {
-		delete [] cells;
-	};
-	void init(int c) {
-		colCount=c;
-		cells = new cellType[c];
-	}
-	cellType &operator[](int c) {
-		if (c>=0 && c<colCount)
-			return cells[c];
-		else return cells[0];
-	};
-};
-
-template <typename Type> class Mass {
-public:
-	int rowCount;
-	row <Type> *rows;
-public:
-	Mass(int r, int c) {
-		rowCount=r;
-		rows = new row<Type>[r];
-		for (int i=0; i<r; i++) {
-			rows[i].init(c);
-		}
-	};
-	~Mass() {
-		delete [] rows;
-	};
-	row <Type> &operator[](int r) {
-		if (r>=0 && r<rowCount)
-			return rows[r];
-		else return rows[0];
 	};
 };
 
