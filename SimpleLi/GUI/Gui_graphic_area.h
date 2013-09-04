@@ -1,25 +1,6 @@
-#include "Main_inclusion.h"
 #include "Gui_color.h"
 
 extern HGE *hge;
-
-template <typename Type> class Array {
-private:
-	int _rowCount;
-	int _colCount;
-	Type *arr;
-	Type null;
-public:
-	Array(int colCount, int rowCount) {
-		_rowCount = rowCount;
-		_colCount = colCount;
-		arr = new Type[rowCount*colCount];
-	};
-	Type  operator[](int i) {return arr[i];};
-	Type &operator()(int x, int y) {
-		return arr[x + y*_colCount];
-	};
-};
 
 struct Cell {
 private:
@@ -41,14 +22,12 @@ public:
 		q.v[3].x=x;
 		q.v[3].y=y+h;
 	};
-
 	void setColor(DWORD color) {
 		q.v[0].col=
 			q.v[1].col=
 			q.v[2].col=
 			q.v[3].col=color;
 	};
-
 	hgeQuad *getQuad() {return &q;};
 };
 
@@ -87,11 +66,11 @@ public:
 					  colorArr(x, y) = 0xFFFFFFFF;
 				  }
 	  };
-	  void setBorder(int b) {
+	void setBorder(int b) {
 		  _border = b;
 		  setVisibleArea(_visibleX, _visibleY, _visibleColCount, _visibleRowCount);
 	  };
-	  void setVisibleArea(int visibleX, int visibleY, int visibleColCount, int visibleRowCount) {
+	void setVisibleArea(int visibleX, int visibleY, int visibleColCount, int visibleRowCount) {
 		  if (visibleX<=0) _visibleX = 0;
 		  if (visibleX>=_colCount) visibleX = _colCount;
 		  if (visibleY<=0) visibleY = 0;
@@ -113,22 +92,22 @@ public:
 				  (_y-visibleY)*cellHeight+(_border*(_y-visibleY)), 
 				  cellWidth, cellHeight);
 	  };
-	  Cell operator[](int i) {return quadArr[i];};
-	  DWORD &operator()(int x, int y) {return colorArr(x, y);};
-	  void Update() {
+	Cell operator[](int i) {return quadArr[i];};
+	DWORD &operator()(int x, int y) {return colorArr(x, y);};
+	void Update() {
 		  for(int x=_visibleX; x<_visibleColCount; x++)
 			  for(int y=_visibleY; y<_visibleRowCount; y++)
 				  quadArr(x, y).setColor(colorArr(x, y));
 	  };
-	  void Render() {
+	void Render() {
 		  for(int x=_visibleX; x<_visibleColCount; x++)
 			  for(int y=_visibleY; y<_visibleRowCount; y++)
 				  hge->Gfx_RenderQuad(quadArr(x, y).getQuad());
 	  };
-	  void setBackground(DWORD color) {
+	void setBackground(DWORD color) {
 		  _background = color;
 	  };
-	  void Clear() {
+	void Clear() {
 		  for(int x=_visibleX; x<_visibleColCount; x++)
 			  for(int y=_visibleY; y<_visibleRowCount; y++)
 				  colorArr(x, y) = _background;

@@ -1,4 +1,3 @@
-
 #include "Main_inclusion.h"
 
 #pragma comment (lib, "hge.lib")
@@ -10,19 +9,6 @@
 #include "Logic\Environment.h"
 
 #include "GUI\Gui_win_manager.h"
-
-
-#define GUI_TEXT				0
-
-#define CMD_WIN_S_L				1
-#define CMD_WIN_ADD_IND			2
-#define CMD_WIN_EDIT_PHIS		3
-#define CMD_PAUSE				4
-
-#define WIN_S_L					1
-#define WIN_ADD_IND				2
-#define WIN_EDIT_EYE			3
-#define WIN_EDIT_PHIS			4
 
 HGE *hge=0;
 
@@ -92,74 +78,6 @@ bool FrameFunc()
 			timer=0;
 		}
 	}
-
-	//заготовка дл€ метода look индивида.
-	//кака€-то странан€ херн€ с поворотом шаблона. ¬озможно дело в округлении точек при повороте. ј возможно и нет.
-	//ƒобавить красивые затухающие окошки об каких-то событи€х в центре экрана. Ѕольше кава€, да!
-	Point <int> pos(35, 35);
-
-	std::vector <hgeQuad> ::iterator p = winManager->getWin(WIN_EDIT_EYE)->graphic.begin();
-	while(p != winManager->getWin(WIN_EDIT_EYE)->graphic.end()) {
-		setQuadColor(&*p, objsColor);
-		p++;
-	}
-
-	std::vector <Vector <double> > mem;
-
-	FOV_Tri eee(0, (GetWinSliderValue(winManager, WIN_EDIT_EYE, "height_s")), 
-					(GetWinSliderValue(winManager, WIN_EDIT_EYE, "width_s")));
-	double wayAngle = 0; //(GetWinSliderValue(winManager, WIN_EDIT_EYE, "angle_s")/100)*M_PI;
-	double k1=tan(eee.angle() + atan(eee.height()/(eee.width()/2)) - wayAngle), b1=0;
-	double k2=tan(eee.angle() - atan(eee.height()/(eee.width()/2)) - wayAngle), b2=0;
-	double k3=tan(eee.angle() - wayAngle),    b3=(eee.height()/cos(eee.angle() - wayAngle));
-
-	Point <double> vert[3];
-	vert[0]=func::crossLine(k1,b1,k2,b2);
-	vert[1]=func::crossLine(k2,b2,k3,b3);
-	vert[2]=func::crossLine(k1,b1,k3,b3);
-
-	Vector <double> vectorR(vert[2].x, vert[2].y);
-	double R = vectorR.getLength();
-
-	Vector <double> P;
-	int start_x = (pos.x-R>0) ? pos.x-R : 0;
-	int start_y = (pos.y-R>0) ? pos.y-R : 0;
-
-	for (int _x=start_x; _x<pos.x+R, _x<W; _x++) { 
-		P.x=_x-pos.x;
-		for (int _y=start_y; _y<pos.y+R, _y<H; _y++) {
-			P.y=_y-pos.y;
-			double pl1, pl2, pl3;
-			pl1 = (vert[0].x - P.y)*(vert[1].y - vert[0].y)-(vert[1].x - vert[0].x)*(vert[0].y - P.x);
-			pl2 = (vert[1].x - P.y)*(vert[2].y - vert[1].y)-(vert[2].x - vert[1].x)*(vert[1].y - P.x);
-			pl3 = (vert[2].x - P.y)*(vert[0].y - vert[2].y)-(vert[0].x - vert[2].x)*(vert[2].y - P.x);
-			if ((pl1 >= 0 && pl2 >= 0 && pl3 >= 0) || (pl1 <= 0 && pl2 <= 0 && pl3 <= 0)) {
-				Point <int> absP;
-				absP.x=func::round(P.x+pos.x);
-				absP.y=func::round(P.y+pos.y);
-
-				mem.push_back(Vector <double> (P.x, P.y));
-			}
-		}
-	}
-
-	std::vector <Vector <int> > mem_2;
-	std::vector <Vector <double> > ::iterator m = mem.begin();
-	while (m != mem.end()) {
-		m->rotate((GetWinSliderValue(winManager, WIN_EDIT_EYE, "angle_s")/100)*M_PI*2);
-		
-		Vector <int> g(m->x, m->y);
-		mem_2.push_back(g);
-		g.x+=35;
-		g.y*=(-1);
-		g.y+=35;
-		
-		if (g.x + g.y*70 >= 0 && g.x + g.y*70 < 70*70) 
-			setQuadColor(&(winManager->getWin(WIN_EDIT_EYE)->graphic[g.x + g.y*70]), 0xFFFF0000);
-		m++;
-	}
-
-
 
 	return false;
 }

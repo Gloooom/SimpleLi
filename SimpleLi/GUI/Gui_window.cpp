@@ -2,6 +2,7 @@
 #include "Gui_color.h"
 
 int GUI_window::objCount = 3;
+void nullf() {};
 
 GUI_window::GUI_window(
 	float _w, float _h, 
@@ -39,6 +40,8 @@ GUI_window::GUI_window(
 	gui->AddCtrl(titleBar);
 	gui->AddCtrl(titleText);
 	gui->AddCtrl(closeBut);
+
+	updateFunc = nullf;
 
 	background.v[0].x=x;
 	background.v[0].y=y;
@@ -103,6 +106,7 @@ void GUI_window::setPos(int _x, int _y) { //баг: перемещается кнопка закрытия ок
 }
 
 void GUI_window::Update(float dt, float mx, float my) {
+	updateFunc();
 	gui->Update(dt);
 	std::map <std::string, objInfo> ::iterator p = objectsID.begin();
 	while (p != objectsID.end()) {
@@ -140,9 +144,6 @@ void GUI_window::Update(float dt, float mx, float my) {
 		setPos(mx - m_dx, my - m_dy);
 	} else {touchFlag = false;}
 }
-
-
-void nullf() {};
 
 //При добавлении кнопки, и передачи в метод ссылки на функцию, она будет выполнена по нажатию на кнопку.
 //При добавлении листбокса, и передачи в метод ссылки на функцию, она будет выполнена после смены выбранного элемента.
@@ -205,4 +206,8 @@ void GUI_window::setAColor(BYTE alpha) {
 		_col.b[3] = alpha;
 		background.v[i].col = _col.dw;
 	}
+}
+
+void GUI_window::setUpdateFunc(void (*func)()) {
+	updateFunc = func;
 }

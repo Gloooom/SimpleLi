@@ -31,7 +31,6 @@ GeneticCode GeneticCode::hibridization(GeneticCode person, Mode_hibrid mode) {
 	return result;
 }
 
-
 GeneticCode GeneticCode::mutation(float maxDelta, float eyeAddChance, float eyeMutationChance, 
 								  float radEyeMutationChance, int mutation_mode) {
 	GeneticCode result;

@@ -26,6 +26,7 @@ private:
 	std::string		title;
 	hgeGUIText		*titleText;
 	hgeGUI			*gui;
+	void			(*updateFunc)();
 	float			m_dx, m_dy;
 	bool			touchFlag;
 	bool			buttonDoneFlag;
@@ -57,6 +58,7 @@ public:
 	void Update(float dt, float mx, float my);
 	void Render();
 	void setPos(int _x, int _y);
+	void setUpdateFunc(void (*func)());
 	void addCtrl(hgeGUIObject* obj, float _x, float _y, std::string name, void (*func)() = nullf);
 	hgeGUIObject *getCtrl(std::string name);
 };

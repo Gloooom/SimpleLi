@@ -83,7 +83,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="GUI\Gui_color.cpp" />
-    <ClCompile Include="GUI\Gui_types.cpp" />
     <ClCompile Include="GUI\Gui_window.cpp" />
     <ClCompile Include="GUI\Gui_win_manager.cpp" />
     <ClCompile Include="Logic\Environment.cpp" />
@@ -100,6 +99,7 @@
     <ClInclude Include="GUI\Gui_window.h" />
     <ClInclude Include="GUI\Gui_win_manager.h" />
     <ClInclude Include="GUI_structure.h" />
+    <ClInclude Include="helpers.h" />
     <ClInclude Include="HGE\hge.h" />
     <ClInclude Include="HGE\hgeanim.h" />
     <ClInclude Include="HGE\hgecolor.h" />
@@ -116,6 +116,7 @@
     <ClInclude Include="Logic\Environment.h" />
     <ClInclude Include="Logic\Functions.h" />
     <ClInclude Include="Logic\GeneticCode.h" />
+    <ClInclude Include="Logic\Inclusion.h" />
     <ClInclude Include="Logic\Individ.h" />
     <ClInclude Include="Logic\Types.h" />
     <ClInclude Include="Main_inclusion.h" />

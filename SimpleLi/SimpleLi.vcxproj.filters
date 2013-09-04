@@ -39,9 +39,6 @@
     <ClCompile Include="GUI\Gui_color.cpp">
       <Filter>Файлы исходного кода\GUI</Filter>
     </ClCompile>
-    <ClCompile Include="GUI\Gui_types.cpp">
-      <Filter>Файлы исходного кода\GUI</Filter>
-    </ClCompile>
     <ClCompile Include="GUI\Gui_window.cpp">
       <Filter>Файлы исходного кода\GUI</Filter>
     </ClCompile>
@@ -127,6 +124,12 @@
     </ClInclude>
     <ClInclude Include="GUI_structure.h">
       <Filter>Файлы исходного кода</Filter>
+    </ClInclude>
+    <ClInclude Include="helpers.h">
+      <Filter>Файлы исходного кода</Filter>
+    </ClInclude>
+    <ClInclude Include="Logic\Inclusion.h">
+      <Filter>Файлы исходного кода\Logic</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

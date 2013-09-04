@@ -1,3 +1,4 @@
+char buf[10];
 
 void save_func() {
 	int selectSlot = GetWinListboxSelect(winManager, WIN_S_L, "slot_list");
@@ -26,6 +27,82 @@ void load_func() {
 void call_EyeEdit() {
 	winManager->Activate(WIN_EDIT_EYE);
 	winManager->setFocus(WIN_EDIT_EYE);
+}
+
+void update_EyeEdit() {
+	SetWinText(winManager, WIN_EDIT_EYE, "angle_val", 
+		itoa((int)((GetWinSliderValue(winManager, WIN_EDIT_EYE, "angle_s")/100)*360), buf, 10));
+	SetWinText(winManager, WIN_EDIT_EYE, "width_val", 
+		itoa((int)(GetWinSliderValue(winManager, WIN_EDIT_EYE, "width_s")), buf, 10));
+	SetWinText(winManager, WIN_EDIT_EYE, "height_val", 
+		itoa((int)(GetWinSliderValue(winManager, WIN_EDIT_EYE, "height_s")), buf, 10));
+
+
+	//заготовка для метода look индивида.
+	//какая-то странаня херня с поворотом шаблона. Возможно дело в округлении точек при повороте. А возможно и нет.
+	//Добавить красивые затухающие окошки об каких-то событиях в центре экрана. Больше кавая, да!
+	std::vector <hgeQuad> ::iterator p = winManager->getWin(WIN_EDIT_EYE)->graphic.begin();
+	while(p != winManager->getWin(WIN_EDIT_EYE)->graphic.end()) {
+		setQuadColor(&*p, objsColor);
+		p++;
+	}
+
+	Point <int> pos(35, 35);
+	std::vector <Vector <double> > mem;
+
+	FOV_Tri eee(0, (GetWinSliderValue(winManager, WIN_EDIT_EYE, "height_s")), 
+					(GetWinSliderValue(winManager, WIN_EDIT_EYE, "width_s")));
+	double wayAngle = 0; 
+	double k1=tan(eee.angle() + atan(eee.height()/(eee.width()/2)) - wayAngle), b1=0;
+	double k2=tan(eee.angle() - atan(eee.height()/(eee.width()/2)) - wayAngle), b2=0;
+	double k3=tan(eee.angle() - wayAngle),    b3=(eee.height()/cos(eee.angle() - wayAngle));
+
+	Point <double> vert[3];
+	vert[0]=func::crossLine(k1,b1,k2,b2);
+	vert[1]=func::crossLine(k2,b2,k3,b3);
+	vert[2]=func::crossLine(k1,b1,k3,b3);
+
+	Vector <double> vectorR(vert[2].x, vert[2].y);
+	double R = vectorR.getLength();
+
+	Vector <double> P;
+	int start_x = (pos.x-R>0) ? pos.x-R : 0;
+	int start_y = (pos.y-R>0) ? pos.y-R : 0;
+
+	for (int _x=start_x; _x<pos.x+R, _x<W; _x++) { 
+		P.x=_x-pos.x;
+		for (int _y=start_y; _y<pos.y+R, _y<H; _y++) {
+			P.y=_y-pos.y;
+			double pl1, pl2, pl3;
+			pl1 = (vert[0].x - P.y)*(vert[1].y - vert[0].y)-(vert[1].x - vert[0].x)*(vert[0].y - P.x);
+			pl2 = (vert[1].x - P.y)*(vert[2].y - vert[1].y)-(vert[2].x - vert[1].x)*(vert[1].y - P.x);
+			pl3 = (vert[2].x - P.y)*(vert[0].y - vert[2].y)-(vert[0].x - vert[2].x)*(vert[2].y - P.x);
+			if ((pl1 >= 0 && pl2 >= 0 && pl3 >= 0) || (pl1 <= 0 && pl2 <= 0 && pl3 <= 0)) {
+				Point <int> absP;
+				absP.x=func::round(P.x+pos.x);
+				absP.y=func::round(P.y+pos.y);
+
+				mem.push_back(Vector <double> (P.x, P.y));
+			}
+		}
+	}
+
+	std::vector <Vector <int> > mem_2;
+	std::vector <Vector <double> > ::iterator m = mem.begin();
+	while (m != mem.end()) {
+		m->rotate((GetWinSliderValue(winManager, WIN_EDIT_EYE, "angle_s")/100)*M_PI*2);
+		
+		Vector <int> g(m->x, m->y);
+		mem_2.push_back(g);
+		g.x+=35;
+		g.y*=(-1);
+		g.y+=35;
+		
+		if (g.x + g.y*70 >= 0 && g.x + g.y*70 < 70*70) 
+			setQuadColor(&(winManager->getWin(WIN_EDIT_EYE)->graphic[g.x + g.y*70]), 0xFFFF0000);
+		m++;
+	}
+
 }
 
 void CreateGUI() {
@@ -84,12 +161,8 @@ void CreateWinManager() {
 	RGBColor backCol(0xFF666666);
 	RGBColor headCol(0xFF999999);
 	RGBColor colPix(0xFF00DD00);
-	//sliderTexture = new Pixel(objsColor);
-	HTEXTURE *sliderTex = new HTEXTURE(getButtonTex(10, 10, 0xFFFFFFFF, 0.1));
 
-	//Такой слайдер гораздо лучше
-	//HTEXTURE *tex = new HTEXTURE(getButtonTex(10, 10, 0xFFFFFFFF, 0.1));
-	//slid = new hgeGUISlider(0, 0, 0, 200, 10, *tex, 1, 0, 5, 10);
+	HTEXTURE *sliderTex = new HTEXTURE(getButtonTex(10, 10, 0xFFFFFFFF, 0.1));
 
 	////////////////////////////////////////////////////
 	//////////////////////WINDOWS///////////////////////
@@ -314,6 +387,8 @@ void CreateWinManager() {
 	winEditEye->addCtrl(eyeButText, 270, 388, "eye_but_add_t");
 	eyeButText->SetText("Del");
 	winEditEye->addCtrl(eyeButText, 270, 452, "eye_but_del_t");
+
+	winEditEye->setUpdateFunc(update_EyeEdit);
 
 	winManager->addWindow(winEditEye, WIN_EDIT_EYE);
 	////////////////////////////////////////////////////

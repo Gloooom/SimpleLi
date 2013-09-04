@@ -13,6 +13,7 @@
 #define SetWinButtonState(manager, winid, ctrlname, state) (((hgeGUIButton*)(manager->getWin(winid)->getCtrl(ctrlname)))->SetState(state))
 #define SetWinSliderValue(manager, winid, ctrlname, val) (((hgeGUISlider*)(manager->getWin(winid)->getCtrl(ctrlname)))->SetValue(val))
 #define SetWinListboxSelect(manager, winid, ctrlname, select) (((hgeGUIListbox*)(manager->getWin(winid)->getCtrl(ctrlname)))->SetSelectedItem(select))
+#define SetWinText(manager, winid, ctrlname, text) (((hgeGUIText*)(manager->getWin(winid)->getCtrl(ctrlname)))->SetText(text));
 
 class GUI_win_manager {
 private:
