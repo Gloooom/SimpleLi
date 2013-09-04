@@ -125,6 +125,9 @@
     <ClInclude Include="GUI\Gui_graphic_area.h">
       <Filter>Файлы исходного кода\GUI</Filter>
     </ClInclude>
+    <ClInclude Include="GUI_structure.h">
+      <Filter>Файлы исходного кода</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="ClassDiagram1.cd" />

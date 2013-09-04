@@ -23,6 +23,7 @@ private:
 
 public:
 	Environment() {
+		empty.dna.color = 0xFFFFFFFF;
 		mutation_maxDelta = 0;
 		mutation_eyeAddChance = 0;
 		mutation_eyeMutationChance = 0;

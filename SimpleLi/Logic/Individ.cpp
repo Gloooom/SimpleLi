@@ -48,9 +48,9 @@ void Individ::move(Individ (*(*field)[W][H])) {
 	while (way.getLength()!=0 &&
 		(he->ID == 0 || (*he) == (*this)) &&
 		(tempPos+way)<=(way*speed) &&
-		pos.x+func::round(tempPos.x+way.x)>0 && 
+		pos.x+func::round(tempPos.x+way.x)>=0 && 
 		pos.x+func::round(tempPos.x+way.x)<W && 
-		pos.y+func::round(tempPos.y+way.y)>0 && 
+		pos.y+func::round(tempPos.y+way.y)>=0 && 
 		pos.y+func::round(tempPos.y+way.y)<H) {
 			he = (*field)[func::round(tempPos.x + way.x + (double) pos.x)][func::round(tempPos.y + way.y + (double) pos.y)];
 			if (he->ID == 0 || (*he) == (*this)) {
@@ -64,9 +64,9 @@ void Individ::move(Individ (*(*field)[W][H])) {
 	pos.x+=func::round(tempPos.x);
 	pos.y+=func::round(tempPos.y);
 	if (pos.x >=W) pos.x = W-1;
-	if (pos.x <0) pos.x = 0;
+	if (pos.x <=0) pos.x = 0;
 	if (pos.y >=H) pos.y = H-1;
-	if (pos.y <0) pos.y = 0;
+	if (pos.y <=0) pos.y = 0;
 }
 
 //дописать обработку глаза типа сектор
@@ -149,42 +149,53 @@ void Individ::look(Individ (*(*field)[W][H])) {
 
 
 void Individ::checkWay() {
-	Vector <double> cohesionEnemy, cohesionPartner, 
-		separationEnemy, separationPartner,
-		alignmentEnemy, alignmentPartner,
+	Vector <double> enemyCohesion, partnerCohesion, 
+		enemySeparation, partnerSeparation,
+		enemyAlignment, partnerAlignment,
+		spouseAttraction,
 		P0;
 
-	Vector <double> wayToEnemy;
+	Vector <double> enemiesImpact;
 	for(int i=0; i<mem.enemies.size(); i++)	{
-		wayToEnemy.x = mem.enemies[i]->pos.x - pos.x;
-		wayToEnemy.y = mem.enemies[i]->pos.y - pos.y;
-		cohesionEnemy += wayToEnemy.getNorm();
-		separationEnemy += wayToEnemy.getNorm()/((wayToEnemy.getLength()!=0) ? wayToEnemy.getLength() : 1);
-		alignmentEnemy += mem.enemies[i]->way;
+		enemiesImpact.x = mem.enemies[i]->pos.x - pos.x;
+		enemiesImpact.y = mem.enemies[i]->pos.y - pos.y;
+		enemyCohesion += enemiesImpact.getNorm();
+		enemySeparation += enemiesImpact.getNorm()/((enemiesImpact.getLength()!=0) ? enemiesImpact.getLength() : 1);
+		enemyAlignment += mem.enemies[i]->way;
 	}
 
-	Vector <double> wayToPartner;
+	Vector <double> partnersImpact;
 	for(int i=0; i<mem.partners.size(); i++) {
-		wayToPartner.x = mem.partners[i]->pos.x - pos.x;
-		wayToPartner.y = mem.partners[i]->pos.y - pos.y;
-		cohesionPartner += wayToPartner.getNorm();
-		separationPartner += wayToPartner.getNorm()/((wayToPartner.getLength()!=0) ? wayToPartner.getLength() : 1);
-		alignmentPartner += mem.partners[i]->way;
+		partnersImpact.x = mem.partners[i]->pos.x - pos.x;
+		partnersImpact.y = mem.partners[i]->pos.y - pos.y;
+		partnerCohesion += partnersImpact.getNorm();
+		partnerSeparation += partnersImpact.getNorm()/((partnersImpact.getLength()!=0) ? partnersImpact.getLength() : 1);
+		partnerAlignment += mem.partners[i]->way;
 	}
+
+	Vector <double> libidoImpact;
+	for(int i=0; i<mem.partners.size(); i++) {
+		if (mem.partners[i]->gender != gender) {
+			libidoImpact.x = mem.partners[i]->pos.x - pos.x;
+			libidoImpact.y = mem.partners[i]->pos.y - pos.y;
+			spouseAttraction += libidoImpact.getNorm();
+		}
+	}
+
 
 	if (!mem.enemies.empty() || !mem.partners.empty()) {
 		Vector <double> finalWay;
-		Vector <double>	wayPartners = cohesionPartner.getNorm()*dna.soc[state][cohesion_partner] + 
-			separationPartner.getNorm()*dna.soc[state][separation_partner] + 
-			alignmentPartner*dna.soc[state][alignment_partner];
-		Vector <double> wayEnemys  = cohesionPartner.getNorm()*dna.soc[state][cohesion_enemy] + 
-			separationPartner.getNorm()*dna.soc[state][separation_enemy] + 
-			alignmentPartner*dna.soc[state][alignment_enemy];
+		Vector <double>	wayPartners = partnerCohesion.getNorm()*dna.soc[state][cohesion_partner] + 
+			partnerSeparation.getNorm()*dna.soc[state][separation_partner] + 
+			partnerAlignment*dna.soc[state][alignment_partner];
+		Vector <double> wayEnemies  = partnerCohesion.getNorm()*dna.soc[state][cohesion_enemy] + 
+			partnerSeparation.getNorm()*dna.soc[state][separation_enemy] + 
+			partnerAlignment*dna.soc[state][alignment_enemy];
 
 		if (mem.partners.empty()) wayPartners = P0;
-		if (mem.enemies.empty()) wayEnemys = P0;
+		if (mem.enemies.empty()) wayEnemies = P0;
 
-		finalWay = wayPartners*dna.soc[state][partner] + wayEnemys*dna.soc[state][enemy];
+		finalWay = wayPartners*dna.soc[state][partner] + wayEnemies*dna.soc[state][enemy] + spouseAttraction*dna.soc[state][libido];
 		way = finalWay.getNorm();
 
 	} else {

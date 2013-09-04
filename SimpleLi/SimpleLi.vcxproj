@@ -99,6 +99,7 @@
     <ClInclude Include="GUI\Gui_types.h" />
     <ClInclude Include="GUI\Gui_window.h" />
     <ClInclude Include="GUI\Gui_win_manager.h" />
+    <ClInclude Include="GUI_structure.h" />
     <ClInclude Include="HGE\hge.h" />
     <ClInclude Include="HGE\hgeanim.h" />
     <ClInclude Include="HGE\hgecolor.h" />

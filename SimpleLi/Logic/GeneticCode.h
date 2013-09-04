@@ -25,6 +25,7 @@ enum Phis {
 enum Soc {
 	max_speed,
 	rand_way,
+	libido,
 	partner,
 	cohesion_partner,
 	separation_partner,
@@ -136,7 +137,7 @@ public:
 	int diet;
 public:
 	GeneticCode() {
-		color=0xFFFFFFFF;
+		color=0xFF000000;
 
 		phis.resize(end_of_phis, 0);
 
