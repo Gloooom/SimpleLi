@@ -29,6 +29,7 @@ bool func::sign(double value) {
 
 Point <double> func::crossLine(double k1, double b1, double k2, double b2) {
 	Point <double> cross;
+	if (k1 == k2) return cross;
 	cross.x=(b2-b1)/(k1-k2);
 	cross.y=k1*cross.x+b1;
 	return cross;

@@ -42,17 +42,17 @@ bool Individ::operator!=(Individ i) {
 	else return true;
 }
 
-void Individ::move(Individ (*(*field)[W][H])) {
+void Individ::move(Array <Individ*> *field) {
 	Vector <double> tempPos(0, 0);
 	Individ *he=this;
 	while (way.getLength()!=0 &&
 		(he->ID == 0 || (*he) == (*this)) &&
 		(tempPos+way)<=(way*speed) &&
 		pos.x+func::round(tempPos.x+way.x)>=0 && 
-		pos.x+func::round(tempPos.x+way.x)<W && 
+		pos.x+func::round(tempPos.x+way.x)<field->getW() && 
 		pos.y+func::round(tempPos.y+way.y)>=0 && 
-		pos.y+func::round(tempPos.y+way.y)<H) {
-			he = (*field)[func::round(tempPos.x + way.x + (double) pos.x)][func::round(tempPos.y + way.y + (double) pos.y)];
+		pos.y+func::round(tempPos.y+way.y)<field->getH()) {
+			he = (*field)(func::round(tempPos.x + way.x + (double) pos.x), func::round(tempPos.y + way.y + (double) pos.y));
 			if (he->ID == 0 || (*he) == (*this)) {
 				tempPos+=way;
 				collision=false;
@@ -63,9 +63,9 @@ void Individ::move(Individ (*(*field)[W][H])) {
 
 	pos.x+=func::round(tempPos.x);
 	pos.y+=func::round(tempPos.y);
-	if (pos.x >=W) pos.x = W-1;
+	if (pos.x >=field->getW()) pos.x = field->getW()-1;
 	if (pos.x <=0) pos.x = 0;
-	if (pos.y >=H) pos.y = H-1;
+	if (pos.y >=field->getH()) pos.y = field->getH()-1;
 	if (pos.y <=0) pos.y = 0;
 }
 
@@ -73,7 +73,7 @@ void Individ::move(Individ (*(*field)[W][H])) {
 //вычислять с помощью перевода координаты ячейки в полярную систему координат
 //Полностью переписать. В промежутке формировать матрицу области видимости и уже из неё вычислять видимых индивидумов
 //А не как сейчас: добавлять в массив по пять раз один объект.
-void Individ::look(Individ (*(*field)[W][H])) {
+void Individ::look(Array <Individ*> *field) {
 	mem.clear();
 
 	if (dna.radialEye.height() > 0) {
@@ -81,15 +81,15 @@ void Individ::look(Individ (*(*field)[W][H])) {
 		Vector <double> P;
 		int start_x = (pos.x-R>0) ? pos.x-R : 0;
 		int start_y = (pos.y-R>0) ? pos.y-R : 0;
-		for (int _x=start_x; _x<pos.x+R, _x<W; _x++) { 
+		for (int _x=start_x; _x<pos.x+R, _x<field->getW(); _x++) { 
 			P.x=_x-pos.x;
-			for (int _y=start_y; _y<pos.y+R, _y<H; _y++) {
+			for (int _y=start_y; _y<pos.y+R, _y<field->getH(); _y++) {
 				P.y=_y-pos.y;
 				if (P.y*P.y+P.x*P.x<R*R) {
 					Point <int> absP;
 					absP.x=func::round(P.x+pos.x);
 					absP.y=func::round(P.y+pos.y);
-					Individ *he = (*field)[absP.x][absP.y];
+					Individ *he = (*field)(absP.x, absP.y);
 					if (he->ID != 0 && *he != *this) {
 						if (he->dna.diet != dna.diet && !func::isIn(mem.enemies, he)) 
 							mem.enemies.push_back(he);
@@ -120,9 +120,9 @@ void Individ::look(Individ (*(*field)[W][H])) {
 			int start_x = (pos.x-R>0) ? pos.x-R : 0;
 			int start_y = (pos.y-R>0) ? pos.y-R : 0;
 
-			for (int _x=start_x; _x<pos.x+R, _x<W; _x++) { 
+			for (int _x=start_x; _x<pos.x+R, _x<field->getW(); _x++) { 
 				P.x=_x-pos.x;
-				for (int _y=start_y; _y<pos.y+R, _y<H; _y++) {
+				for (int _y=start_y; _y<pos.y+R, _y<field->getH(); _y++) {
 					P.y=_y-pos.y;
 					double pl1, pl2, pl3;
 					pl1 = (vert[0].x - P.y)*(vert[1].y - vert[0].y)-(vert[1].x - vert[0].x)*(vert[0].y - P.x);
@@ -133,7 +133,7 @@ void Individ::look(Individ (*(*field)[W][H])) {
 						absP.x=func::round(P.x+pos.x);
 						absP.y=func::round(P.y+pos.y);
 
-						Individ *he = (*field)[absP.x][absP.y];
+						Individ *he = (*field)(absP.x, absP.y);
 						if (he->ID != 0 && *he != *this) {
 							if (he->dna.diet != dna.diet && !func::isIn(mem.enemies, he)) 
 								mem.enemies.push_back(he);
@@ -245,7 +245,7 @@ void Individ::beginReproduction(long long int _spouse, std::map <long long int, 
 	}
 }
 
-void Individ::reproduction(Individ (*(*field)[W][H]), std::deque <Individ> *cradle, std::map <long long int, Individ> *population) {
+void Individ::reproduction(Array <Individ*> *field, std::deque <Individ> *cradle, std::map <long long int, Individ> *population) {
 	if (population->find(spouse) != population->end()) {
 		if (reproduction_timer < dna.phis[reproduction_time]) {
 			reproduction_timer++;
@@ -268,22 +268,22 @@ void Individ::reproduction(Individ (*(*field)[W][H]), std::deque <Individ> *crad
 }
 
 
-Point <int> Individ::getNearestEmpty(Individ (*(*field)[W][H])) {
+Point <int> Individ::getNearestEmpty(Array <Individ*> *field) {
 	double R = 10;
 	std::vector <Vector <int> > emptyNear;
 	Vector <int> P;
 
 	int start_x = (pos.x-R>0) ? pos.x-R : 0;
 	int start_y = (pos.y-R>0) ? pos.y-R : 0;
-	for (int _x=start_x; _x<pos.x+R, _x<W; _x++) { 
+	for (int _x=start_x; _x<pos.x+R, _x<field->getW(); _x++) { 
 		P.x=_x-pos.x;
-		for (int _y=start_y; _y<pos.y+R, _y<H; _y++) {
+		for (int _y=start_y; _y<pos.y+R, _y<field->getH(); _y++) {
 			P.y=_y-pos.y;
 			if (P.y*P.y+P.x*P.x<R*R) {
 				Point <int> absP;
 				absP.x=func::round(P.x+pos.x);
 				absP.y=func::round(P.y+pos.y);
-				Individ *he = (*field)[absP.x][absP.y];
+				Individ *he = (*field)(absP.x, absP.y);
 				if (he->ID == 0) 
 					emptyNear.push_back(P);
 			}
@@ -309,7 +309,7 @@ bool Individ::isNearby(Individ* target) {
 	else return true;
 }
 
-IndMemory <long long int> Individ::whoIsNearby(Individ (*(*field)[W][H])) {
+IndMemory <long long int> Individ::whoIsNearby(Array <Individ*> *field) {
 	IndMemory <long long int> result;
 	
 	int delta[] = {-1, 0, 1};
@@ -317,8 +317,8 @@ IndMemory <long long int> Individ::whoIsNearby(Individ (*(*field)[W][H])) {
 	for (int x=0; x<=2; x++) 
 		for (int y=0; y<=2; y++) {
 			if (pos.x+delta[x] >=0 && pos.y+delta[y] >=0 
-				&& pos.x+delta[x] <W && pos.y+delta[y] <H) {
-				Individ *he = (*field)[pos.x+delta[x]][pos.y+delta[y]];
+				&& pos.x+delta[x] <field->getW() && pos.y+delta[y] <field->getH()) {
+				Individ *he = (*field)(pos.x+delta[x], pos.y+delta[y]);
 				if (he->ID != 0 && he->ID != ID && he->state != REPRODUCT && he->live) {
 					if (he->dna.diet == dna.diet && he->gender != gender && he->state == MATURE)
 						result.partners.push_back(he->ID);
@@ -345,7 +345,7 @@ bool isLess(Individ *first, Individ *second) {
 
 //раскидать индивидуальные методы по классам (автотрофы, гетеротрофы, самка, самец)
 //реализовать в дальнейшем через множественное наследование
-void Individ::step(Individ (*(*field)[W][H]), std::deque <Individ> *cradle, std::map <long long int, Individ> *population) {
+void Individ::step(Array <Individ*> *field, std::deque <Individ> *cradle, std::map <long long int, Individ> *population) {
 	isLive();
 
 	if (live == true) {

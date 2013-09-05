@@ -16,10 +16,12 @@ public:
 		_colCount = colCount;
 		arr = new Type[rowCount*colCount];
 	};
-	Type  operator[](int i) {return arr[i];};
+	Type &operator[](int i) {return arr[i];};
 	Type &operator()(int x, int y) {
 		return arr[x + y*_colCount];
 	};
+	int getW() {return _colCount;};
+	int getH() {return _rowCount;};
 };
 
 template <typename T> class Point {
@@ -134,6 +136,12 @@ public:
 		fromDeg(angle);
 		x*=length;
 		y*=length;
+	};
+	void multiplying(double a11,double a12,double a21,double a22) {
+		Vector <T> result;
+		result.x = x * a11 + y * a21;
+		result.y = x * a12 + y * a22;
+		*this = result;
 	};
 	void rotate(double angle) {
 		Vector <T> result;

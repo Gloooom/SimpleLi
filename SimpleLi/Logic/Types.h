@@ -2,8 +2,8 @@
 
 #pragma once
 
-#define W 100
-#define H 100
+//#define W 100
+//#define H 100
 #define POP_A 50
 #define POP_G 0
 

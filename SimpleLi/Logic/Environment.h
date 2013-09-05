@@ -4,12 +4,14 @@
 
 
 class Environment {
+private:
+	int _width;
+	int _height;
 public:
 	long long int stepCount;
 	Individ empty;
-	Individ *field[W][H];
+	Array <Individ*> field;
 	std::map <long long int, Individ> population;
-
 public:
 	void setMutation(float maxDelta, float eyeAddChance, float eyeMutationChance, 
 								  float radEyeMutationChance, Mode_mutation mode);
@@ -22,7 +24,10 @@ private:
 	std::deque <Individ> cradle;
 
 public:
-	Environment() {
+	Environment(int width, int height):
+	field(width, height) {
+		_width = width;
+		_height = height;
 		empty.dna.color = 0xFFFFFFFF;
 		mutation_maxDelta = 0;
 		mutation_eyeAddChance = 0;
@@ -31,9 +36,9 @@ public:
 		mutation_mode = ONE;
 
 		stepCount = 0;
-		for (int i=0; i<W; i++)
-			for (int j=0; j<H; j++)
-				field[i][j]=&empty;
+		for (int i=0; i<field.getW(); i++)
+			for (int j=0; j<field.getH(); j++)
+				field(i,j ) = &empty;
 	};
 	~Environment() { };
 	void save(std::string path);
@@ -44,4 +49,7 @@ public:
 	void born();
 	void fill();
 	void step();
+
+	int W() {return _width;};
+	int H() {return _height;};
 };

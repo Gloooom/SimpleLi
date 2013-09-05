@@ -34,19 +34,19 @@ public:
 	bool operator==(Individ i);
 	bool operator!=(Individ i);
 
-	void step(Individ (*(*field)[W][H]), std::deque <Individ> *cradle, std::map <long long int, Individ> *population);
-	void move(Individ (*(*field)[W][H]));
-	void look(Individ (*(*field)[W][H]));
+	void step(Array <Individ*> *field, std::deque <Individ> *cradle, std::map <long long int, Individ> *population);
+	void move(Array <Individ*> *field);
+	void look(Array <Individ*> *field);
 	void checkState();
 	void checkWay();
 	void eat(Individ *target);
 	void eat();
-	void reproduction(Individ (*(*field)[W][H]), std::deque <Individ> *cradle, std::map <long long int, Individ> *population);
+	void reproduction(Array <Individ*> *field, std::deque <Individ> *cradle, std::map <long long int, Individ> *population);
 	void beginReproduction(long long int _spouse, std::map <long long int, Individ> *population);
 	void heal();
 	void isLive();
 	bool isNearby(Individ *target);
-	Point <int> getNearestEmpty(Individ (*(*field)[W][H]));
-	IndMemory <long long int>  whoIsNearby(Individ (*(*field)[W][H]));
+	Point <int> getNearestEmpty(Array <Individ*> *field);
+	IndMemory <long long int>  whoIsNearby(Array <Individ*> *field);
 };
 

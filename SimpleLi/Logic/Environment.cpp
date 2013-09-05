@@ -174,13 +174,13 @@ void Environment::load(std::string path) {
 
 
 void Environment::fill() {
-	for (int i=0; i<W; i++)
-			for (int j=0; j<H; j++)
-				field[i][j]=&empty;
+	for (int i=0; i<field.getW(); i++)
+			for (int j=0; j<field.getH(); j++)
+				field(i, j) = &empty;
 
 	std::map <long long int, Individ> ::iterator p = population.begin();
 	while (p != population.end()) {
-		field[p->second.pos.x][p->second.pos.y]=&(p->second);
+		field(p->second.pos.x, p->second.pos.y) = &(p->second);
 		p++;
 	}
 }

@@ -12,7 +12,7 @@
 
 HGE *hge=0;
 
-Environment env;
+Environment env(100, 100);
 EditorState	state;
 
 hgeGUI			*mainGUI;
@@ -67,11 +67,11 @@ bool FrameFunc()
 		if (timer>0.1) {
 			env.step();
 			display->Clear();
-			for (int x=0; x<W; x++)
-				for (int y=0; y<H; y++) {
-					if (env.field[x][y]->gender == MALE)
+			for (int x=0; x<env.W(); x++)
+				for (int y=0; y<env.H(); y++) {
+					if (env.field(x, y)->gender == MALE)
 						(*display)(x, y) = 0xFF990000;
-					if (env.field[x][y]->gender == FEMALE)
+					if (env.field(x, y)->gender == FEMALE)
 						(*display)(x, y) = 0xFF000099;
 				}
 			display->Update();
@@ -105,7 +105,7 @@ bool RenderFunc()
 
 	std::map <long long int, Individ> ::iterator p = env.population.begin();
 	while (p != env.population.end()) {
-		Cell c = (*display)[p->second.pos.x + p->second.pos.y*W];
+		Cell c = (*display)[p->second.pos.x + p->second.pos.y*env.W()];
 		float x1, y1, x2, y2;
 		x1 = (c.getQuad()->v[0].x +  c.getQuad()->v[2].x)/2;
 		y1 = (c.getQuad()->v[0].y +  c.getQuad()->v[2].y)/2;
@@ -189,18 +189,18 @@ void addIndivid(Point <float> p, Mode_feeding diet) {
 }
 
 void InitEnvironment() {
-	env.setMutation(1, 0.1, 0.2, 0, ONE);
+	env.setMutation(1, 0.1, 0.2, 0.1, ONE);
 
 	Point <float> p;
 
 	for(int i=0; i<POP_A; i++) {
-		p.x=func::randf(0, W);
-		p.y=func::randf(0, H); 
+		p.x=func::randf(0, env.W());
+		p.y=func::randf(0, env.H()); 
 		addIndivid(p, AUTO);
 	}
 	for(int i=0; i<POP_G; i++) {
-		p.x=func::randf(0, W);
-		p.y=func::randf(0, H); 
+		p.x=func::randf(0, env.W());
+		p.y=func::randf(0, env.H()); 
 		addIndivid(p, GETERO);
 	}
 }
@@ -217,9 +217,9 @@ void InitEditor() {
 	winManager = new GUI_win_manager();
 	CreateWinManager();
 
-	display = new GraphicArea(W, H, 600, 600);
+	display = new GraphicArea(env.W(), env.H(), 600, 600);
 	display->setBorder(1);
-	display->setVisibleArea(0, 0, W, H);
+	display->setVisibleArea(0, 0, env.W(), env.H());
 }
 
 void DoneEditor() {
