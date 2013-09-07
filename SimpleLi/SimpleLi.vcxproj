@@ -90,6 +90,7 @@
     <ClCompile Include="Logic\GeneticCode.cpp" />
     <ClCompile Include="Logic\Individ.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Something.h" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GUI\Gui_color.h" />
@@ -114,6 +115,7 @@
     <ClInclude Include="HGE\hgestrings.h" />
     <ClInclude Include="HGE\hgevector.h" />
     <ClInclude Include="Logic\Environment.h" />
+    <ClInclude Include="Logic\Eyes.h" />
     <ClInclude Include="Logic\Functions.h" />
     <ClInclude Include="Logic\GeneticCode.h" />
     <ClInclude Include="Logic\Inclusion.h" />

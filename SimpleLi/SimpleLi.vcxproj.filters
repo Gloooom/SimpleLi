@@ -45,6 +45,9 @@
     <ClCompile Include="GUI\Gui_win_manager.cpp">
       <Filter>Файлы исходного кода\GUI</Filter>
     </ClCompile>
+    <ClCompile Include="Something.h">
+      <Filter>Файлы исходного кода</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="HGE\hge.h">
@@ -129,6 +132,9 @@
       <Filter>Файлы исходного кода</Filter>
     </ClInclude>
     <ClInclude Include="Logic\Inclusion.h">
+      <Filter>Файлы исходного кода\Logic</Filter>
+    </ClInclude>
+    <ClInclude Include="Logic\Eyes.h">
       <Filter>Файлы исходного кода\Logic</Filter>
     </ClInclude>
   </ItemGroup>

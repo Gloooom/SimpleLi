@@ -10,6 +10,11 @@
 
 #include "GUI\Gui_win_manager.h"
 
+
+
+#define POP_A 50
+#define POP_G 0
+
 HGE *hge=0;
 
 Environment env(100, 100);
@@ -162,16 +167,17 @@ void addIndivid(Point <float> p, Mode_feeding diet) {
 		g.phis[saturation] = 10;
 		g.phis[stamina] = 2;
 		g.phis[fertility] = 4;
-		g.phis[live_time] = 400;
+		g.phis[live_time] = 600;
 		g.phis[reproduction_time] = 10; 
 		g.phis[reproduction_pause] = 100;
-		g.radialEye.setHeight(3);
+		g.radialEye.setHeight(0);
 		g.eyes.push_back(FOV_Tri(0, 30, 20));
 		g.diet=diet;
 		g.color = 0xFF000000;
 		for (int i=0; i<end_of_status; i++) {
 			if (diet==AUTO) {
-				g.soc[i][max_speed] = func::randf(0, 5);
+				/*g.soc[i][max_speed] = func::randf(0, 5);
+				g.soc[i][libido] = func::randf(0, 10);
 				g.soc[i][rand_way] = func::randf(0, 10);
 				g.soc[i][partner] = func::randf(0, 10);
 				g.soc[i][cohesion_partner] = func::randf(0, 10);
@@ -180,8 +186,18 @@ void addIndivid(Point <float> p, Mode_feeding diet) {
 				g.soc[i][enemy] = func::randf(0, 10);
 				g.soc[i][cohesion_enemy] = func::randf(0, 10);
 				g.soc[i][separation_enemy] = func::randf(0, 10);
-				g.soc[i][alignment_enemy] = func::randf(0, 10);
-				g.color = 0xFF009900;
+				g.soc[i][alignment_enemy] = func::randf(0, 10);*/
+				g.soc[i][max_speed] = 2;
+				g.soc[i][libido] = 1;
+				g.soc[i][rand_way] = 1;
+				g.soc[i][partner] = 1;
+				g.soc[i][cohesion_partner] = 1;
+				g.soc[i][separation_partner] = 0.2;
+				g.soc[i][alignment_partner] = 0.1;
+				g.soc[i][enemy] = 1;
+				g.soc[i][cohesion_enemy] = 1;
+				g.soc[i][separation_enemy] = 1;
+				g.soc[i][alignment_enemy] = 1;
 			}
 		}
 		g.color = 0xFF009900;
@@ -189,8 +205,8 @@ void addIndivid(Point <float> p, Mode_feeding diet) {
 }
 
 void InitEnvironment() {
-	env.setMutation(1, 0.1, 0.2, 0.1, ONE);
-
+	//env.setMutation(1, 0.1, 0.2, 0.1, ONE);
+	env.setMutation(0, 0, 0, 0, ONE);
 	Point <float> p;
 
 	for(int i=0; i<POP_A; i++) {
@@ -223,5 +239,5 @@ void InitEditor() {
 }
 
 void DoneEditor() {
-	delete fnt;
+	//delete fnt;
 }

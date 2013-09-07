@@ -4,6 +4,7 @@
 
 #include "Functions.h"
 
+
 bool func::randBool() {
 	return (bool)(rand()/(RAND_MAX/2));
 }

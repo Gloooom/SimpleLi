@@ -42,11 +42,11 @@ void Environment::save(std::string path) {
 		val.i = p->second.dna.eyes.size();
 		saveVal(&outf, &val);
 		for (int i = 0; i<p->second.dna.eyes.size(); i++) {
-			val.f = p->second.dna.eyes[i].angle();
+			val.f = p->second.dna.eyes[i].getAngle();
 			saveVal(&outf, &val);
-			val.f = p->second.dna.eyes[i].height();
+			val.f = p->second.dna.eyes[i].getHeight();
 			saveVal(&outf, &val);
-			val.f = p->second.dna.eyes[i].width();
+			val.f = p->second.dna.eyes[i].getWidth();
 			saveVal(&outf, &val);
 		}
 		val.f = p->second.dna.radialEye.height();
@@ -122,6 +122,7 @@ void Environment::load(std::string path) {
 			tempEye.setHeight(val.f);
 			loadVal(&inf, &val);
 			tempEye.setWidth(val.f);
+			tempEye.calculatPolygon();
 			ind.dna.eyes.push_back(tempEye);
 		}
 		loadVal(&inf, &val);

@@ -18,6 +18,11 @@ namespace func {
 
 	Point <double> crossLine(double k1, double b1, double k2, double b2);
 
+	template <typename T>
+	T getMin(T a, T b) {return a<b ? a : b;};
+	template <typename T>
+	T getMax(T a, T b) {return a>b ? a : b;};
+
 	template <typename F>
 	F getVariation (F d, double coef) {
 		//coef определяет максимально возможное отклонение в процентах.

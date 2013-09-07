@@ -2,6 +2,7 @@
 #pragma once
 
 #include "Functions.h"
+#include "Eyes.h"
 
 enum Phis { 
 	acceleration,
@@ -37,94 +38,6 @@ enum Soc {
 
 	end_of_soc
 };
-
-class FOV {
-protected:
-	Type_eye _type;
-public:
-	int type() {return _type;};
-	virtual float angle() = 0;
-	virtual float height() = 0;
-	virtual float width() = 0;
-};
-
-class FOV_Tri : public FOV {
-private:
-	float _angle;
-	float _height;
-	float _width;
-public:
-	FOV_Tri():
-		_angle(0),
-		_height(0),
-		_width(0) {};
-	FOV_Tri(float ang, float hgt, float wdt):
-		_angle(ang),
-		_height(hgt),
-		_width(wdt)
-	{_type = TRIANGLE;};
-		
-	float angle()	{return _angle;};
-	float height()	{return _height;};
-	float width()	{return _width;};
-
-	void setAngle(float _a)		{_angle = _a;};
-	void setHeight(float _h)	{_height = _h;};
-	void setWidth(float _w)		{_width = _w;};
-
-	FOV_Tri mutation(float coef, int mutation_mode) {
-		FOV_Tri result;
-		if (mutation_mode == ONE) {
-			int seed = func::randi(0, 2);
-			switch(seed) {
-			case 0: result._angle = func::getVariation(_angle, coef); break;
-			case 1: result._height = func::getVariation(_height, coef); break;
-			case 2: result._width = func::getVariation(_width, coef); break;
-			}
-		} else if (mutation_mode == ALL || mutation_mode == HALF) {
-			result._angle = func::getVariation(_angle, coef);
-			result._height = func::getVariation(_height, coef);
-			result._width = func::getVariation(_width, coef); 
-		}
-		return result;
-	};
-	FOV_Tri hibrid(FOV_Tri eye) {
-		FOV_Tri result;
-		result._angle = (_angle + eye._angle)/2;
-		result._height = (_height + eye._height)/2;
-		result._width = (_width + eye._width)/2;
-		return result;
-	};
-};
-
-class FOV_Rad : public FOV {
-private:
-	float _height;
-public:
-	FOV_Rad(): 
-	  _height(0) {};
-	FOV_Rad(float hgt):
-		_height(hgt)
-	{_type = RADIUS;};
-
-	float angle()	{return 0;};
-	float height()	{return _height;};
-	float width()	{return 0;};
-
-	void setHeight(float hgt) {_height = hgt;};
-
-	FOV_Rad mutation(float coef, int mutation_mode) {
-		FOV_Rad result;
-		func::getVariation(_height, coef);
-		return result;
-	};
-	FOV_Rad hibrid(FOV_Rad eye) {
-		FOV_Rad result;
-		result._height = (_height + eye._height)/2;
-		return result;
-	};
-};
-
 
 class GeneticCode {
 public:

@@ -4,13 +4,12 @@
 
 #include "Individ.h"
 
-long long int Individ::count=0;
+long long int Individ::count=1;
 
 
 Individ::Individ(): way(0,0) {
 	gender = NEUTER;
-	ID = count;
-	count++;
+	ID = 0;
 }
 
 Individ::Individ(Point <int> _pos, GeneticCode _dna) {
@@ -102,47 +101,68 @@ void Individ::look(Array <Individ*> *field) {
 	}
 
 	for (int i=0; i<dna.eyes.size(); i++) {
-		if (dna.eyes[i].height() > 0 && dna.eyes[i].width() > 0) {
+		if (dna.eyes[i].getHeight() > 0 && dna.eyes[i].getWidth() > 0) {
 			double wayAngle = way.getDeg();
-			double k1=tan(dna.eyes[i].angle() + atan(dna.eyes[i].height()/(dna.eyes[i].width()/2)) - wayAngle), b1=0;
-			double k2=tan(dna.eyes[i].angle() - atan(dna.eyes[i].height()/(dna.eyes[i].width()/2)) - wayAngle), b2=0;
-			double k3=tan(dna.eyes[i].angle() - wayAngle),    b3=(dna.eyes[i].height()/cos(dna.eyes[i].angle() - wayAngle));
 
-			Point <double> vert[3];
-			vert[0]=func::crossLine(k1,b1,k2,b2);
-			vert[1]=func::crossLine(k2,b2,k3,b3);
-			vert[2]=func::crossLine(k1,b1,k3,b3);
+			std::vector <Vector <int> > eyeVectors = dna.eyes[i].getVectors(wayAngle);
 
-			Vector <double> vectorR(vert[2].x, vert[2].y);
-			double R = vectorR.getLength();
-
-			Vector <double> P;
-			int start_x = (pos.x-R>0) ? pos.x-R : 0;
-			int start_y = (pos.y-R>0) ? pos.y-R : 0;
-
-			for (int _x=start_x; _x<pos.x+R, _x<field->getW(); _x++) { 
-				P.x=_x-pos.x;
-				for (int _y=start_y; _y<pos.y+R, _y<field->getH(); _y++) {
-					P.y=_y-pos.y;
-					double pl1, pl2, pl3;
-					pl1 = (vert[0].x - P.y)*(vert[1].y - vert[0].y)-(vert[1].x - vert[0].x)*(vert[0].y - P.x);
-					pl2 = (vert[1].x - P.y)*(vert[2].y - vert[1].y)-(vert[2].x - vert[1].x)*(vert[1].y - P.x);
-					pl3 = (vert[2].x - P.y)*(vert[0].y - vert[2].y)-(vert[0].x - vert[2].x)*(vert[2].y - P.x);
-					if ((pl1 >= 0 && pl2 >= 0 && pl3 >= 0) || (pl1 <= 0 && pl2 <= 0 && pl3 <= 0)) {
-						Point <int> absP;
-						absP.x=func::round(P.x+pos.x);
-						absP.y=func::round(P.y+pos.y);
-
-						Individ *he = (*field)(absP.x, absP.y);
-						if (he->ID != 0 && *he != *this) {
-							if (he->dna.diet != dna.diet && !func::isIn(mem.enemies, he)) 
-								mem.enemies.push_back(he);
-							if (he->dna.diet == dna.diet && !func::isIn(mem.partners, he))
-								mem.partners.push_back(he);
-						}
+			std::vector <Vector <int> > ::iterator p = eyeVectors.begin();
+			while (p != eyeVectors.end()) {
+				Vector <int> absP = (*p) + pos;
+				if (absP.x >= 0 && absP.x <=field->getW() && absP.y >= 0 && absP.y <=field->getH()) {
+					Individ *he = (*field)(p->x+pos.x, p->y+pos.y);
+					if (he->ID != 0 && *he != *this) {
+						if (he->dna.diet != dna.diet && !func::isIn(mem.enemies, he)) 
+							mem.enemies.push_back(he);
+						if (he->dna.diet == dna.diet && !func::isIn(mem.partners, he))
+							mem.partners.push_back(he);
 					}
 				}
+				p++;
 			}
+
+
+			//double sint = sin(wayAngle);
+			//double cost = cos(wayAngle);
+
+			//Vector <double> vert[3];
+			//vert[0]=dna.eyes[i].getPolygon()[0];
+			//vert[1]=dna.eyes[i].getPolygon()[1];
+			//vert[2]=dna.eyes[i].getPolygon()[2];
+
+			//vert[1].multiplying(cost, -sint, sint, cost);
+			//vert[2].multiplying(cost, -sint, sint, cost);
+
+			//Vector <double> vectorR(vert[2].x, vert[2].y);
+			//double R = vectorR.getLength();
+
+			//Vector <double> P;
+			//int start_x = (pos.x-R>0) ? pos.x-R : 0;
+			//int start_y = (pos.y-R>0) ? pos.y-R : 0;
+
+			//for (int _x=start_x; _x<pos.x+R, _x<field->getW(); _x++) { 
+			//	P.x=_x-pos.x;
+			//	for (int _y=start_y; _y<pos.y+R, _y<field->getH(); _y++) {
+			//		P.y=_y-pos.y;
+			//		double pl1, pl2, pl3;
+			//		pl1 = (vert[0].x - P.y)*(vert[1].y - vert[0].y)-(vert[1].x - vert[0].x)*(vert[0].y - P.x);
+			//		pl2 = (vert[1].x - P.y)*(vert[2].y - vert[1].y)-(vert[2].x - vert[1].x)*(vert[1].y - P.x);
+			//		pl3 = (vert[2].x - P.y)*(vert[0].y - vert[2].y)-(vert[0].x - vert[2].x)*(vert[2].y - P.x);
+			//		if ((pl1 >= 0 && pl2 >= 0 && pl3 >= 0) || (pl1 <= 0 && pl2 <= 0 && pl3 <= 0)) {
+			//			Point <int> absP;
+			//			absP.x=func::round(P.x+pos.x);
+			//			absP.y=func::round(P.y+pos.y);
+
+			//			Individ *he = (*field)(absP.x, absP.y);
+			//			if (he->ID != 0 && *he != *this) {
+			//				if (he->dna.diet != dna.diet && !func::isIn(mem.enemies, he)) 
+			//					mem.enemies.push_back(he);
+			//				if (he->dna.diet == dna.diet && !func::isIn(mem.partners, he))
+			//					mem.partners.push_back(he);
+			//			}
+			//		}
+			//	}
+			//}
 		} 
 	}
 }

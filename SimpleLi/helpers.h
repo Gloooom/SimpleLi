@@ -114,6 +114,14 @@ public:
 		if (this->getLength()>=v.getLength()) return true;
 		else return false;
 	};
+	bool operator==(Vector v) {
+		if (x == v.x && y == v.y) return true;
+		else return false;
+	};
+	bool operator!=(Vector v) {
+		if (x == v.x && y == v.y) return false;
+		else return true;
+	};
 	Vector getNorm() const {
 		Vector <T> result = *this;
 		if (x!=0 || y!=0) {
