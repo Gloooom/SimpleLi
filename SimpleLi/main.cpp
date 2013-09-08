@@ -194,8 +194,8 @@ void addIndivid(Point <float> p, Mode_feeding diet) {
 }
 
 void InitEnvironment() {
-	env.setMutation(1, 0.1, 0.2, 0.1, ONE);
-	//env.setMutation(0, 0, 0, 0, ONE);
+	//env.setMutation(1, 0.1, 0.2, 0.1, ONE);
+	env.setMutation(0, 0, 0, 0, ONE);
 	Point <float> p;
 
 	for(int i=0; i<POP_A; i++) {

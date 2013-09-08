@@ -103,6 +103,8 @@ public:
 		return result;
 	};
 	FOV_Tri hibrid(FOV_Tri eye) {
+		//Конечно всё очень круто, но если у одной особи глаз имеет 1 градус, а у другой 359, то
+		//в итоге у потомка будет глаз на жопе.
 		FOV_Tri result;
 		result._angle = (_angle + eye._angle)/2;
 		result._height = (_height + eye._height)/2;

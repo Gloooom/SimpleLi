@@ -49,6 +49,7 @@ public:
 	void born();
 	void fill();
 	void step();
+	void clear();
 
 	int W() {return _width;};
 	int H() {return _height;};

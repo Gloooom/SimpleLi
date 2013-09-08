@@ -232,3 +232,10 @@ void Environment::setMutation(float maxDelta, float eyeAddChance, float eyeMutat
 	mutation_radEyeMutationChance = radEyeMutationChance;
 	mutation_mode = mode;
 }
+
+void Environment::clear() {
+	stepCount = 0;
+	population.clear();
+	cradle.clear();
+	fill();
+}
