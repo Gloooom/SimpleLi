@@ -175,8 +175,8 @@ void Environment::load(std::string path) {
 
 
 void Environment::fill() {
-	for (int i=0; i<field.getW(); i++)
-			for (int j=0; j<field.getH(); j++)
+	for (int i=0; i<_width; i++)
+			for (int j=0; j<_height; j++)
 				field(i, j) = &empty;
 
 	std::map <long long int, Individ> ::iterator p = population.begin();

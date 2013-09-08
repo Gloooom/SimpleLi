@@ -7,7 +7,8 @@ struct objInfo {
 	float	x, y;
 	void	(*func)();
 	bool	doneFlag;
-	int	check;
+	int		state;
+	int		selectItem;
 	std::string type;
 };
 
@@ -61,5 +62,6 @@ public:
 	void setUpdateFunc(void (*func)());
 	void addCtrl(hgeGUIObject* obj, float _x, float _y, std::string name, void (*func)() = nullf);
 	hgeGUIObject *getCtrl(std::string name);
+	objInfo getCtrlInfo(std::string name);
 };
 

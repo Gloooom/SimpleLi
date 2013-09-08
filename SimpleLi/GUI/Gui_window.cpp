@@ -106,30 +106,35 @@ void GUI_window::setPos(int _x, int _y) { //баг: перемещается кнопка закрытия ок
 }
 
 void GUI_window::Update(float dt, float mx, float my) {
-	updateFunc();
 	gui->Update(dt);
 	std::map <std::string, objInfo> ::iterator p = objectsID.begin();
 	while (p != objectsID.end()) {
-		if (p->second.type == "class hgeGUIButton")
-			if(hgeButtonGetState(gui,p->second.ID)) {
-				if (p->second.doneFlag && !buttonPressFlag) {
-					p->second.doneFlag = false;
-					buttonPressFlag = true;
+		if (p->second.type == "class hgeGUIButton") {
+			if (!p->second.state) {
+				if (hgeButtonGetState(gui,p->second.ID)) {
+					if (p->second.doneFlag && !buttonPressFlag) {
+						p->second.doneFlag = false;
+						buttonPressFlag = true;
+					}
+				} else if (!p->second.doneFlag) {
+					p->second.func();
+					p->second.doneFlag = true;
+					buttonPressFlag = false;
 				}
-			} else if (!p->second.doneFlag) {
-				p->second.func();
-				p->second.doneFlag = true;
-				buttonPressFlag = false;
+			} else {
+				if (hgeButtonGetState(gui,p->second.ID))
+					p->second.func();
 			}
-		if (p->second.type == "class hgeGUIListbox") {
-			int selectItem = ((hgeGUIListbox*)gui->GetCtrl(p->second.ID))->GetSelectedItem();
-			if(p->second.check != selectItem) {
-				p->second.check = selectItem;
+		} else if (p->second.type == "class hgeGUIListbox") {
+			p->second.selectItem = ((hgeGUIListbox*)gui->GetCtrl(p->second.ID))->GetSelectedItem();
+			if(p->second.state != p->second.selectItem) {
+				p->second.state = p->second.selectItem;
 				p->second.func();
 			}
 		}
 		p++;
 	}
+	updateFunc();
 	if (closeBut->GetState()) {
 		visible = false;
 		buttonPressFlag = false;
@@ -154,7 +159,8 @@ void GUI_window::addCtrl(hgeGUIObject* obj, float _x, float _y, std::string name
 		objectsID[name].y = _y;
 		objectsID[name].func = func;
 		objectsID[name].doneFlag = true;
-		objectsID[name].check = 0;
+		objectsID[name].selectItem = 0;
+		objectsID[name].state = 0;
 		objectsID[name].type = typeid(*obj).name();
 	}
 
@@ -173,6 +179,7 @@ void GUI_window::addCtrl(hgeGUIObject* obj, float _x, float _y, std::string name
 		but = new hgeGUIButton(*((hgeGUIButton*)obj));
 		but->sprUp = new hgeSprite (*((hgeGUIButton*)obj)->sprUp);
 		but->sprDown = new hgeSprite (*((hgeGUIButton*)obj)->sprDown);
+		objectsID[name].state = but->GetMode();
 		objects.push_back(but);
 	} else if (typeid(*obj).name() == typeid(hgeGUIText).name())
 		objects.push_back(new hgeGUIText(*((hgeGUIText*)obj)));
@@ -188,6 +195,10 @@ void GUI_window::addCtrl(hgeGUIObject* obj, float _x, float _y, std::string name
 
 hgeGUIObject *GUI_window::getCtrl(std::string name) {
 	return gui->GetCtrl(objectsID[name].ID);
+}
+
+objInfo GUI_window::getCtrlInfo(std::string name) {
+	return objectsID[name];
 }
 
 void GUI_window::setColor(DWORD color) {

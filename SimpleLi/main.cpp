@@ -34,7 +34,8 @@ hgeSprite		*testSpr;
 Individ *selectInd=&(env.empty);
 
 float			timer = 0;
-int				testVal = 0;
+int				mp_x = 0;
+int				mp_y = 0;
 
 void			InitEditor();
 void			DoneEditor();
@@ -48,24 +49,11 @@ bool FrameFunc()
 	hge->Input_GetMousePos(&state.mp.x, &state.mp.y);
 
 	winManager->Update(dt, state.mp.x, state.mp.y);
+	display->getMousePos(state.mp.x, state.mp.y, &mp_x, &mp_y);
 
 	mainGUI->Update(dt);
 
-	if (hgeButtonGetState(mainGUI, CMD_WIN_S_L)) {
-		winManager->Activate(WIN_S_L);
-		winManager->setFocus(WIN_S_L);
-	}
-	if (hgeButtonGetState(mainGUI, CMD_WIN_ADD_IND)) {
-		winManager->Activate(WIN_ADD_IND);
-		winManager->setFocus(WIN_ADD_IND);
-	}
-	if (hgeButtonGetState(mainGUI, CMD_WIN_EDIT_PHIS)) {
-		winManager->Activate(WIN_EDIT_PHIS);
-		winManager->setFocus(WIN_EDIT_PHIS);
-	}
-	if (hgeButtonGetState(mainGUI, CMD_PAUSE)) {
-		state.play = false;
-	} else state.play = true;
+	CheckButtons();
 
 	if (state.play) {
 		timer+=dt;
@@ -98,14 +86,14 @@ bool RenderFunc()
 		"FPS: %d "
 		"\nPopulation: %d"
 		"\nStep: %d"
-		"\nTESTVAL:%d",
+		"\nMousePos:%d  %d",
 		hge->Timer_GetFPS(), 
 		env.population.size(), 
 		(int) env.stepCount,
-		testVal 
+		mp_x,
+		mp_y
 		);
 
-	
 	display->Render();
 
 	std::map <long long int, Individ> ::iterator p = env.population.begin();
@@ -170,13 +158,14 @@ void addIndivid(Point <float> p, Mode_feeding diet) {
 		g.phis[live_time] = 600;
 		g.phis[reproduction_time] = 10; 
 		g.phis[reproduction_pause] = 100;
-		g.radialEye.setHeight(0);
-		g.eyes.push_back(FOV_Tri(0, 30, 20));
+		g.radialEye.setHeight(1);
+		for(int i = func::randi(1, 3); i>=0; i--)
+			g.eyes.push_back(FOV_Tri(func::randf(0, M_PI*2), func::randi(5, 40), func::randi(5, 40)));
 		g.diet=diet;
 		g.color = 0xFF000000;
 		for (int i=0; i<end_of_status; i++) {
 			if (diet==AUTO) {
-				/*g.soc[i][max_speed] = func::randf(0, 5);
+				g.soc[i][max_speed] = func::randf(0, 5);
 				g.soc[i][libido] = func::randf(0, 10);
 				g.soc[i][rand_way] = func::randf(0, 10);
 				g.soc[i][partner] = func::randf(0, 10);
@@ -186,8 +175,8 @@ void addIndivid(Point <float> p, Mode_feeding diet) {
 				g.soc[i][enemy] = func::randf(0, 10);
 				g.soc[i][cohesion_enemy] = func::randf(0, 10);
 				g.soc[i][separation_enemy] = func::randf(0, 10);
-				g.soc[i][alignment_enemy] = func::randf(0, 10);*/
-				g.soc[i][max_speed] = 2;
+				g.soc[i][alignment_enemy] = func::randf(0, 10);
+		/*		g.soc[i][max_speed] = 2;
 				g.soc[i][libido] = 1;
 				g.soc[i][rand_way] = 1;
 				g.soc[i][partner] = 1;
@@ -197,7 +186,7 @@ void addIndivid(Point <float> p, Mode_feeding diet) {
 				g.soc[i][enemy] = 1;
 				g.soc[i][cohesion_enemy] = 1;
 				g.soc[i][separation_enemy] = 1;
-				g.soc[i][alignment_enemy] = 1;
+				g.soc[i][alignment_enemy] = 1;*/
 			}
 		}
 		g.color = 0xFF009900;
@@ -205,20 +194,23 @@ void addIndivid(Point <float> p, Mode_feeding diet) {
 }
 
 void InitEnvironment() {
-	//env.setMutation(1, 0.1, 0.2, 0.1, ONE);
-	env.setMutation(0, 0, 0, 0, ONE);
+	env.setMutation(1, 0.1, 0.2, 0.1, ONE);
+	//env.setMutation(0, 0, 0, 0, ONE);
 	Point <float> p;
 
 	for(int i=0; i<POP_A; i++) {
-		p.x=func::randf(0, env.W());
-		p.y=func::randf(0, env.H()); 
+		p.x=func::randi(0, env.W()-2);
+		p.y=func::randi(0, env.H()-2); 
 		addIndivid(p, AUTO);
 	}
 	for(int i=0; i<POP_G; i++) {
-		p.x=func::randf(0, env.W());
-		p.y=func::randf(0, env.H()); 
+		p.x=func::randi(0, env.W()-2);
+		p.y=func::randi(0, env.H()-2); 
 		addIndivid(p, GETERO);
 	}
+	
+	env.step();
+	display->Update();
 }
 
 void InitEditor() {
@@ -228,7 +220,7 @@ void InitEditor() {
 	fnt->SetScale(0.5);
 
 	mainGUI=new hgeGUI();
-	CreateGUI();
+	CreateMainGUI();
 
 	winManager = new GUI_win_manager();
 	CreateWinManager();

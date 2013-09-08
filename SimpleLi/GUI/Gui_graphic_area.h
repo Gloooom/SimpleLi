@@ -44,6 +44,9 @@ private:
 	int _visibleX, _visibleY;
 	int _visibleColCount, _visibleRowCount;
 
+	int _cellWidth;
+	int _cellHeight;
+
 	DWORD _background;
 	Array <DWORD> colorArr;
 	Array <Cell> quadArr;
@@ -65,11 +68,11 @@ public:
 					  quadArr(x, y).setQuad(0, 0, 1, 1);
 					  colorArr(x, y) = 0xFFFFFFFF;
 				  }
-	  };
+	};
 	void setBorder(int b) {
 		  _border = b;
 		  setVisibleArea(_visibleX, _visibleY, _visibleColCount, _visibleRowCount);
-	  };
+	};
 	void setVisibleArea(int visibleX, int visibleY, int visibleColCount, int visibleRowCount) {
 		  if (visibleX<=0) _visibleX = 0;
 		  if (visibleX>=_colCount) visibleX = _colCount;
@@ -84,32 +87,41 @@ public:
 		  _visibleColCount = visibleColCount;
 		  _visibleRowCount = visibleRowCount;
 
-		  int cellWidth = _screenWidth/_visibleColCount - _border;
-		  int cellHeight = _screenHeight/_visibleRowCount - _border;
+		  _cellWidth = _screenWidth/_visibleColCount - _border;
+		  _cellHeight = _screenHeight/_visibleRowCount - _border;
 		  for(int _x=visibleX; _x<visibleColCount; _x++)
 			  for(int _y=visibleY; _y<visibleRowCount; _y++)
-				  quadArr(_x, _y).setQuad((_x-visibleX)*cellWidth+(_border*(_x-visibleX)),
-				  (_y-visibleY)*cellHeight+(_border*(_y-visibleY)), 
-				  cellWidth, cellHeight);
-	  };
+				  quadArr(_x, _y).setQuad((_x-visibleX)*_cellWidth+(_border*(_x-visibleX)),
+				  (_y-visibleY)*_cellHeight+(_border*(_y-visibleY)), 
+				  _cellWidth, _cellHeight);
+	};
 	Cell operator[](int i) {return quadArr[i];};
 	DWORD &operator()(int x, int y) {return colorArr(x, y);};
 	void Update() {
 		  for(int x=_visibleX; x<_visibleColCount; x++)
 			  for(int y=_visibleY; y<_visibleRowCount; y++)
 				  quadArr(x, y).setColor(colorArr(x, y));
-	  };
+	};
 	void Render() {
 		  for(int x=_visibleX; x<_visibleColCount; x++)
 			  for(int y=_visibleY; y<_visibleRowCount; y++)
 				  hge->Gfx_RenderQuad(quadArr(x, y).getQuad());
-	  };
+	};
 	void setBackground(DWORD color) {
 		  _background = color;
-	  };
+	};
 	void Clear() {
 		  for(int x=_visibleX; x<_visibleColCount; x++)
 			  for(int y=_visibleY; y<_visibleRowCount; y++)
 				  colorArr(x, y) = _background;
-	  };
+	};
+	void getMousePos(int mpx, int mpy, int *colPos, int *rowPos) {
+		if (mpx<_screenWidth && mpy<_screenHeight) {
+			*colPos = mpx/(_cellWidth+_border);
+			*rowPos = mpy/(_cellHeight+_border);
+		} else {
+			*colPos = _visibleColCount-1;
+			*rowPos = _visibleRowCount-1;
+		}
+	};
 };

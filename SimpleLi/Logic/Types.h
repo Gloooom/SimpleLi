@@ -16,9 +16,8 @@ enum Mode_hibrid {HALF_TO_HALF, AVERAGE};
 enum Mode_change_what {SOC, SOC_PHIS, PHIS};
 enum Mode_mutation {ONE, ALL, HALF};
 enum Mode_feeding {AUTO, GETERO};
-enum Type_eye {RADIUS, TRIANGLE, SECTOR};
 
-enum Individ_status {HUNGRY, MATURE, REPRODUCT, WAIT, end_of_status};
+enum Individ_status {HUNGRY, MATURE, WAIT, end_of_status, REPRODUCT};
 
 template <typename Type> class IndMemory {
 public:

@@ -60,6 +60,7 @@ public:
 	virtual			~hgeGUIButton();
 
 	void			SetMode(bool _bTrigger) { bTrigger=_bTrigger; }
+	bool			GetMode() const { return bTrigger; }
 	void			SetState(bool _bPressed) { bPressed=_bPressed; }
 	bool			GetState() const { return bPressed; }
 

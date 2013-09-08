@@ -1,4 +1,6 @@
 #include <math.h>
+#include <sstream>
+#include <windows.h>
 
 #pragma once
 
@@ -18,7 +20,14 @@ public:
 	};
 	Type &operator[](int i) {return arr[i];};
 	Type &operator()(int x, int y) {
-		return arr[x + y*_colCount];
+		try {
+			if (x>=0 && x<_colCount && y>=0 && y<_rowCount)
+				return arr[x + y*_colCount];
+			else
+				throw 1;
+		} catch(int i) {
+			MessageBox(NULL, (Convert(x) + ", " + Convert(y)).c_str(), "Error", MB_OK | MB_ICONERROR | MB_SYSTEMMODAL);
+		}
 	};
 	int getW() {return _colCount;};
 	int getH() {return _rowCount;};
@@ -180,3 +189,10 @@ public:
 		return acos((x*v.x + y*v.y)/sqrt((x*x+y*y)*(v.x*v.x+v.y*v.y)));
 	}
 };
+
+template <typename T>
+std::string Convert (T number) {
+	std::ostringstream buff;
+	buff << number;
+	return buff.str();
+}

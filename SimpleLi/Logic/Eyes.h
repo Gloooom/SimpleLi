@@ -1,3 +1,4 @@
+using namespace func;
 
 class FOV_Tri {
 private:
@@ -57,28 +58,27 @@ public:
 		vert[1].multiplying(cost, -sint, sint, cost);
 		vert[2].multiplying(cost, -sint, sint, cost);
 
-		double min_x = func::getMin(vert[0].x, func::getMin(vert[1].x, vert[2].x));
-		double min_y = func::getMin(vert[0].y, func::getMin(vert[1].y, vert[2].y));
+		double min_x = getMin(vert[0].x, getMin(vert[1].x, vert[2].x));
+		double min_y = getMin(vert[0].y, getMin(vert[1].y, vert[2].y));
 		Point <int> start;
 		Point <int> end;
 
-		Vector <double> dt(min_x < 0 ? min_x : 0, min_y < 0 ? min_y : 0);
-
+		Vector <double> dt(min_x, min_y);
 		vert[0]-=dt;
 		vert[1]-=dt;
 		vert[2]-=dt;
 		
-		int max_x = func::getMax(vert[0].x, func::getMax(vert[1].x, vert[2].x));
-		int max_y = func::getMax(vert[0].y, func::getMax(vert[1].y, vert[2].y));
+		int max_x = getMax(vert[0].x, getMax(vert[1].x, vert[2].x));
+		int max_y = getMax(vert[0].y, getMax(vert[1].y, vert[2].y));
 
-		for (int x=0; x<=max_x; x++) {
-			for (int y=0; y<=max_y; y++) {
+		for (int x=0; x<=max_y; x++) {
+			for (int y=0; y<=max_x; y++) {
 				double pl1, pl2, pl3;
 				pl1 = (vert[0].x - y)*(vert[1].y - vert[0].y)-(vert[1].x - vert[0].x)*(vert[0].y - x);
 				pl2 = (vert[1].x - y)*(vert[2].y - vert[1].y)-(vert[2].x - vert[1].x)*(vert[1].y - x);
 				pl3 = (vert[2].x - y)*(vert[0].y - vert[2].y)-(vert[0].x - vert[2].x)*(vert[2].y - x);
 				if ((pl1 >= 0 && pl2 >= 0 && pl3 >= 0) || (pl1 <= 0 && pl2 <= 0 && pl3 <= 0)) {
-					result.push_back(Vector <int> (x, y));
+					result.push_back(Vector <int> (x+dt.y, y+dt.x));
 				}
 			}
 		}
@@ -88,16 +88,16 @@ public:
 	FOV_Tri mutation(float coef, int mutation_mode) {
 		FOV_Tri result;
 		if (mutation_mode == ONE) {
-			int seed = func::randi(0, 2);
+			int seed = randi(0, 2);
 			switch(seed) {
-			case 0: result._angle = func::getVariation(_angle, coef); break;
-			case 1: result._height = func::getVariation(_height, coef); break;
-			case 2: result._width = func::getVariation(_width, coef); break;
+			case 0: result._angle = getVariation(_angle, coef); break;
+			case 1: result._height = getVariation(_height, coef); break;
+			case 2: result._width = getVariation(_width, coef); break;
 			}
 		} else if (mutation_mode == ALL || mutation_mode == HALF) {
-			result._angle = func::getVariation(_angle, coef);
-			result._height = func::getVariation(_height, coef);
-			result._width = func::getVariation(_width, coef); 
+			result._angle = getVariation(_angle, coef);
+			result._height = getVariation(_height, coef);
+			result._width = getVariation(_width, coef); 
 		}
 		result.calculatPolygon();
 		return result;
@@ -130,7 +130,7 @@ public:
 
 	FOV_Rad mutation(float coef, int mutation_mode) {
 		FOV_Rad result;
-		func::getVariation(_height, coef);
+		getVariation(_height, coef);
 		return result;
 	};
 	FOV_Rad hibrid(FOV_Rad eye) {
