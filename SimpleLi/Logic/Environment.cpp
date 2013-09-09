@@ -199,8 +199,8 @@ void Environment::checkDead() {
 void Environment::born() {
 	std::deque <Individ> ::iterator c = cradle.begin();
 	while (c != cradle.end()) {
-		c->dna = c->dna.mutation(mutation_maxDelta, mutation_eyeAddChance, 
-			mutation_eyeMutationChance, mutation_radEyeMutationChance, mutation_mode);
+		c->dna = c->dna.mutation(mutation_maxDelta, mutation_mutGenCount, mutation_eyeAddChance, 
+			mutation_eyeMutationChance, mutation_radEyeMutationChance);
 		population[c->ID] = *c;
 		c++;
 	}
@@ -212,6 +212,8 @@ void Environment::addIndivid(Individ ind) {
 }
 
 void Environment::step() {
+	if (stepCount % 100 == 0 && stepCount != 0)
+		save("temp.bin");
 	stepCount++;
 	checkDead();
 	born();
@@ -224,18 +226,17 @@ void Environment::step() {
 }
 
 
-void Environment::setMutation(float maxDelta, float eyeAddChance, float eyeMutationChance, 
-								  float radEyeMutationChance, Mode_mutation mode) {
+void Environment::setMutation(float maxDelta, int mutGenCount, float eyeAddChance, float eyeMutationChance, 
+								  float radEyeMutationChance) {
 	mutation_maxDelta = maxDelta;
 	mutation_eyeAddChance = eyeAddChance;
 	mutation_eyeMutationChance = eyeMutationChance;
 	mutation_radEyeMutationChance = radEyeMutationChance;
-	mutation_mode = mode;
+	mutation_mutGenCount = mutGenCount;
 }
 
 void Environment::clear() {
 	stepCount = 0;
 	population.clear();
 	cradle.clear();
-	fill();
 }

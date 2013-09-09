@@ -24,10 +24,16 @@ namespace func {
 	T getMax(T a, T b) {return a>b ? a : b;};
 
 	template <typename F>
-	F getVariation (F d, double coef) {
+	F getVariation (F d, double coef, bool negativeValue = true) {
 		//coef определяет максимально возможное отклонение в процентах.
-		if (d!=0) return (d + d*(((((double) rand())/(RAND_MAX/2)) - 1) * coef));
-		if (d==0) return (((((double) rand())/(RAND_MAX/2)) - 1) * coef);
+		if (negativeValue) {
+			if (d!=0) return (d + (d*(((((double) rand())/(RAND_MAX/2)) - 1) * coef)));
+			if (d==0) return (((((double) rand())/(RAND_MAX/2)) - 1) * coef);
+		} else {
+			d = (d + d*(((((double) rand())/(RAND_MAX/2)) - 1) * coef));
+			if (d<=0) return 0;
+			return d;
+		}
 		return 0;
 	}
 

@@ -5,7 +5,7 @@
 #define CMD_WIN_EDIT_PHIS		3
 #define CMD_PAUSE				4
 #define CMD_CLEAR				5
-#define CMD_WIN_MUT				6
+#define CMD_WIN_EDIT_MUT				6
 
 #define WIN_S_L					1
 #define WIN_ADD_IND				2
@@ -40,10 +40,6 @@ void load_func() {
 	}
 };
 
-void createNewDNA() {
-	genes = new GeneticCode();
-}
-
 void state_list_upd() {
 	int select_state = GetWinListboxSelect(winManager, WIN_ADD_IND, "state_list");
 	SetWinSliderValue(winManager, WIN_ADD_IND, "max_speed_s", genes->soc[select_state][max_speed]);
@@ -59,23 +55,13 @@ void state_list_upd() {
 	SetWinSliderValue(winManager, WIN_ADD_IND, "alignment_enemy_s", genes->soc[select_state][alignment_enemy]);
 }
 
-void selectIndivid() {
-	int col, row;
-	display->getMousePos(state.mp.x, state.mp.y, &col, &row);
-	if (hge->Input_GetKeyState(HGEK_LBUTTON)) {
-		genes = &env.field(col, row)->dna;
-		state_list_upd();
-		SetWinButtonState(winManager, WIN_ADD_IND, "select_ind_but", false);
-	}
-}
-
 void resetDNA() {
 	genes = new GeneticCode();
-	genes->phis = env.population[1].dna.phis;
 	state_list_upd();
 }
 
 void newIndivid() {
+	genes->diet = AUTO;
 	SetWinButtonState(winManager, WIN_ADD_IND, "select_ind_but", false);
 	int col, row;
 	display->getMousePos(state.mp.x, state.mp.y, &col, &row);
@@ -111,12 +97,29 @@ void update_IndEdit() {
 	SetLink(WIN_ADD_IND, "alignment_enemy_s", "alignment_enemy_val");
 }
 
+void randDNA() {
+	for (int i=0; i<end_of_status; i++) {
+		genes->soc[i][max_speed] = func::randf(0, 10);
+		genes->soc[i][libido] = func::randf(-10, 10);
+		genes->soc[i][rand_way] = func::randf(0, M_PI);
+		genes->soc[i][partner] = func::randf(-10, 10);
+		genes->soc[i][cohesion_partner] = func::randf(-10, 10);
+		genes->soc[i][separation_partner] = func::randf(-10, 10);
+		genes->soc[i][alignment_partner] = func::randf(-10, 10);
+		genes->soc[i][enemy] = func::randf(-10, 10);
+		genes->soc[i][cohesion_enemy] = func::randf(-10, 10);
+		genes->soc[i][separation_enemy] = func::randf(-10, 10);
+		genes->soc[i][alignment_enemy] = func::randf(-10, 10);
+	}
+	state_list_upd();
+}
+
 int selectEye;
 void update_EyeEdit();
 
 void setEye() {
 	if(!genes->eyes.empty()) {
-		genes->eyes[selectEye].setAngle((GetWinSliderValue(winManager, WIN_EDIT_EYE, "angle_s")/100)*M_PI*2);
+		genes->eyes[selectEye].setAngle(GetWinSliderValue(winManager, WIN_EDIT_EYE, "angle_s"));
 		genes->eyes[selectEye].setWidth(GetWinSliderValue(winManager, WIN_EDIT_EYE, "width_s"));
 		genes->eyes[selectEye].setHeight(GetWinSliderValue(winManager, WIN_EDIT_EYE, "height_s"));
 	}
@@ -125,16 +128,16 @@ void setEye() {
 void getEye() {
 	if(!genes->eyes.empty()) {
 		selectEye = GetWinListboxSelect(winManager, WIN_EDIT_EYE, "eyes_list");
-		SetWinSliderValue(winManager, WIN_EDIT_EYE, "angle_s", genes->eyes[selectEye].getAngle()/(M_PI*2)*100);
+		SetWinSliderValue(winManager, WIN_EDIT_EYE, "angle_s", genes->eyes[selectEye].getAngle());
 		SetWinSliderValue(winManager, WIN_EDIT_EYE, "width_s", genes->eyes[selectEye].getWidth());
 		SetWinSliderValue(winManager, WIN_EDIT_EYE, "height_s", genes->eyes[selectEye].getHeight());
 	}
 }
 
 void addEye() {
-	FOV_Tri e((GetWinSliderValue(winManager, WIN_EDIT_EYE, "angle_s")/100)*M_PI*2, 
-		(GetWinSliderValue(winManager, WIN_EDIT_EYE, "height_s")), 
-		(GetWinSliderValue(winManager, WIN_EDIT_EYE, "width_s")));
+	FOV_Tri e(GetWinSliderValue(winManager, WIN_EDIT_EYE, "angle_s"), 
+		GetWinSliderValue(winManager, WIN_EDIT_EYE, "height_s"), 
+		GetWinSliderValue(winManager, WIN_EDIT_EYE, "width_s"));
 
 	genes->eyes.push_back(e);
 	update_EyeEdit();
@@ -196,12 +199,27 @@ void update_EyeEdit() {
 			m++;
 		}
 	}
+	for (int i = 0; i<20; i++) 
+		setQuadColor(&(winManager->getWin(WIN_EDIT_EYE)->graphic[35+i + (35)*70]), 0xFFFFFFFF);
 }
 
 void call_EyeEdit() {
 	winManager->Activate(WIN_EDIT_EYE);
 	winManager->setFocus(WIN_EDIT_EYE);
 	getEye();
+}
+
+void selectIndivid() {
+	int col, row;
+	display->getMousePos(state.mp.x, state.mp.y, &col, &row);
+	if (hge->Input_GetKeyState(HGEK_LBUTTON)) {
+		genes = &env.field(col, row)->dna;
+		state_list_upd();
+		SetWinButtonState(winManager, WIN_ADD_IND, "select_ind_but", false);
+		getEye();
+		update_EyeEdit();
+		winManager->getWin(WIN_EDIT_EYE)->Render();
+	}
 }
 
 void update_PhisEdit() {
@@ -257,14 +275,30 @@ void set_PhisGenes() {
 	}
 }
 
+void standart_PhisGenes() {
+	genes->phis[acceleration] = 0.3;
+	genes->phis[hp_max] = 10; 
+	genes->phis[saturation] = 10;
+	genes->phis[stamina] = 2;
+	genes->phis[fertility] = 4;
+	genes->phis[live_time] = 400;
+	genes->phis[energy_max] = 1000;
+	genes->phis[energy_mature] = 0;
+	genes->phis[energy_hungry] = 0;
+	genes->phis[reproduction_cost] = 10; 
+	genes->phis[reproduction_time] = 10; 
+	genes->phis[reproduction_pause] = 100;
+	
+	get_PhisGenes();
+}
 
 void set_Mut() {
 	env.setMutation(
 		GetWinSliderValue(winManager, WIN_EDIT_MUT, "mutation_maxDelta_s"),
+		GetWinSliderValue(winManager, WIN_EDIT_MUT, "mutation_mutGenCount_s"),
 		GetWinSliderValue(winManager, WIN_EDIT_MUT, "mutation_eyeAddChance_s"),
 		GetWinSliderValue(winManager, WIN_EDIT_MUT, "mutation_eyeMutationChance_s"),
-		GetWinSliderValue(winManager, WIN_EDIT_MUT, "mutation_radEyeMutationChance_s"),
-		ONE
+		GetWinSliderValue(winManager, WIN_EDIT_MUT, "mutation_radEyeMutationChance_s")
 		);
 }
 
@@ -273,6 +307,9 @@ void update_MutEdit() {
 	SetLink(WIN_EDIT_MUT, "mutation_eyeAddChance_s", "mutation_eyeAddChance_val");
 	SetLink(WIN_EDIT_MUT, "mutation_eyeMutationChance_s", "mutation_eyeMutationChance_val");
 	SetLink(WIN_EDIT_MUT, "mutation_radEyeMutationChance_s", "mutation_radEyeMutationChance_val");
+	SetWinSliderValue(winManager, WIN_EDIT_MUT, "mutation_mutGenCount_s", 
+		(int)GetWinSliderValue(winManager, WIN_EDIT_MUT, "mutation_mutGenCount_s"));
+	SetLink(WIN_EDIT_MUT, "mutation_mutGenCount_s", "mutation_mutGenCount_val");
 }
 
 void CreateMainGUI() {
@@ -292,7 +329,7 @@ void CreateMainGUI() {
 	text->bEnabled = false;
 	mainGUI->AddCtrl(text);
 
-	button=new hgeGUIButton(CMD_WIN_MUT, 610, 400, 180, 20, butTex, 0, 0);
+	button=new hgeGUIButton(CMD_WIN_EDIT_MUT, 610, 400, 180, 20, butTex, 0, 0);
 	button->SetMode(false);
 	mainGUI->AddCtrl(button);
 
@@ -476,6 +513,8 @@ void CreateWinManager() {
 	hgeGUIButton *indEditButtons;
 	indEditButtons = new hgeGUIButton(0, 0, 0, 140, 20, indEditButtonsTex, 0, 0);
 	
+	
+	winAddIndivid->addCtrl(indEditButtons, 10, 175, "rand_dna_but", randDNA);
 	winAddIndivid->addCtrl(indEditButtons, 10, 200, "new_dna_but", resetDNA);
 	winAddIndivid->addCtrl(indEditButtons, 10, 225, "edit_eyes_but", call_EyeEdit);
 	indEditButtons->SetMode(true);
@@ -487,6 +526,8 @@ void CreateWinManager() {
 	callEyeEditButText->SetMode(HGETEXT_CENTER);
 	callEyeEditButText->bEnabled = false;
 
+	callEyeEditButText->SetText("Rand DNA");
+	winAddIndivid->addCtrl(callEyeEditButText, 10, 180, "rand_dna_but_t");
 	callEyeEditButText->SetText("New DNA");
 	winAddIndivid->addCtrl(callEyeEditButText, 10, 205, "new_dna_but_t");
 	callEyeEditButText->SetText("Edit eyes");
@@ -511,32 +552,26 @@ void CreateWinManager() {
 	int b = 1;
 	int w = areaW/countW - b, h = areaH/countH - b;
 	int pos_x=10, pos_y=25;
+	cellQ.v[0].col=
+		cellQ.v[1].col=
+		cellQ.v[2].col=
+		cellQ.v[3].col=objsColor;
+	cellQ.v[0].z=
+		cellQ.v[1].z=
+		cellQ.v[2].z=
+		cellQ.v[3].z=0.5f;
+	cellQ.blend=BLEND_COLORMUL | BLEND_ALPHABLEND | BLEND_NOZWRITE;
+	cellQ.tex=0;
 	for(int y=0; y<countH; y++) {		
 		for (int x=0; x<countW; x++) {
 			cellQ.v[0].x=b*x+w*x+pos_x;
 			cellQ.v[0].y=b*y+h*y+pos_y;
-
 			cellQ.v[1].x=b*x+w*x+w+pos_x;
 			cellQ.v[1].y=b*y+h*y+pos_y;
-
 			cellQ.v[2].x=b*x+w*x+w+pos_x;
 			cellQ.v[2].y=b*y+h*y+h+pos_y;
-
 			cellQ.v[3].x=b*x+w*x+pos_x;
 			cellQ.v[3].y=b*y+h*y+h+pos_y;
-			
-			cellQ.v[0].col=
-			cellQ.v[1].col=
-			cellQ.v[2].col=
-			cellQ.v[3].col=objsColor;
-			cellQ.v[0].z=
-			cellQ.v[1].z=
-			cellQ.v[2].z=
-			cellQ.v[3].z=0.5f;
-
-			cellQ.blend=BLEND_COLORMUL | BLEND_ALPHABLEND | BLEND_NOZWRITE;
-			cellQ.tex=0;
-			
 			winEditEye->graphic.push_back(cellQ);
 		}
 	}
@@ -544,10 +579,12 @@ void CreateWinManager() {
 	hgeGUISlider *eyeSlider;
 	eyeSlider = new hgeGUISlider(0, 0, 0, 200, 10, *sliderTex, 1, 0, 5, 10);
 	eyeSlider->SetMode(0, 100, HGESLIDER_BAR);
-	eyeSlider->SetValue(10);
+	eyeSlider->SetValue(0);
 	
 	winEditEye->addCtrl(eyeSlider, 10, 395, "height_rad_s");
+	eyeSlider->SetMode(-M_PI, M_PI, HGESLIDER_BARRELATIVE);
 	winEditEye->addCtrl(eyeSlider, 10, 435, "angle_s");
+	eyeSlider->SetMode(0, 100, HGESLIDER_BAR);
 	winEditEye->addCtrl(eyeSlider, 10, 460, "width_s");
 	winEditEye->addCtrl(eyeSlider, 10, 485, "height_s");
 
@@ -600,7 +637,7 @@ void CreateWinManager() {
 	////////////////WINDOW EDIT PHIS////////////////////
 	////////////////////////////////////////////////////
 	GUI_window *winEditPhis;
-	winEditPhis = new GUI_window(220, 390, "Edit phis attributes", fnt, headCol, backCol, objsColor);
+	winEditPhis = new GUI_window(220, 410, "Edit phis attributes", fnt, headCol, backCol, objsColor);
 
 	hgeGUISlider *phisSlider;
 	phisSlider = new hgeGUISlider(0, 0, 0, 200, 10, *sliderTex, 1, 0, 5, 10);
@@ -678,32 +715,42 @@ void CreateWinManager() {
 	editPhisButText->SetMode(HGETEXT_CENTER);
 	editPhisButText->bEnabled = false;
 
+	
+	editPhisButText->SetText("Standart");
+	winEditPhis->addCtrl(editPhisBut, 10, 330, "standart_phis_but", standart_PhisGenes);
+	winEditPhis->addCtrl(editPhisButText, 10, 335, "standart_phis_but_t");
+
 	editPhisButText->SetText("Read");
-	winEditPhis->addCtrl(editPhisBut, 10, 335, "read_phis_but", get_PhisGenes);
-	winEditPhis->addCtrl(editPhisButText, 10, 340, "read_phis_but_t");
+	winEditPhis->addCtrl(editPhisBut, 10, 355, "read_phis_but", get_PhisGenes);
+	winEditPhis->addCtrl(editPhisButText, 10, 360, "read_phis_but_t");
 
 	editPhisButText->SetText("Apply");
-	winEditPhis->addCtrl(editPhisBut, 10, 360, "edit_phis_but", set_PhisGenes);
-	winEditPhis->addCtrl(editPhisButText, 10, 365, "edit_phis_but_t");
+	winEditPhis->addCtrl(editPhisBut, 10, 380, "edit_phis_but", set_PhisGenes);
+	winEditPhis->addCtrl(editPhisButText, 10, 385, "edit_phis_but_t");
 
 	winEditPhis->setUpdateFunc(update_PhisEdit);
 
 	winManager->addWindow(winEditPhis, WIN_EDIT_PHIS);
+	standart_PhisGenes();
 	////////////////////////////////////////////////////
 	///////////////WINDOW EDIT MUTATION/////////////////
 	////////////////////////////////////////////////////
 	GUI_window *winEditMut;
-	winEditMut = new GUI_window(220, 160, "Edit mutation", fnt, headCol, backCol, objsColor);
+	winEditMut = new GUI_window(250, 185, "Edit mutation", fnt, headCol, backCol, objsColor);
 
 	hgeGUISlider *mutSlider;
-	mutSlider = new hgeGUISlider(0, 0, 0, 200, 10, *sliderTex, 1, 0, 5, 10);
-	mutSlider->SetMode(0, 1, HGESLIDER_BAR);
+	mutSlider = new hgeGUISlider(0, 0, 0, 230, 10, *sliderTex, 1, 0, 5, 10);
 	mutSlider->SetValue(0);
 	
+	
+	mutSlider->SetMode(0, 1, HGESLIDER_BAR);
 	winEditMut->addCtrl(mutSlider, 10, 35, "mutation_maxDelta_s");
-	winEditMut->addCtrl(mutSlider, 10, 60, "mutation_eyeAddChance_s");
-	winEditMut->addCtrl(mutSlider, 10, 85, "mutation_eyeMutationChance_s");
-	winEditMut->addCtrl(mutSlider, 10, 110, "mutation_radEyeMutationChance_s");
+	mutSlider->SetMode(0, end_of_soc*end_of_status, HGESLIDER_BAR);
+	winEditMut->addCtrl(mutSlider, 10, 60, "mutation_mutGenCount_s");
+	mutSlider->SetMode(0, 1, HGESLIDER_BAR);
+	winEditMut->addCtrl(mutSlider, 10, 85, "mutation_eyeAddChance_s");
+	winEditMut->addCtrl(mutSlider, 10, 110, "mutation_eyeMutationChance_s");
+	winEditMut->addCtrl(mutSlider, 10, 135, "mutation_radEyeMutationChance_s");
 
 	slidersStaticText = new hgeGUIText(0, 0, 0, 100, 20, fnt);
 	slidersStaticText->SetMode(HGETEXT_LEFT);
@@ -711,35 +758,38 @@ void CreateWinManager() {
 
 	slidersStaticText->SetText("Deviation degree:");
 	winEditMut->addCtrl(slidersStaticText, 10, 25, "mutation_maxDelta_t");
+	slidersStaticText->SetText("Count of mutation genes:");
+	winEditMut->addCtrl(slidersStaticText, 10, 50, "mutation_mutGenCount_t");
 	slidersStaticText->SetText("Chance to add eye:");
-	winEditMut->addCtrl(slidersStaticText, 10, 50, "mutation_eyeAddChance_t");
+	winEditMut->addCtrl(slidersStaticText, 10, 75, "mutation_eyeAddChance_t");
 	slidersStaticText->SetText("Eye mutation chance:");
-	winEditMut->addCtrl(slidersStaticText, 10, 75, "mutation_eyeMutationChance_t");
+	winEditMut->addCtrl(slidersStaticText, 10, 100, "mutation_eyeMutationChance_t");
 	slidersStaticText->SetText("Radial eye mutation:");
-	winEditMut->addCtrl(slidersStaticText, 10, 100, "mutation_radEyeMutationChance_t");
+	winEditMut->addCtrl(slidersStaticText, 10, 125, "mutation_radEyeMutationChance_t");
 
 	slidersValText = new hgeGUIText(0, 0, 0, 100, 20, fnt);
 	slidersValText->SetMode(HGETEXT_RIGHT);
 	slidersValText->bEnabled = false;
 	slidersValText->SetText("0");
 
-	winEditMut->addCtrl(slidersValText, 110, 25, "mutation_maxDelta_val");
-	winEditMut->addCtrl(slidersValText, 110, 50, "mutation_eyeAddChance_val");
-	winEditMut->addCtrl(slidersValText, 110, 75, "mutation_eyeMutationChance_val");
-	winEditMut->addCtrl(slidersValText, 110, 100, "mutation_radEyeMutationChance_val");
+	winEditMut->addCtrl(slidersValText, 140, 25, "mutation_maxDelta_val");
+	winEditMut->addCtrl(slidersValText, 140, 50, "mutation_mutGenCount_val");
+	winEditMut->addCtrl(slidersValText, 140, 75, "mutation_eyeAddChance_val");
+	winEditMut->addCtrl(slidersValText, 140, 100, "mutation_eyeMutationChance_val");
+	winEditMut->addCtrl(slidersValText, 140, 125, "mutation_radEyeMutationChance_val");
 
-	HTEXTURE editMutButTex = getButtonTex(200, 20, objsColor, 0.1);
+	HTEXTURE editMutButTex = getButtonTex(230, 20, objsColor, 0.1);
 	hgeGUIButton *editMutBut;
-	editMutBut = new hgeGUIButton(0, 0, 0, 200, 20, editMutButTex, 0, 0);
+	editMutBut = new hgeGUIButton(0, 0, 0, 230, 20, editMutButTex, 0, 0);
 	
 	hgeGUIText *editMutButText;
-	editMutButText = new hgeGUIText(0, 0, 0, 200, 20, fnt);
+	editMutButText = new hgeGUIText(0, 0, 0, 230, 20, fnt);
 	editMutButText->SetMode(HGETEXT_CENTER);
 	editMutButText->bEnabled = false;
 
 	editMutButText->SetText("Apply");
-	winEditMut->addCtrl(editMutBut, 10, 130, "edit_mut_but", set_Mut);
-	winEditMut->addCtrl(editMutButText, 10, 135, "edit_mut_but_t");
+	winEditMut->addCtrl(editMutBut, 10, 155, "edit_mut_but", set_Mut);
+	winEditMut->addCtrl(editMutButText, 10, 160, "edit_mut_but_t");
 
 	winEditMut->setUpdateFunc(update_MutEdit);
 
@@ -772,7 +822,7 @@ void CheckButtons() {
 		winManager->Activate(WIN_S_L);
 		winManager->setFocus(WIN_S_L);
 	}
-	if (hgeButtonGetState(mainGUI, CMD_WIN_MUT)) {
+	if (hgeButtonGetState(mainGUI, CMD_WIN_EDIT_MUT)) {
 		winManager->Activate(WIN_EDIT_MUT);
 		winManager->setFocus(WIN_EDIT_MUT);
 	}
@@ -784,12 +834,11 @@ void CheckButtons() {
 		winManager->Activate(WIN_EDIT_PHIS);
 		winManager->setFocus(WIN_EDIT_PHIS);
 
-		genes->phis = env.population.begin()->second.dna.phis;
 		get_PhisGenes();
 	}
 	if (hgeButtonGetState(mainGUI, CMD_CLEAR)) {
+		hgeButtonSetState(mainGUI, CMD_CLEAR, false);
 		env.clear();
-		genes = new GeneticCode();
 	}
 	if (hgeButtonGetState(mainGUI, CMD_PAUSE)) {
 		state.play = false;

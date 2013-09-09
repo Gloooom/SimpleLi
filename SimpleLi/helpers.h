@@ -18,6 +18,9 @@ public:
 		_colCount = colCount;
 		arr = new Type[rowCount*colCount];
 	};
+	~Array() {
+		delete[] arr;
+	};
 	Type &operator[](int i) {return arr[i];};
 	Type &operator()(int x, int y) {
 		try {

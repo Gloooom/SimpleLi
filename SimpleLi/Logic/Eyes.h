@@ -85,27 +85,21 @@ public:
 		return result;
 	};
 
-	FOV_Tri mutation(float coef, int mutation_mode) {
+	FOV_Tri mutation(float coef) {
 		FOV_Tri result;
-		if (mutation_mode == ONE) {
-			int seed = randi(0, 2);
-			switch(seed) {
-			case 0: result._angle = getVariation(_angle, coef); break;
-			case 1: result._height = getVariation(_height, coef); break;
-			case 2: result._width = getVariation(_width, coef); break;
-			}
-		} else if (mutation_mode == ALL || mutation_mode == HALF) {
 			result._angle = getVariation(_angle, coef);
-			result._height = getVariation(_height, coef);
-			result._width = getVariation(_width, coef); 
-		}
+			result._height = getVariation(_height, coef, false);
+			result._width = getVariation(_width, coef, false); 
 		result.calculatPolygon();
 		return result;
 	};
 	FOV_Tri hibrid(FOV_Tri eye) {
 		//Конечно всё очень круто, но если у одной особи глаз имеет 1 градус, а у другой 359, то
 		//в итоге у потомка будет глаз на жопе.
+		//Вроде починил.
 		FOV_Tri result;
+		if (eye._angle > M_PI) eye._angle-=M_PI*2;
+		if (eye._angle < -M_PI) eye._angle+=M_PI*2;
 		result._angle = (_angle + eye._angle)/2;
 		result._height = (_height + eye._height)/2;
 		result._width = (_width + eye._width)/2;
@@ -130,9 +124,9 @@ public:
 
 	void setHeight(float hgt) {_height = hgt;};
 
-	FOV_Rad mutation(float coef, int mutation_mode) {
+	FOV_Rad mutation(float coef) {
 		FOV_Rad result;
-		getVariation(_height, coef);
+		getVariation(_height, coef, false);
 		return result;
 	};
 	FOV_Rad hibrid(FOV_Rad eye) {

@@ -52,7 +52,9 @@ public:
 	GeneticCode() {
 		color=0xFF000000;
 
-		phis.resize(end_of_phis, 0);
+		std::vector <float> phis_temp;
+		phis_temp.resize(end_of_phis, 0);
+		phis = phis_temp;
 
 		std::vector <float> one_of_soc;
 		one_of_soc.resize(end_of_soc, 0);
@@ -60,8 +62,8 @@ public:
 	};
 
 	GeneticCode hibridization(GeneticCode person, Mode_hibrid mode);
-	GeneticCode mutation(float maxDelta, float eyeAddChance, float eyeMutationChance, 
-						 float radEyeMutationChance, int mutation_mode);
+	GeneticCode mutation(float maxDelta, int mutGenCount, float eyeAddChance, float eyeMutationChance, 
+						 float radEyeMutationChance);
 	bool save(std::string path);
 	bool load(std::string path);
 };
