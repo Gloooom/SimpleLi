@@ -161,7 +161,6 @@ void addIndivid(Point <float> p, Mode_feeding diet) {
 		g.radialEye.setHeight(0);
 		for(int i = func::randi(1, 3); i>=0; i--)
 			g.eyes.push_back(FOV_Tri(func::randf(-M_PI, M_PI), func::randi(5, 40), func::randi(5, 40)));
-		//g.eyes.push_back(FOV_Tri(0, 20, 40));
 		g.diet=diet;
 		g.color = 0xFF000000;
 		for (int i=0; i<end_of_status; i++) {
