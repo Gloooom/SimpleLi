@@ -38,4 +38,6 @@ public:
 
 	void Activate(int ID);
 	void Deactivate(int ID);
+
+	bool checkHit(int mp_x, int mp_y);
 };

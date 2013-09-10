@@ -51,14 +51,17 @@ void Individ::move(Array <Individ*> *field) {
 		pos.x+func::round(tempPos.x+way.x)<field->getW() && 
 		pos.y+func::round(tempPos.y+way.y)>=0 && 
 		pos.y+func::round(tempPos.y+way.y)<field->getH()) {
-			he = (*field)(func::round(tempPos.x + way.x + (double) pos.x), func::round(tempPos.y + way.y + (double) pos.y));
+			he = (*field)(
+				func::round(tempPos.x + way.x + (double) pos.x), 
+				func::round(tempPos.y + way.y + (double) pos.y)
+				);
 			if (he->ID == 0 || (*he) == (*this)) {
 				tempPos+=way;
 				collision=false;
-			} else { collision=true; break; }
+			} else { break; }
 	}
 
-	if (tempPos.getLength()==0) {way.x*=(-1); way.y*=(-1);}
+	if (tempPos.getLength()==0) { way.x*=(-1); way.y*=(-1); }
 
 	pos.x+=func::round(tempPos.x);
 	pos.y+=func::round(tempPos.y);
@@ -74,102 +77,29 @@ void Individ::move(Array <Individ*> *field) {
 //А не как сейчас: добавлять в массив по пять раз один объект.
 void Individ::look(Array <Individ*> *field) {
 	mem.clear();
-
-	if (dna.radialEye.height() > 0) {
-		double R = dna.radialEye.height();
-		Vector <double> P;
-		int start_x = (pos.x-R>0) ? pos.x-R : 0;
-		int start_y = (pos.y-R>0) ? pos.y-R : 0;
-		for (int _x=start_x; _x<pos.x+R, _x<field->getW(); _x++) { 
-			P.x=_x-pos.x;
-			for (int _y=start_y; _y<pos.y+R, _y<field->getH(); _y++) {
-				P.y=_y-pos.y;
-				if (P.y*P.y+P.x*P.x<R*R) {
-					Point <int> absP;
-					absP.x=func::round(P.x+pos.x);
-					absP.y=func::round(P.y+pos.y);
-					Individ *he = (*field)(absP.x, absP.y);
-					if (he->ID != 0 && *he != *this) {
-						if (he->dna.diet != dna.diet && !func::isIn(mem.enemies, he)) 
-							mem.enemies.push_back(he);
-						if (he->dna.diet == dna.diet && !func::isIn(mem.partners, he))
-							mem.partners.push_back(he);
-					}
-				}
-			}
-		}
-	}
-
 	for (int i=0; i<dna.eyes.size(); i++) {
-		if (dna.eyes[i].getHeight() > 0 && dna.eyes[i].getWidth() > 0) {
-			double wayAngle = way.getDeg();
-			
-			std::vector <Vector <int> > eyeVectors = dna.eyes[i].getVectors(wayAngle);
+		double wayAngle = way.getDeg();
 
-			std::vector <Vector <int> > ::iterator p = eyeVectors.begin();
-			while (p != eyeVectors.end()) {
-				//p->y*=(-1);
-				Vector <int> absP;
-				absP.x = p->x + pos.x;
-				absP.y = p->y + pos.y;
-				if (absP.x >= 0 && absP.x < field->getW() && absP.y >= 0 && absP.y < field->getH()) {
-					Individ *he = (*field)(absP.x, absP.y);
-					if (he->ID != 0 && *he != *this) {
-						if (he->dna.diet != dna.diet && !func::isIn(mem.enemies, he)) 
-							mem.enemies.push_back(he);
-						if (he->dna.diet == dna.diet && !func::isIn(mem.partners, he))
-							mem.partners.push_back(he);
-					}
+		std::vector <Vector <int> > eyeVectors = dna.eyes[i].getVectors(wayAngle);
+
+		std::vector <Vector <int> > ::iterator p = eyeVectors.begin();
+		while (p != eyeVectors.end()) {
+			Vector <int> absP;
+			absP.x = p->x + pos.x;
+			absP.y = p->y + pos.y;
+			if (absP.x >= 0 && absP.x < field->getW() && absP.y >= 0 && absP.y < field->getH()) {
+				Individ *he = (*field)(absP.x, absP.y);
+				if (he->ID != 0 && *he != *this) {
+					if (he->dna.diet != dna.diet && !func::isIn(mem.enemies, he)) 
+						mem.enemies.push_back(he);
+					if (he->dna.diet == dna.diet && !func::isIn(mem.partners, he))
+						mem.partners.push_back(he);
 				}
-				p++;
 			}
-
-			
-			/*double sint = sin(wayAngle);
-			double cost = cos(wayAngle);
-
-			Vector <double> vert[3];
-			vert[0]=dna.eyes[i].getPolygon()[0];
-			vert[1]=dna.eyes[i].getPolygon()[1];
-			vert[2]=dna.eyes[i].getPolygon()[2];
-
-			vert[1].multiplying(cost, -sint, sint, cost);
-			vert[2].multiplying(cost, -sint, sint, cost);
-
-			Vector <double> vectorR(vert[2].x, vert[2].y);
-			double R = vectorR.getLength();
-
-			Vector <double> P;
-			int start_x = (pos.x-R>0) ? pos.x-R : 0;
-			int start_y = (pos.y-R>0) ? pos.y-R : 0;
-
-			for (int _x=start_x; _x<pos.x+R, _x<field->getW(); _x++) { 
-				P.x=_x-pos.x;
-				for (int _y=start_y; _y<pos.y+R, _y<field->getH(); _y++) {
-					P.y=_y-pos.y;
-					double pl1, pl2, pl3;
-					pl1 = (vert[0].x - P.y)*(vert[1].y - vert[0].y)-(vert[1].x - vert[0].x)*(vert[0].y - P.x);
-					pl2 = (vert[1].x - P.y)*(vert[2].y - vert[1].y)-(vert[2].x - vert[1].x)*(vert[1].y - P.x);
-					pl3 = (vert[2].x - P.y)*(vert[0].y - vert[2].y)-(vert[0].x - vert[2].x)*(vert[2].y - P.x);
-					if ((pl1 >= 0 && pl2 >= 0 && pl3 >= 0) || (pl1 <= 0 && pl2 <= 0 && pl3 <= 0)) {
-						Point <int> absP;
-						absP.x=func::round(P.x+pos.x);
-						absP.y=func::round(P.y+pos.y);
-
-						Individ *he = (*field)(absP.x, absP.y);
-						if (he->ID != 0 && *he != *this) {
-							if (he->dna.diet != dna.diet && !func::isIn(mem.enemies, he)) 
-								mem.enemies.push_back(he);
-							if (he->dna.diet == dna.diet && !func::isIn(mem.partners, he))
-								mem.partners.push_back(he);
-						}
-					}
-				}
-			}*/
+			p++;
 		} 
 	}
 }
-
 
 void Individ::checkWay() {
 	Vector <double> enemyCohesion, partnerCohesion, 
@@ -205,7 +135,6 @@ void Individ::checkWay() {
 		}
 	}
 
-
 	if (!mem.enemies.empty() || !mem.partners.empty()) {
 		Vector <double> finalWay;
 		Vector <double>	wayPartners = partnerCohesion.getNorm()*dna.soc[state][cohesion_partner] + 
@@ -226,7 +155,6 @@ void Individ::checkWay() {
 	}
 }
 
-
 void Individ::checkState() {
 	if (reproduction_timer == dna.phis[reproduction_pause] && energy >= dna.phis[reproduction_cost]) 
 		state = MATURE;
@@ -235,7 +163,6 @@ void Individ::checkState() {
 	else  
 		state = WAIT;
 }
-
 
 void Individ::eat() {
 	if (dna.diet==AUTO && energy < dna.phis[energy_max]) {

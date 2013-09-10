@@ -106,3 +106,14 @@ void GUI_win_manager::setWinPos(int ID, float _x, float _y) {
 	windows.at(ID)->setPos(_x, _y); 
 	gui->MoveCtrl(ID, _x, _y); 
 };
+
+bool GUI_win_manager::checkHit(int mp_x, int mp_y) {
+	std::deque <int> ::reverse_iterator p = activeWindows.rbegin();
+	while (p != activeWindows.rend()) {
+		if(mp_x > gui->GetCtrl(*p)->rect.x1 && mp_x <gui->GetCtrl(*p)->rect.x2 &&
+		   mp_y > gui->GetCtrl(*p)->rect.y1 && mp_y <gui->GetCtrl(*p)->rect.y2) 
+		   return true;
+		p++;
+	}
+	return false;
+};

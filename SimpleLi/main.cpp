@@ -158,14 +158,15 @@ void addIndivid(Point <float> p, Mode_feeding diet) {
 		g.phis[live_time] = 400;
 		g.phis[reproduction_time] = 10; 
 		g.phis[reproduction_pause] = 100;
-		g.radialEye.setHeight(1);
+		g.radialEye.setHeight(0);
 		for(int i = func::randi(1, 3); i>=0; i--)
 			g.eyes.push_back(FOV_Tri(func::randf(-M_PI, M_PI), func::randi(5, 40), func::randi(5, 40)));
+		//g.eyes.push_back(FOV_Tri(0, 20, 40));
 		g.diet=diet;
 		g.color = 0xFF000000;
 		for (int i=0; i<end_of_status; i++) {
 			if (diet==AUTO) {
-				/*g.soc[i][max_speed] = func::randf(0, 5);
+				g.soc[i][max_speed] = func::randf(0, 5);
 				g.soc[i][libido] = func::randf(0, 10);
 				g.soc[i][rand_way] = func::randf(0, M_PI*2);
 				g.soc[i][partner] = func::randf(0, 10);
@@ -175,8 +176,8 @@ void addIndivid(Point <float> p, Mode_feeding diet) {
 				g.soc[i][enemy] = func::randf(0, 10);
 				g.soc[i][cohesion_enemy] = func::randf(0, 10);
 				g.soc[i][separation_enemy] = func::randf(0, 10);
-				g.soc[i][alignment_enemy] = func::randf(0, 10);*/
-				g.soc[i][max_speed] = 2;
+				g.soc[i][alignment_enemy] = func::randf(0, 10);
+				/*g.soc[i][max_speed] = 2;
 				g.soc[i][libido] = 1;
 				g.soc[i][rand_way] = 1;
 				g.soc[i][partner] = 1;
@@ -186,7 +187,7 @@ void addIndivid(Point <float> p, Mode_feeding diet) {
 				g.soc[i][enemy] = 1;
 				g.soc[i][cohesion_enemy] = 1;
 				g.soc[i][separation_enemy] = 1;
-				g.soc[i][alignment_enemy] = 1;
+				g.soc[i][alignment_enemy] = 1;*/
 			}
 		}
 		g.soc[0][libido] = 0;

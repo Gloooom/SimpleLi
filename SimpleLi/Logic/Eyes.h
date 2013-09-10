@@ -35,52 +35,65 @@ public:
 	};
 
 	void calculatPolygon() {
-		double cost = cos(-_angle);
-		double sint = sin(-_angle);
-		polygon[0].x = 0;
-		polygon[0].y = 0;
-		polygon[1].x = _height * sint - 0.5 * _width * cost;
-		polygon[1].y = _height * cost + 0.5 * _width * sint; 
-		polygon[2].x = _height * sint + 0.5 * _width * cost;
-		polygon[2].y = _height * cost - 0.5 * _width * sint;
+		if (_height > 0 && _width > 0) {
+			double cost = cos(-_angle);
+			double sint = sin(-_angle);
+			polygon[0].x = 0;
+			polygon[0].y = 0;
+			polygon[1].x = _height * sint - 0.5 * _width * cost;
+			polygon[1].y = _height * cost + 0.5 * _width * sint; 
+			polygon[2].x = _height * sint + 0.5 * _width * cost;
+			polygon[2].y = _height * cost - 0.5 * _width * sint;
+		} else {
+			polygon[0].x =
+			polygon[0].y = 
+			polygon[1].x = 
+			polygon[1].y = 
+			polygon[2].x =
+			polygon[2].y = 0;
+		}
 	};
 
 	std::vector <Vector <int> > getVectors(double rotateAngle) {
 		std::vector <Vector <int> > result;
-		double sint = sin(rotateAngle);
-		double cost = cos(rotateAngle);
+		if (_height > 0 && _width > 0) {
+			double sint = sin(rotateAngle);
+			double cost = cos(rotateAngle);
 
-		Vector <double> vert[3];
-		vert[0]=polygon[0];
-		vert[1]=polygon[1];
-		vert[2]=polygon[2];
+			Vector <double> vert[3];
+			vert[0]=polygon[0];
+			vert[1]=polygon[1];
+			vert[2]=polygon[2];
 
-		vert[1].multiplying(cost, -sint, sint, cost);
-		vert[2].multiplying(cost, -sint, sint, cost);
+			vert[1].multiplying(cost, -sint, sint, cost);
+			vert[2].multiplying(cost, -sint, sint, cost);
 
-		double min_x = getMin(vert[0].x, getMin(vert[1].x, vert[2].x));
-		double min_y = getMin(vert[0].y, getMin(vert[1].y, vert[2].y));
-		Point <int> start;
-		Point <int> end;
+			double min_x = getMin(vert[0].x, getMin(vert[1].x, vert[2].x));
+			double min_y = getMin(vert[0].y, getMin(vert[1].y, vert[2].y));
+			Point <int> start;
+			Point <int> end;
 
-		Vector <double> dt(min_x, min_y);
-		vert[0]-=dt;
-		vert[1]-=dt;
-		vert[2]-=dt;
-		
-		int max_x = getMax(vert[0].x, getMax(vert[1].x, vert[2].x));
-		int max_y = getMax(vert[0].y, getMax(vert[1].y, vert[2].y));
+			Vector <double> dt(min_x, min_y);
+			vert[0]-=dt;
+			vert[1]-=dt;
+			vert[2]-=dt;
 
-		for (int x=0; x<=max_y; x++) {
-			for (int y=0; y<=max_x; y++) {
-				double pl1, pl2, pl3;
-				pl1 = (vert[0].x - y)*(vert[1].y - vert[0].y)-(vert[1].x - vert[0].x)*(vert[0].y - x);
-				pl2 = (vert[1].x - y)*(vert[2].y - vert[1].y)-(vert[2].x - vert[1].x)*(vert[1].y - x);
-				pl3 = (vert[2].x - y)*(vert[0].y - vert[2].y)-(vert[0].x - vert[2].x)*(vert[2].y - x);
-				if ((pl1 >= 0 && pl2 >= 0 && pl3 >= 0) || (pl1 <= 0 && pl2 <= 0 && pl3 <= 0)) {
-					result.push_back(Vector <int> (x+dt.y, y+dt.x));
+			int max_x = getMax(vert[0].x, getMax(vert[1].x, vert[2].x));
+			int max_y = getMax(vert[0].y, getMax(vert[1].y, vert[2].y));
+
+			for (int x=0; x<=max_y; x++) {
+				for (int y=0; y<=max_x; y++) {
+					double pl1, pl2, pl3;
+					pl1 = (vert[0].x - y)*(vert[1].y - vert[0].y)-(vert[1].x - vert[0].x)*(vert[0].y - x);
+					pl2 = (vert[1].x - y)*(vert[2].y - vert[1].y)-(vert[2].x - vert[1].x)*(vert[1].y - x);
+					pl3 = (vert[2].x - y)*(vert[0].y - vert[2].y)-(vert[0].x - vert[2].x)*(vert[2].y - x);
+					if ((pl1 >= 0 && pl2 >= 0 && pl3 >= 0) || (pl1 <= 0 && pl2 <= 0 && pl3 <= 0)) {
+						result.push_back(Vector <int> (x+dt.y, y+dt.x));
+					}
 				}
 			}
+		} else {
+			result.push_back(Vector <int> (0, 0));
 		}
 		return result;
 	};

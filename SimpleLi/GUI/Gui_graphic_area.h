@@ -115,13 +115,15 @@ public:
 			  for(int y=_visibleY; y<_visibleRowCount; y++)
 				  colorArr(x, y) = _background;
 	};
-	void getMousePos(int mpx, int mpy, int *colPos, int *rowPos) {
+	bool getMousePos(int mpx, int mpy, int *colPos, int *rowPos) {
 		if (mpx<_screenWidth && mpy<_screenHeight) {
 			*colPos = mpx/(_cellWidth+_border);
 			*rowPos = mpy/(_cellHeight+_border);
+			return true;
 		} else {
-			*colPos = _visibleColCount-1;
-			*rowPos = _visibleRowCount-1;
+			*colPos = 0;
+			*rowPos = 0;
+			return false;
 		}
 	};
 };

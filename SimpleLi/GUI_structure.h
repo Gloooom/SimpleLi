@@ -64,8 +64,8 @@ void newIndivid() {
 	genes->diet = AUTO;
 	SetWinButtonState(winManager, WIN_ADD_IND, "select_ind_but", false);
 	int col, row;
-	display->getMousePos(state.mp.x, state.mp.y, &col, &row);
-	if (hge->Input_GetKeyState(HGEK_LBUTTON)) {
+	if (hge->Input_GetKeyState(HGEK_LBUTTON) && !winManager->checkHit(state.mp.x, state.mp.y) &&
+		display->getMousePos(state.mp.x, state.mp.y, &col, &row)) {
 		env.addIndivid(Individ(Point <int>(col, row), *genes));
 	}
 }
@@ -829,6 +829,8 @@ void CheckButtons() {
 	if (hgeButtonGetState(mainGUI, CMD_WIN_ADD_IND)) {
 		winManager->Activate(WIN_ADD_IND);
 		winManager->setFocus(WIN_ADD_IND);
+		SetWinButtonState(winManager, WIN_ADD_IND, "add_ind_but", false);
+		SetWinButtonState(winManager, WIN_ADD_IND, "select_ind_but", false);
 	}
 	if (hgeButtonGetState(mainGUI, CMD_WIN_EDIT_PHIS)) {
 		winManager->Activate(WIN_EDIT_PHIS);
@@ -837,7 +839,7 @@ void CheckButtons() {
 		get_PhisGenes();
 	}
 	if (hgeButtonGetState(mainGUI, CMD_CLEAR)) {
-		hgeButtonSetState(mainGUI, CMD_CLEAR, false);
+		//hgeButtonSetState(mainGUI, CMD_CLEAR, false);
 		env.clear();
 	}
 	if (hgeButtonGetState(mainGUI, CMD_PAUSE)) {
