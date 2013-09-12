@@ -87,7 +87,7 @@ void Environment::save(std::string path) {
 		saveVal(&outf, &val);
 		val.li = p->second.reproduction_timer;
 		saveVal(&outf, &val);
-		val.i = p->second.spouse;
+		val.i = p->second.spouseID;
 		saveVal(&outf, &val);
 		p++;
 	}
@@ -164,7 +164,7 @@ void Environment::load(std::string path) {
 		loadVal(&inf, &val);
 		ind.reproduction_timer = val.li;
 		loadVal(&inf, &val);
-		ind.spouse = val.i;
+		ind.spouseID = val.i;
 
 		population[ind.ID] = ind;
 		inf.clear();

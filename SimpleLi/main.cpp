@@ -17,7 +17,7 @@
 
 HGE *hge=0;
 
-Environment env(100, 100);
+Environment env(200, 200);
 EditorState	state;
 
 hgeGUI			*mainGUI;
@@ -28,6 +28,7 @@ RGBColor		objsColor;
 hgeFont			*fnt;
 Pixel			*sliderTexture;
 hgeSprite		*testSpr;
+
 
 #include "GUI_structure.h"
 
@@ -40,7 +41,7 @@ int				mp_y = 0;
 void			InitEditor();
 void			DoneEditor();
 void			InitEnvironment();
-void			addIndivid(Point <float> p, Mode_feeding diet); 
+void			addIndivid(Vector <int> p, Mode_feeding diet); 
 
 bool FrameFunc()
 {
@@ -96,18 +97,39 @@ bool RenderFunc()
 
 	display->Render();
 
+	std::vector <std::vector < Vector <int>>> polygons;
+	//формируются сырые полигоны глаз c абсолютной позицией по ячейкам
 	std::map <long long int, Individ> ::iterator p = env.population.begin();
 	while (p != env.population.end()) {
+		std::vector <FOV_Tri> ::iterator e = p->second.dna.eyes.begin();		
+		//while (e != p->second.dna.eyes.end()) {
+		//	std::vector < Vector <double> >  poly_to_arr_doub;
+		//	std::vector < Vector <int> >  poly_to_arr_int;
+
+		//	//Сделать что-то с этим говном. О боги, какое же это говно.
+		//	poly_to_arr_doub = e->getPolygon();
+		//	for(int i=0; i<3; i++ ) {
+		//		poly_to_arr_doub[i].rotate(p->second.way.getDeg()-M_PI/2);
+		//		poly_to_arr_doub[i]+=p->second.pos.toDouble();
+		//		poly_to_arr_int.push_back(poly_to_arr_doub[i].toInt());
+		//	}
+		//	polygons.push_back(poly_to_arr_int);
+		//	e++;
+		//}
+		
 		Cell c = (*display)[p->second.pos.x + p->second.pos.y*env.W()];
-		float x1, y1, x2, y2;
-		x1 = (c.getQuad()->v[0].x +  c.getQuad()->v[2].x)/2;
-		y1 = (c.getQuad()->v[0].y +  c.getQuad()->v[2].y)/2;
-		x2 = x1 + p->second.way.x*20;
-		y2 = y1 + p->second.way.y*20;
-		hge->Gfx_RenderLine(x1, y1, x2, y2, 0xAA00AA00);
+			float x1, y1, x2, y2;
+			x1 = (c.getQuad()->v[0].x +  c.getQuad()->v[2].x)/2;
+			y1 = (c.getQuad()->v[0].y +  c.getQuad()->v[2].y)/2;
+			x2 = x1 + p->second.way.x*20;
+			y2 = y1 + p->second.way.y*20;
+			hge->Gfx_RenderLine(x1, y1, x2, y2, 0xAA00AA00);
+
 		p++;
 	}
-	
+
+	display->RenderInfo(&polygons);
+
 	mainGUI->Render();
 	winManager->Render();
 
@@ -147,7 +169,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 	return 0;
 }
 
-void addIndivid(Point <float> p, Mode_feeding diet) {
+void addIndivid(Vector <int> p, Mode_feeding diet) {
 	GeneticCode g;
 		g.phis[acceleration] = 0.3;
 		g.phis[hp_max] = 10; 
@@ -159,13 +181,14 @@ void addIndivid(Point <float> p, Mode_feeding diet) {
 		g.phis[reproduction_time] = 10; 
 		g.phis[reproduction_pause] = 100;
 		g.radialEye.setHeight(0);
-		for(int i = func::randi(1, 3); i>=0; i--)
-			g.eyes.push_back(FOV_Tri(func::randf(-M_PI, M_PI), func::randi(5, 40), func::randi(5, 40)));
+		//for(int i = func::randi(1, 3); i>=0; i--)
+			//g.eyes.push_back(FOV_Tri(func::randf(-M_PI, M_PI), func::randi(5, 40), func::randi(5, 40)));
+		g.eyes.push_back(FOV_Tri(0, 20, 5));
 		g.diet=diet;
 		g.color = 0xFF000000;
 		for (int i=0; i<end_of_status; i++) {
 			if (diet==AUTO) {
-				g.soc[i][max_speed] = func::randf(0, 5);
+				/*g.soc[i][max_speed] = func::randf(0.5, 5);
 				g.soc[i][libido] = func::randf(0, 10);
 				g.soc[i][rand_way] = func::randf(0, M_PI*2);
 				g.soc[i][partner] = func::randf(0, 10);
@@ -175,8 +198,8 @@ void addIndivid(Point <float> p, Mode_feeding diet) {
 				g.soc[i][enemy] = func::randf(0, 10);
 				g.soc[i][cohesion_enemy] = func::randf(0, 10);
 				g.soc[i][separation_enemy] = func::randf(0, 10);
-				g.soc[i][alignment_enemy] = func::randf(0, 10);
-				/*g.soc[i][max_speed] = 2;
+				g.soc[i][alignment_enemy] = func::randf(0, 10);*/
+				g.soc[i][max_speed] = 2;
 				g.soc[i][libido] = 1;
 				g.soc[i][rand_way] = 1;
 				g.soc[i][partner] = 1;
@@ -186,7 +209,7 @@ void addIndivid(Point <float> p, Mode_feeding diet) {
 				g.soc[i][enemy] = 1;
 				g.soc[i][cohesion_enemy] = 1;
 				g.soc[i][separation_enemy] = 1;
-				g.soc[i][alignment_enemy] = 1;*/
+				g.soc[i][alignment_enemy] = 1;
 			}
 		}
 		g.soc[0][libido] = 0;
@@ -196,9 +219,8 @@ void addIndivid(Point <float> p, Mode_feeding diet) {
 }
 
 void InitEnvironment() {
-	//env.setMutation(1, 0.1, 0.2, 0.1, ONE);
 	env.setMutation(0, 0, 0, 0, ONE);
-	Point <float> p;
+	Vector <int> p;
 
 	for(int i=0; i<POP_A; i++) {
 		p.x=func::randi(0, env.W()-2);

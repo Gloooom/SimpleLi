@@ -14,16 +14,16 @@ public:
 	int				energy;
 	double			speed;
 	Vector <double> way;
-	Point <int>		pos;
+	Vector <int>	pos;
 	int				live_timer;
 	int				reproduction_timer;
 	
 	int				state;
 	
-	long long int ID;
-	long long int spouse;
+	long long int	ID;
+	long long int	spouseID;
 private:
-	bool collision;
+	bool			collision;
 	IndMemory <Individ*> mem;
 
 	static long long int count;
@@ -39,10 +39,10 @@ public:
 	void look(Array <Individ*> *field);
 	void checkState();
 	void checkWay();
-	void eat(Individ *target);
+	void eat(long long int targetID, std::map <long long int, Individ> *population);
 	void eat();
 	void reproduction(Array <Individ*> *field, std::deque <Individ> *cradle, std::map <long long int, Individ> *population);
-	void beginReproduction(long long int _spouse, std::map <long long int, Individ> *population);
+	void beginReproduction(long long int _spouseID, std::map <long long int, Individ> *population);
 	void heal();
 	void isLive();
 	bool isNearby(Individ *target);

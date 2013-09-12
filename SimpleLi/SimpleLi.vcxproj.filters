@@ -95,9 +95,6 @@
     <ClInclude Include="Logic\Types.h">
       <Filter>Файлы исходного кода\Logic</Filter>
     </ClInclude>
-    <ClInclude Include="Logic\Environment.h">
-      <Filter>Файлы исходного кода\Logic</Filter>
-    </ClInclude>
     <ClInclude Include="HGE\hgegui.h">
       <Filter>Заголовочные файлы</Filter>
     </ClInclude>
@@ -135,6 +132,9 @@
       <Filter>Файлы исходного кода\Logic</Filter>
     </ClInclude>
     <ClInclude Include="Logic\Eyes.h">
+      <Filter>Файлы исходного кода\Logic</Filter>
+    </ClInclude>
+    <ClInclude Include="Logic\Environment.h">
       <Filter>Файлы исходного кода\Logic</Filter>
     </ClInclude>
   </ItemGroup>

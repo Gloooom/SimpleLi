@@ -28,6 +28,12 @@ public:
 			q.v[2].col=
 			q.v[3].col=color;
 	};
+	Point <double> getCenterPos() {
+		Point <double> result;
+		result.x = (q.v[0].x + q.v[1].x + q.v[2].x + q.v[3].x)/4;
+		result.y = (q.v[0].y + q.v[1].y + q.v[2].y + q.v[3].y)/4;
+		return result;
+	}
 	hgeQuad *getQuad() {return &q;};
 };
 
@@ -126,4 +132,35 @@ public:
 			return false;
 		}
 	};
+
+	void RenderInfo(std::vector <std::vector <Vector <int>>> *polygons) {
+		//Дописать в плане масштабирования
+		hgeTriple _poly;
+		_poly.v[0].col = 
+		_poly.v[1].col = 
+		_poly.v[2].col = 0x44FF0000;
+		_poly.v[0].z = 
+		_poly.v[1].z = 
+		_poly.v[2].z = 0.5;
+		_poly.tex = NULL;
+		_poly.blend = BLEND_COLORMUL | BLEND_ALPHABLEND | BLEND_NOZWRITE;
+
+		std::vector <std::vector <Vector <int>>> ::iterator p = polygons->begin();
+		while (p != polygons->end()) {	
+			//Расчёт и рендер областей зрения.
+			Vector <double> vert;
+			for (int i=0; i<3; i++) {
+				_poly.v[i].x = (*p)[i].x*(_cellWidth+_border)+_cellWidth/2;
+				_poly.v[i].y = (*p)[i].y*(_cellHeight+_border)+_cellHeight/2;
+			}
+			hge->Gfx_RenderTriple(&_poly);
+			p++;
+		}	
+	};
+
+	int getColCount() {	return _colCount;};
+	int getRowCount() { return _rowCount;};
+
+	int getCellWidth() {return _cellWidth;};
+	int getCellHeight() {return _cellHeight;};
 };

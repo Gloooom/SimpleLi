@@ -19,7 +19,13 @@ public:
 	float getAngle()	{return _angle;};
 	float getHeight()	{return _height;};
 	float getWidth()	{return _width;};
-	Point <double> *getPolygon() {return polygon;};
+	std::vector < Vector <double> >  getPolygon() {
+		std::vector < Vector <double> > v;
+		v.push_back(polygon[0]);
+		v.push_back(polygon[1]);
+		v.push_back(polygon[2]);
+		return v;
+	};
 
 	void setAngle(float _a)	{
 		_angle = _a;
@@ -54,7 +60,7 @@ public:
 		}
 	};
 
-	std::vector <Vector <int> > getVectors(double rotateAngle) {
+	std::vector <Vector <int> > getVectors(double rotateAngle = 0) {
 		std::vector <Vector <int> > result;
 		if (_height > 0 && _width > 0) {
 			double sint = sin(rotateAngle);

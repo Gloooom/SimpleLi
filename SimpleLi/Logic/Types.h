@@ -17,7 +17,7 @@ enum Mode_change_what {SOC, SOC_PHIS, PHIS};
 enum Mode_mutation {ONE, ALL, HALF};
 enum Mode_feeding {AUTO, GETERO};
 
-enum Individ_status {HUNGRY, MATURE, WAIT, end_of_status, REPRODUCT};
+enum Individ_status {HUNGRY, MATURE, WAIT, end_of_status, REPRODUCT, STOP};
 
 template <typename Type> class IndMemory {
 public:

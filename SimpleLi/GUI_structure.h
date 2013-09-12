@@ -13,6 +13,8 @@
 #define WIN_EDIT_PHIS			4
 #define WIN_EDIT_MUT			5
 
+
+bool isIndSelect = false;
 #define SetLink(winID, sliderID, textID) SetWinText(winManager, winID, textID, Convert(GetWinSliderValue(winManager, winID, sliderID)).c_str())
 GeneticCode *genes = new GeneticCode();
 
@@ -56,6 +58,7 @@ void state_list_upd() {
 }
 
 void resetDNA() {
+	isIndSelect = false;
 	genes = new GeneticCode();
 	state_list_upd();
 }
@@ -219,6 +222,7 @@ void selectIndivid() {
 		getEye();
 		update_EyeEdit();
 		winManager->getWin(WIN_EDIT_EYE)->Render();
+		isIndSelect = true;
 	}
 }
 
@@ -815,8 +819,6 @@ void CreateWinManager() {
 	delete editPhisButText;
 }
 
-
-
 void CheckButtons() {
 	if (hgeButtonGetState(mainGUI, CMD_WIN_S_L)) {
 		winManager->Activate(WIN_S_L);
@@ -839,10 +841,20 @@ void CheckButtons() {
 		get_PhisGenes();
 	}
 	if (hgeButtonGetState(mainGUI, CMD_CLEAR)) {
-		//hgeButtonSetState(mainGUI, CMD_CLEAR, false);
 		env.clear();
+		if (isIndSelect)
+			resetDNA();
 	}
 	if (hgeButtonGetState(mainGUI, CMD_PAUSE)) {
 		state.play = false;
 	} else state.play = true;
+}
+
+void CheckKeys() {
+	//добавить обработку 
+	//пробел - пауза
+	//z - отдаление
+	//a - приближение
+	//правая кнопка - добавление особи
+	//левая кнопка - выбор особи с последующим открытием окна редактирования.
 }

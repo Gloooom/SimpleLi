@@ -62,12 +62,6 @@ public:
 		Vector v = *this;
 		*a=v.getDeg();
 	};
-	Point <int> round() {
-		Point <int> result;
-		result.x=(int) floor(x + 0.5);
-		result.y=(int) floor(y + 0.5);
-		return result;
-	}
 };
 
 template <typename T> class Vector: public Point <T> {
@@ -76,6 +70,25 @@ public:
 	Vector() : Point() {};
 	Vector(Point <T> p) : Point(p) {};
 
+
+	Vector <int> toInt() {
+		Vector <int> v;
+		v.x = (int)x;
+		v.y = (int)y;
+		return v;
+	};
+	Vector <double> toDouble() {
+		Vector <double> v;
+		v.x = (double)x;
+		v.y = (double)y;
+		return v;
+	};
+	Vector <int> round() {
+		Vector <int> v;
+		v.x = func::round(x);
+		v.y = func::round(y);
+		return v;
+	};
 	void operator=(Point <T> p) {
 		x=p.x;
 		y=p.y;
@@ -138,7 +151,7 @@ public:
 		Vector <T> result = *this;
 		if (x!=0 || y!=0) {
 			double lenRcp = 1/sqrt(x*x+y*y);
-			result.x *= lenRcp;
+			result.x *= lenRcp; //Делю на длину вектора и получаю нормированный вектор.
 			result.y *= lenRcp;
 		} else {
 			result.x=0;
