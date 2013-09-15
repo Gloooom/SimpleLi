@@ -17,7 +17,7 @@
 
 HGE *hge=0;
 
-Environment env(200, 200);
+Environment env(100, 100);
 EditorState	state;
 
 hgeGUI			*mainGUI;
@@ -101,7 +101,7 @@ bool RenderFunc()
 	//формируются сырые полигоны глаз c абсолютной позицией по ячейкам
 	std::map <long long int, Individ> ::iterator p = env.population.begin();
 	while (p != env.population.end()) {
-		std::vector <FOV_Tri> ::iterator e = p->second.dna.eyes.begin();		
+		//std::vector <FOV_Tri> ::iterator e = p->second.dna.eyes.begin();		
 		//while (e != p->second.dna.eyes.end()) {
 		//	std::vector < Vector <double> >  poly_to_arr_doub;
 		//	std::vector < Vector <int> >  poly_to_arr_int;
@@ -128,7 +128,7 @@ bool RenderFunc()
 		p++;
 	}
 
-	display->RenderInfo(&polygons);
+	//display->RenderInfo(&polygons);
 
 	mainGUI->Render();
 	winManager->Render();
@@ -183,7 +183,7 @@ void addIndivid(Vector <int> p, Mode_feeding diet) {
 		g.radialEye.setHeight(0);
 		//for(int i = func::randi(1, 3); i>=0; i--)
 			//g.eyes.push_back(FOV_Tri(func::randf(-M_PI, M_PI), func::randi(5, 40), func::randi(5, 40)));
-		g.eyes.push_back(FOV_Tri(0, 20, 5));
+		g.eyes.push_back(FOV_Tri(0, 20, 30));
 		g.diet=diet;
 		g.color = 0xFF000000;
 		for (int i=0; i<end_of_status; i++) {
@@ -255,5 +255,5 @@ void InitEditor() {
 }
 
 void DoneEditor() {
-	//delete fnt;
+
 }

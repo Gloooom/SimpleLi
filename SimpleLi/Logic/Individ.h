@@ -37,6 +37,7 @@ public:
 	void step(Array <Individ*> *field, std::deque <Individ> *cradle, std::map <long long int, Individ> *population);
 	void move(Array <Individ*> *field);
 	void look(Array <Individ*> *field);
+	void look(std::map <long long int, Individ> *population);
 	void checkState();
 	void checkWay();
 	void eat(long long int targetID, std::map <long long int, Individ> *population);

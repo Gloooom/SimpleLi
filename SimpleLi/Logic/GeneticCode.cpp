@@ -7,9 +7,6 @@ GeneticCode GeneticCode::hibridization(GeneticCode person, Mode_hibrid mode) {
 	GeneticCode result;
 	result.diet = diet;
 
-	for(int i = 0; i<eyes.size(); i++) {
-
-	}
 	if (mode==HALF_TO_HALF) {
 		for (int i=0; i<end_of_phis; i++)
 			result.phis[i] = (randBool()) ? phis[i] : person.phis[i];
@@ -17,7 +14,6 @@ GeneticCode GeneticCode::hibridization(GeneticCode person, Mode_hibrid mode) {
 			for (int j=0; j<end_of_soc; j++)
 				result.soc[i][j] = (randBool()) ? soc[i][j] : person.soc[i][j];
 	} else if (mode==AVERAGE) {
-
 		if (eyes.size()<person.eyes.size()) {
 			for (int i=0; i < eyes.size(); i++)
 				result.eyes.push_back(eyes[i].hibrid(person.eyes[i]));
@@ -70,12 +66,12 @@ GeneticCode GeneticCode::mutation(float maxDelta, int mutGenCount, float eyeAddC
 
 
 	
-	if (randPercent(eyeMutationChance)) {
+	if (randPercentBool(eyeMutationChance)) {
 		int selectEye = randi(0, eyes.size()-1);
 		result.eyes[selectEye] = eyes[selectEye].mutation(maxDelta);
 	}
-	if (randPercent(eyeAddChance)) result.eyes.push_back(FOV_Tri(randf(-M_PI, M_PI), randf(0,50), randf(0,50)));
-	if (randPercent(radEyeMutationChance)) result.radialEye = radialEye.mutation(maxDelta);
+	if (randPercentBool(eyeAddChance)) result.eyes.push_back(FOV_Tri(randf(-M_PI, M_PI), randf(0,50), randf(0,50)));
+	if (randPercentBool(radEyeMutationChance)) result.radialEye = radialEye.mutation(maxDelta);
 
 	return result;
 }

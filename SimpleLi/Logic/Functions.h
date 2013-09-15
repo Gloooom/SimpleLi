@@ -14,7 +14,7 @@ namespace func {
 
 	long long int round(double value);
 
-	bool randPercent(float percent);
+	bool randPercentBool(float percent);
 
 	Point <double> crossLine(double k1, double b1, double k2, double b2);
 

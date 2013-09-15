@@ -67,8 +67,9 @@ void newIndivid() {
 	genes->diet = AUTO;
 	SetWinButtonState(winManager, WIN_ADD_IND, "select_ind_but", false);
 	int col, row;
-	if (hge->Input_GetKeyState(HGEK_LBUTTON) && !winManager->checkHit(state.mp.x, state.mp.y) &&
-		display->getMousePos(state.mp.x, state.mp.y, &col, &row)) {
+	if (hge->Input_GetKeyState(HGEK_LBUTTON) && 
+		display->getMousePos(state.mp.x, state.mp.y, &col, &row) &&
+		!winManager->checkHit(state.mp.x, state.mp.y)) {
 		env.addIndivid(Individ(Point <int>(col, row), *genes));
 	}
 }
@@ -159,9 +160,12 @@ void delEye() {
 }
 
 void update_EyeEdit() {
+	SetLink(WIN_EDIT_EYE, "way_angle_s", "way_angle_val");
 	SetLink(WIN_EDIT_EYE, "angle_s", "angle_val");
 	SetLink(WIN_EDIT_EYE, "width_s", "width_val");
 	SetLink(WIN_EDIT_EYE, "height_s", "height_val");
+
+	double wayAngle = GetWinSliderValue(winManager, WIN_EDIT_EYE, "way_angle_s");
 
 	GetWinListbox(winManager, WIN_EDIT_EYE, "eyes_list")->Clear();
 	std::vector <hgeQuad> ::iterator p = winManager->getWin(WIN_EDIT_EYE)->graphic.begin();
@@ -174,11 +178,11 @@ void update_EyeEdit() {
 		selectEye = GetWinListboxSelect(winManager, WIN_EDIT_EYE, "eyes_list");
 		setEye();
 		
-		for(int i = 0; i<genes->eyes.size(); i++) {
+		for (int i = 0; i<genes->eyes.size(); i++) {
 			GetWinListbox(winManager, WIN_EDIT_EYE, "eyes_list")->AddItem(&Convert(i)[0]);
 
 			if (i != selectEye) {
-				std::vector <Vector <int> > tempV = genes->eyes[i].getVectors(0);
+				std::vector <Vector <int> > tempV = genes->eyes[i].getVectors(wayAngle);
 				std::vector <Vector <int> > ::iterator m = tempV.begin();
 				while (m != tempV.end()) {
 					Vector <int> pix(*m);
@@ -191,7 +195,7 @@ void update_EyeEdit() {
 			} 
 		}
 
-		std::vector <Vector <int> > tempV = genes->eyes[selectEye].getVectors(0);
+		std::vector <Vector <int> > tempV = genes->eyes[selectEye].getVectors(wayAngle);
 		std::vector <Vector <int> > ::iterator m = tempV.begin();
 		while (m != tempV.end()) {
 			Vector <int> pix(*m);
@@ -202,8 +206,11 @@ void update_EyeEdit() {
 			m++;
 		}
 	}
+
+	double sint = sin(wayAngle);
+	double cost = cos(wayAngle);
 	for (int i = 0; i<20; i++) 
-		setQuadColor(&(winManager->getWin(WIN_EDIT_EYE)->graphic[35+i + (35)*70]), 0xFFFFFFFF);
+		setQuadColor(&(winManager->getWin(WIN_EDIT_EYE)->graphic[((int)(i*cost))+35 + ((int)(i*sint) + 35)*70]), 0xFFFFFFFF);
 }
 
 void call_EyeEdit() {
@@ -215,7 +222,9 @@ void call_EyeEdit() {
 void selectIndivid() {
 	int col, row;
 	display->getMousePos(state.mp.x, state.mp.y, &col, &row);
-	if (hge->Input_GetKeyState(HGEK_LBUTTON)) {
+	if (hge->Input_GetKeyState(HGEK_LBUTTON) && 
+		display->getMousePos(state.mp.x, state.mp.y, &col, &row) &&
+		!winManager->checkHit(state.mp.x, state.mp.y)) {
 		genes = &env.field(col, row)->dna;
 		state_list_upd();
 		SetWinButtonState(winManager, WIN_ADD_IND, "select_ind_but", false);
@@ -585,7 +594,8 @@ void CreateWinManager() {
 	eyeSlider->SetMode(0, 100, HGESLIDER_BAR);
 	eyeSlider->SetValue(0);
 	
-	winEditEye->addCtrl(eyeSlider, 10, 395, "height_rad_s");
+	eyeSlider->SetMode(0, M_PI*2, HGESLIDER_BAR);
+	winEditEye->addCtrl(eyeSlider, 10, 395, "way_angle_s");
 	eyeSlider->SetMode(-M_PI, M_PI, HGESLIDER_BARRELATIVE);
 	winEditEye->addCtrl(eyeSlider, 10, 435, "angle_s");
 	eyeSlider->SetMode(0, 100, HGESLIDER_BAR);
@@ -596,8 +606,8 @@ void CreateWinManager() {
 	slidersValText->SetMode(HGETEXT_LEFT);
 	slidersValText->bEnabled = false;
 	
-	slidersValText->SetText("Radial eye height:");
-	winEditEye->addCtrl(slidersValText, 10, 385, "height_rad_t");
+	slidersValText->SetText("Way:");
+	winEditEye->addCtrl(slidersValText, 10, 385, "way_angle_t");
 	slidersValText->SetText("Eye angle:");
 	winEditEye->addCtrl(slidersValText, 10, 425, "angle_t");
 	slidersValText->SetText("Eye width:");
@@ -610,7 +620,7 @@ void CreateWinManager() {
 	slidersValText->bEnabled = false;
 	slidersValText->SetText("0");
 
-	winEditEye->addCtrl(slidersValText, 110, 385, "height_rad_val");
+	winEditEye->addCtrl(slidersValText, 110, 385, "way_angle_val");
 	winEditEye->addCtrl(slidersValText, 110, 425, "angle_val");
 	winEditEye->addCtrl(slidersValText, 110, 450, "width_val");
 	winEditEye->addCtrl(slidersValText, 110, 475, "height_val");

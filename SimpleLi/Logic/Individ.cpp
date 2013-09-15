@@ -42,16 +42,17 @@ bool Individ::operator!=(Individ i) {
 	else return true;
 }
 
+//Переписать полностью. Полное говно.
 void Individ::move(Array <Individ*> *field) {
 	Vector <double> tempPos(0, 0);
 	Individ *he=this;
 	while (way.getLength()!=0 &&
 		(he->ID == 0 || (*he) == (*this)) &&
 		(tempPos+way)<=(way*speed) &&
-		pos.x+func::round(tempPos.x+way.x)>=0 && 
-		pos.x+func::round(tempPos.x+way.x)<field->getW() && 
-		pos.y+func::round(tempPos.y+way.y)>=0 && 
-		pos.y+func::round(tempPos.y+way.y)<field->getH()) {
+		func::round(pos.x+tempPos.x+way.x)>=0 && 
+		func::round(pos.x+tempPos.x+way.x)<field->getW() && 
+		func::round(pos.y+tempPos.y+way.y)>=0 && 
+		func::round(pos.y+tempPos.y+way.y)<field->getH()) {
 			he = (*field)(
 				func::round(tempPos.x + way.x + (double) pos.x), 
 				func::round(tempPos.y + way.y + (double) pos.y)
@@ -77,8 +78,8 @@ void Individ::move(Array <Individ*> *field) {
 //А не как сейчас: добавлять в массив по пять раз один объект.
 void Individ::look(Array <Individ*> *field) {
 	mem.clear();
+	double wayAngle = way.getDeg();
 	for (int i=0; i<dna.eyes.size(); i++) {
-		double wayAngle = way.getDeg();
 
 		std::vector <Vector <int> > eyeVectors = dna.eyes[i].getVectors(wayAngle);
 
@@ -100,6 +101,30 @@ void Individ::look(Array <Individ*> *field) {
 	}
 }
 
+void Individ::look(std::map <long long int, Individ> *population) {
+	//Пока слишком криво. Почему-то точки попадания определяются абсолютно правильно, но особи ведут себя слишком странно
+	mem.clear();
+	double wayAngle = way.getDeg();
+
+	std::vector <FOV_Tri> ::iterator e = dna.eyes.begin();
+	while (e != dna.eyes.end()) {
+		std::map <long long int, Individ> ::iterator p = population->begin();
+		while (p != population->end()) {
+			if (e->checkHit(p->second.pos.toDouble(), pos.toDouble(), wayAngle)) {
+				Individ *he = &p->second;
+				if (he->ID != 0 && *he != *this) {
+					if (he->dna.diet != dna.diet && !func::isIn(mem.enemies, he)) 
+						mem.enemies.push_back(he);
+					if (he->dna.diet == dna.diet && !func::isIn(mem.partners, he))
+						mem.partners.push_back(he);
+				}
+			}
+			p++;
+		}
+		e++;
+	}
+}
+
 void Individ::checkWay() {
 	Vector <double> enemyCohesion, partnerCohesion, 
 		enemySeparation, partnerSeparation,
@@ -111,7 +136,7 @@ void Individ::checkWay() {
 	for(int i=0; i<mem.enemies.size(); i++)	{
 		enemiesImpact = (mem.enemies[i]->pos - pos).toDouble();
 		enemyCohesion += enemiesImpact.getNorm();
-		enemySeparation += enemiesImpact.getNorm()/((enemiesImpact.getLength()!=0) ? enemiesImpact.getLength() : 1);
+		enemySeparation -= enemiesImpact.getNorm()/((enemiesImpact.getLength()!=0) ? enemiesImpact.getLength() : 1);
 		enemyAlignment += mem.enemies[i]->way;
 	}
 
@@ -119,7 +144,7 @@ void Individ::checkWay() {
 	for(int i=0; i<mem.partners.size(); i++) {
 		partnersImpact = (mem.partners[i]->pos - pos).toDouble();
 		partnerCohesion += partnersImpact.getNorm();
-		partnerSeparation += partnersImpact.getNorm()/((partnersImpact.getLength()!=0) ? partnersImpact.getLength() : 1);
+		partnerSeparation -= partnersImpact.getNorm()/((partnersImpact.getLength()!=0) ? partnersImpact.getLength() : 1);
 		partnerAlignment += mem.partners[i]->way;
 	}
 
@@ -181,14 +206,15 @@ void Individ::eat(long long int targetID, std::map <long long int, Individ> *pop
 }
 
 void Individ::beginReproduction(long long int _spouseID, std::map <long long int, Individ> *population) {
-	Individ *spouse = &(*population)[_spouseID];
-	if (state != REPRODUCT && spouse->state != REPRODUCT) {
+	if (state != REPRODUCT && (*population)[_spouseID].state != REPRODUCT) {
+		mem.clear();
+		(*population)[_spouseID].mem.clear();
 		reproduction_timer = 0;
-		spouse->reproduction_timer = 0;
+		(*population)[_spouseID].reproduction_timer = 0;
 		state = REPRODUCT;
-		spouse->state = REPRODUCT;
+		(*population)[_spouseID].state = REPRODUCT;
 		spouseID = _spouseID;
-		spouse->spouseID = ID;
+		(*population)[_spouseID].spouseID = ID;
 	}
 }
 
@@ -211,6 +237,7 @@ void Individ::reproduction(Array <Individ*> *field, std::deque <Individ> *cradle
 	} else {
 		reproduction_timer = 0;
 		state = WAIT;
+		spouseID = ID;
 	}
 }
 
@@ -259,13 +286,18 @@ IndMemory <long long int> Individ::whoIsNearby(Array <Individ*> *field) {
 	IndMemory <long long int> result;
 	
 	int delta[] = {-1, 0, 1};
+	Point <int> selectCell;
 
 	for (int x=0; x<=2; x++) 
 		for (int y=0; y<=2; y++) {
-			if (pos.x+delta[x] >=0 && pos.y+delta[y] >=0 
-				&& pos.x+delta[x] <field->getW() && pos.y+delta[y] <field->getH()) {
-				Individ *he = (*field)(pos.x+delta[x], pos.y+delta[y]);
-				if (he->ID != 0 && he->ID != ID && he->state != REPRODUCT && he->live) {
+			selectCell.x = pos.x+delta[x];
+			selectCell.y = pos.y+delta[y];
+			if (field->isValid(selectCell)) {
+				//Individ *he = (*field)(selectCell.x, selectCell.y);
+				Individ *he = (*field)(selectCell);
+				if (he->ID != 0 && he->ID != ID && he->live
+					&& he->state != REPRODUCT
+					&& he->state != STOP) {
 					if (he->dna.diet == dna.diet && he->gender != gender && he->state == MATURE)
 						result.partners.push_back(he->ID);
 					if (he->dna.diet != dna.diet)
@@ -301,7 +333,7 @@ void Individ::step(Array <Individ*> *field, std::deque <Individ> *cradle, std::m
 			checkWay();
 			double energyCost;
 			//Костыль. Исправить.
-			if (dna.soc[state][max_speed] != 0 & dna.phis[stamina] != 0) 
+			if (dna.soc[state][max_speed] != 0 && dna.phis[stamina] != 0) 
 				energyCost = (speed/dna.soc[state][max_speed])/dna.phis[stamina];
 			else
 				energyCost = dna.phis[energy_max];

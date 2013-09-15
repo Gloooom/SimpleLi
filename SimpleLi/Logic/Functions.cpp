@@ -18,7 +18,7 @@ long long int func::randi(long long int start, long long int end) {
 	return ((((float) rand())/(RAND_MAX/(end-start))) + start);
 }
 
-bool func::randPercent(float percent) {
+bool func::randPercentBool(float percent) {
 	if (randf(0, 1) <= percent) return true;
 	else return false;
 }

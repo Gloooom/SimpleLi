@@ -6,36 +6,6 @@
 
 #define M_PI       3.14159265358979323846
 
-template <typename Type> class Array {
-private:
-	int _rowCount;
-	int _colCount;
-	Type *arr;
-	Type null;
-public:
-	Array(int colCount, int rowCount) {
-		_rowCount = rowCount;
-		_colCount = colCount;
-		arr = new Type[rowCount*colCount];
-	};
-	~Array() {
-		delete[] arr;
-	};
-	Type &operator[](int i) {return arr[i];};
-	Type &operator()(int x, int y) {
-		try {
-			if (x>=0 && x<_colCount && y>=0 && y<_rowCount)
-				return arr[x + y*_colCount];
-			else
-				throw 1;
-		} catch(int i) {
-			MessageBox(NULL, (Convert(x) + ", " + Convert(y)).c_str(), "Error", MB_OK | MB_ICONERROR | MB_SYSTEMMODAL);
-		}
-	};
-	int getW() {return _colCount;};
-	int getH() {return _rowCount;};
-};
-
 template <typename T> class Point {
 public:
 	T x;
@@ -212,3 +182,44 @@ std::string Convert (T number) {
 	buff << number;
 	return buff.str();
 }
+
+		
+template <typename Type> class Array {
+private:
+	int _rowCount;
+	int _colCount;
+	Type *arr;
+	Type null;
+public:
+	Array(int colCount, int rowCount) {
+		_rowCount = rowCount;
+		_colCount = colCount;
+		arr = new Type[rowCount*colCount];
+	};
+	~Array() {
+		delete[] arr;
+	};
+	Type &operator[](int i) {return arr[i];};
+	Type &operator()(int x, int y) {
+		try {
+			if (x>=0 && x<_colCount && y>=0 && y<_rowCount)
+				return arr[x + y*_colCount];
+			else
+				throw 1;
+		} catch(int i) {
+			MessageBox(NULL, (Convert(x) + ", " + Convert(y)).c_str(), "Error", MB_OK | MB_ICONERROR | MB_SYSTEMMODAL);
+		}
+	};
+	Type &operator()(Point <int> pos) {
+		return (*this)(pos.x, pos.y);
+	};
+	int getW() {return _colCount;};
+	int getH() {return _rowCount;};
+
+	bool isValid(Point <int> pos) {
+		if (pos.x >= 0 && pos.x <_colCount && 
+			pos.y >= 0 && pos.y <_rowCount)
+			return true;
+		else return false;
+	};
+};
