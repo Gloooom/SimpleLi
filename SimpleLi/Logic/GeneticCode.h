@@ -64,6 +64,8 @@ public:
 	GeneticCode hibridization(GeneticCode person, Mode_hibrid mode);
 	GeneticCode mutation(float maxDelta, int mutGenCount, float eyeAddChance, float eyeMutationChance, 
 						 float radEyeMutationChance);
+
+	void randomize();
 	bool save(std::string path);
 	bool load(std::string path);
 };

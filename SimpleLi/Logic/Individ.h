@@ -29,7 +29,7 @@ private:
 	static long long int count;
 public:
 	Individ();
-	Individ(Point <int> _pos, GeneticCode _gene);
+	Individ(Vector <int> _pos, GeneticCode _dna);
 	
 	bool operator==(Individ i);
 	bool operator!=(Individ i);

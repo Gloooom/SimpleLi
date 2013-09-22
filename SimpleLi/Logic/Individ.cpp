@@ -13,7 +13,7 @@ Individ::Individ(): way(0,0) {
 	live = false;
 }
 
-Individ::Individ(Point <int> _pos, GeneticCode _dna) {
+Individ::Individ(Vector <int> _pos, GeneticCode _dna) {
 	ID=count;
 	count++;
 

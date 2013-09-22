@@ -1,15 +1,16 @@
 #define GUI_TEXT				0
 
 #define CMD_WIN_S_L				1
-#define CMD_WIN_EDIT_DNA			2
+#define CMD_WIN_EDIT_DNA		2
 #define CMD_WIN_EDIT_PHIS		3
 #define CMD_PAUSE				4
 #define CMD_CLEAR				5
 #define CMD_WIN_EDIT_MUT		6
 #define CMD_ZOOM				7
+#define CMD_RAND_POP			8
 
 #define WIN_S_L					1
-#define WIN_EDIT_DNA				2
+#define WIN_EDIT_DNA			2
 #define WIN_EDIT_EYE			3
 #define WIN_EDIT_PHIS			4
 #define WIN_EDIT_MUT			5
@@ -88,23 +89,6 @@ void update_IndEdit() {
 	SetLink(WIN_EDIT_DNA, "cohesion_enemy_s", "cohesion_enemy_val");
 	SetLink(WIN_EDIT_DNA, "separation_enemy_s", "separation_enemy_val");
 	SetLink(WIN_EDIT_DNA, "alignment_enemy_s", "alignment_enemy_val");
-}
-
-void randDNA() {
-	for (int i=0; i<end_of_status; i++) {
-		genes->soc[i][max_speed] = func::randf(0, 10);
-		genes->soc[i][libido] = func::randf(-10, 10);
-		genes->soc[i][rand_way] = func::randf(0, M_PI);
-		genes->soc[i][partner] = func::randf(-10, 10);
-		genes->soc[i][cohesion_partner] = func::randf(-10, 10);
-		genes->soc[i][separation_partner] = func::randf(-10, 10);
-		genes->soc[i][alignment_partner] = func::randf(-10, 10);
-		genes->soc[i][enemy] = func::randf(-10, 10);
-		genes->soc[i][cohesion_enemy] = func::randf(-10, 10);
-		genes->soc[i][separation_enemy] = func::randf(-10, 10);
-		genes->soc[i][alignment_enemy] = func::randf(-10, 10);
-	}
-	state_list_upd();
 }
 
 int selectEye;
@@ -208,6 +192,14 @@ void call_EyeEdit() {
 	getEye();
 }
 
+void randDNA() {
+	delete genes;
+	genes = new GeneticCode();
+	genes->randomize();
+	state_list_upd();
+	update_EyeEdit();
+}
+
 void update_PhisEdit() {
 	SetLink(WIN_EDIT_PHIS, "acceleration_s", "acceleration_val");
 	SetLink(WIN_EDIT_PHIS, "hp_max_s", "hp_max_val");
@@ -296,6 +288,19 @@ void update_MutEdit() {
 	SetWinSliderValue(winManager, WIN_EDIT_MUT, "mutation_mutGenCount_s", 
 		(int)GetWinSliderValue(winManager, WIN_EDIT_MUT, "mutation_mutGenCount_s"));
 	SetLink(WIN_EDIT_MUT, "mutation_mutGenCount_s", "mutation_mutGenCount_val");
+}
+
+void randPopulation(int count) {
+	env.clear();
+	genes->diet = AUTO;
+	GeneticCode temp = *genes;
+	for (int i=0; i<count; i++) {
+		genes->randomize();
+		env.addIndivid(
+			Individ(Vector <int> (func::randi(0, env.W()-2), func::randi(0, env.H()-2)), *genes)
+			);
+	}
+	(*genes) = temp;
 }
 
 void CreateWinManager() {
@@ -788,6 +793,17 @@ void CreateMainGUI() {
 	text->SetText("Clear");
 	text->bEnabled = false;
 	mainGUI->AddCtrl(text);
+
+	button=new hgeGUIButton(CMD_RAND_POP, 610, 520, 180, 20, butTex, 0, 0);
+	button->SetMode(false);
+	mainGUI->AddCtrl(button);
+
+	text = new hgeGUIText(GUI_TEXT, 610, 520, 180, 30, fnt);
+	text->SetMode(HGETEXT_CENTER);
+	text->SetColor(0xFFFFFFFF);
+	text->SetText("Rand Population");
+	text->bEnabled = false;
+	mainGUI->AddCtrl(text);
 	
 	HTEXTURE Tex = getButtonTex(10, 10, 0xFFFFFFFF, 0.1);
 
@@ -826,6 +842,10 @@ void CheckButtons() {
 	}
 	if (hgeButtonGetState(mainGUI, CMD_CLEAR)) {
 		env.clear();
+	}
+	if (hgeButtonGetState(mainGUI, CMD_RAND_POP)) {
+		randPopulation(sqrt((double)(env.H()*env.W())));
+		hgeButtonSetState(mainGUI, CMD_RAND_POP, false);
 	}
 	if (hgeButtonGetState(mainGUI, CMD_PAUSE)) {
 		state.play = false;
