@@ -816,7 +816,7 @@ void CreateMainGUI() {
 
 	hgeGUISlider *slid;
 	slid = new hgeGUISlider(CMD_ZOOM, 610, 300, 180, 10, Tex, 1, 0, 5, 10);
-	slid->SetMode(0, env.H()/10, HGESLIDER_BAR);
+	slid->SetMode(1, env.H()/10, HGESLIDER_BAR);
 	slid->SetValue(1);
 	mainGUI->AddCtrl(slid);
 }

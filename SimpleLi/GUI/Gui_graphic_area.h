@@ -175,7 +175,10 @@ public:
 		if (visibleCol+visibleX <= _colCount && visibleRow+visibleY <=_rowCount &&
 			visibleX >=0  && visibleY >=0)
 			setVisibleArea(visibleX, visibleY, visibleCol, visibleRow);
-		setPos(tempX+(tempVisibleCol-visibleCol)/2, tempY+(tempVisibleRow-visibleRow)/2);
+		setPos(
+			(tempX*2+tempVisibleCol)/2 - visibleCol/2, 
+			(tempY*2+tempVisibleRow)/2 - visibleRow/2
+			);
 	};
 
 	void setPos(int x, int y) {
