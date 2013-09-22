@@ -12,12 +12,12 @@
 
 
 
-#define POP_A 50
+#define POP_A 100
 #define POP_G 0
 
 HGE *hge=0;
 
-Environment env(100, 100);
+Environment env(200, 200);
 EditorState	state;
 
 hgeGUI			*mainGUI;
@@ -28,7 +28,9 @@ RGBColor		objsColor;
 hgeFont			*fnt;
 Pixel			*sliderTexture;
 hgeSprite		*testSpr;
+hgeQuad			rightBar;
 
+float zoom = 1;
 
 #include "GUI_structure.h"
 
@@ -49,12 +51,13 @@ bool FrameFunc()
 	
 	hge->Input_GetMousePos(&state.mp.x, &state.mp.y);
 
+	CheckButtons();
+	CheckKeys();
+
 	winManager->Update(dt, state.mp.x, state.mp.y);
 	display->getMousePos(state.mp.x, state.mp.y, &mp_x, &mp_y);
 
 	mainGUI->Update(dt);
-
-	CheckButtons();
 
 	if (state.play) {
 		timer+=dt;
@@ -72,6 +75,7 @@ bool FrameFunc()
 			timer=0;
 		}
 	}
+	
 
 	return false;
 }
@@ -81,19 +85,6 @@ bool RenderFunc()
 {
 	hge->Gfx_Clear(0);
 	hge->Gfx_BeginScene();
-	
-	if (!env.population.empty())
-		fnt->printf(605, 5, HGETEXT_LEFT, 
-		"FPS: %d "
-		"\nPopulation: %d"
-		"\nStep: %d"
-		"\nMousePos:%d  %d",
-		hge->Timer_GetFPS(), 
-		env.population.size(), 
-		(int) env.stepCount,
-		mp_x,
-		mp_y
-		);
 
 	display->Render();
 
@@ -117,18 +108,34 @@ bool RenderFunc()
 		//	e++;
 		//}
 		
-		Cell c = (*display)[p->second.pos.x + p->second.pos.y*env.W()];
-			float x1, y1, x2, y2;
-			x1 = (c.getQuad()->v[0].x +  c.getQuad()->v[2].x)/2;
-			y1 = (c.getQuad()->v[0].y +  c.getQuad()->v[2].y)/2;
-			x2 = x1 + p->second.way.x*20;
-			y2 = y1 + p->second.way.y*20;
-			hge->Gfx_RenderLine(x1, y1, x2, y2, 0xAA00AA00);
-
+		if (display->checkVisiblity(p->second.pos.x, p->second.pos.y)) {
+			Cell c = (*display)[p->second.pos.x + p->second.pos.y*env.W()];
+			Vector <double> start, end;
+			start = c.getCenterPos();
+			end = start + p->second.way*20*zoom;
+			hge->Gfx_RenderLine(start.x, start.y, end.x, end.y, 0xAA00AA00);
+		}
 		p++;
 	}
 
 	//display->RenderInfo(&polygons);
+
+	hge->Gfx_RenderQuad(&rightBar);
+
+	if (!env.population.empty())
+		fnt->printf(605, 5, HGETEXT_LEFT, 
+		"FPS: %d "
+		"\nPopulation: %d"
+		"\nStep: %d"
+		"\nMousePos:%d  %d"
+		"\nZoom: %f",
+		hge->Timer_GetFPS(), 
+		env.population.size(), 
+		(int) env.stepCount,
+		mp_x,
+		mp_y,
+		zoom
+		);
 
 	mainGUI->Render();
 	winManager->Render();
@@ -183,7 +190,7 @@ void addIndivid(Vector <int> p, Mode_feeding diet) {
 		g.radialEye.setHeight(0);
 		//for(int i = func::randi(1, 3); i>=0; i--)
 			//g.eyes.push_back(FOV_Tri(func::randf(-M_PI, M_PI), func::randi(5, 40), func::randi(5, 40)));
-		g.eyes.push_back(FOV_Tri(0, 20, 30));
+		g.eyes.push_back(FOV_Tri(0, 30, 20));
 		g.diet=diet;
 		g.color = 0xFF000000;
 		for (int i=0; i<end_of_status; i++) {
@@ -240,6 +247,26 @@ void InitEnvironment() {
 void InitEditor() {
 	objsColor = 0xFF111177;
 
+	rightBar.v[0].x=600;
+	rightBar.v[0].y=0;
+	rightBar.v[1].x=800;
+	rightBar.v[1].y=0;
+	rightBar.v[2].x=800;
+	rightBar.v[2].y=600;
+	rightBar.v[3].x=600;
+	rightBar.v[3].y=800;
+
+	rightBar.v[0].col=
+		rightBar.v[1].col=
+		rightBar.v[2].col=
+		rightBar.v[3].col=0xFF000000;
+	rightBar.v[0].z=
+		rightBar.v[1].z=
+		rightBar.v[2].z=
+		rightBar.v[3].z=0.5f;
+	rightBar.tex = NULL;
+	rightBar.blend=BLEND_COLORMUL | BLEND_ALPHABLEND | BLEND_NOZWRITE;
+
 	fnt = new hgeFont("123.fnt");
 	fnt->SetScale(0.5);
 
@@ -251,7 +278,7 @@ void InitEditor() {
 
 	display = new GraphicArea(env.W(), env.H(), 600, 600);
 	display->setBorder(1);
-	display->setVisibleArea(0, 0, env.W(), env.H());
+
 }
 
 void DoneEditor() {

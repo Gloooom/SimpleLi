@@ -218,6 +218,8 @@ void Environment::step() {
 	checkDead();
 	born();
 	fill();
+
+	
 	std::map <long long int, Individ> ::iterator p = population.begin();
 	while (p != population.end()) {
 		p->second.step(&field, &cradle, &population);

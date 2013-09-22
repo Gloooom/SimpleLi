@@ -30,8 +30,8 @@ public:
 	};
 	Point <double> getCenterPos() {
 		Point <double> result;
-		result.x = (q.v[0].x + q.v[1].x + q.v[2].x + q.v[3].x)/4;
-		result.y = (q.v[0].y + q.v[1].y + q.v[2].y + q.v[3].y)/4;
+		result.x = (q.v[0].x + q.v[2].x)/2;
+		result.y = (q.v[0].y + q.v[2].y)/2;
 		return result;
 	}
 	hgeQuad *getQuad() {return &q;};
@@ -39,7 +39,7 @@ public:
 
 class GraphicArea {
 private:
-	int _border;
+	float _border;
 
 	int _screenWidth;
 	int _screenHeight;
@@ -47,11 +47,11 @@ private:
 	int _colCount;
 	int _rowCount;
 
-	int _visibleX, _visibleY;
-	int _visibleColCount, _visibleRowCount;
+	float _visibleX, _visibleY;
+	float _visibleColCount, _visibleRowCount;
 
-	int _cellWidth;
-	int _cellHeight;
+	float _cellWidth;
+	float _cellHeight;
 
 	DWORD _background;
 	Array <DWORD> colorArr;
@@ -74,63 +74,52 @@ public:
 					  quadArr(x, y).setQuad(0, 0, 1, 1);
 					  colorArr(x, y) = 0xFFFFFFFF;
 				  }
+			setVisibleArea(0, 0, _colCount, _rowCount);
 	};
+	  
+	Cell operator[](int i) {return quadArr[i];};
+	DWORD &operator()(int x, int y) {return colorArr(x, y);};
+
 	void setBorder(int b) {
 		  _border = b;
 		  setVisibleArea(_visibleX, _visibleY, _visibleColCount, _visibleRowCount);
 	};
-	void setVisibleArea(int visibleX, int visibleY, int visibleColCount, int visibleRowCount) {
-		  if (visibleX<=0) _visibleX = 0;
-		  if (visibleX>=_colCount) visibleX = _colCount;
-		  if (visibleY<=0) visibleY = 0;
-		  if (visibleY>=_rowCount) visibleY = _rowCount;
-		  _visibleY = visibleY;
-		  _visibleX = visibleX;
 
-		  if (visibleColCount<=0) visibleColCount = 1;
-		  if (visibleRowCount<=0) visibleRowCount = 1;
-
-		  _visibleColCount = visibleColCount;
-		  _visibleRowCount = visibleRowCount;
-
-		  _cellWidth = _screenWidth/_visibleColCount - _border;
-		  _cellHeight = _screenHeight/_visibleRowCount - _border;
-		  for(int _x=visibleX; _x<visibleColCount; _x++)
-			  for(int _y=visibleY; _y<visibleRowCount; _y++)
-				  quadArr(_x, _y).setQuad((_x-visibleX)*_cellWidth+(_border*(_x-visibleX)),
-				  (_y-visibleY)*_cellHeight+(_border*(_y-visibleY)), 
-				  _cellWidth, _cellHeight);
-	};
-	Cell operator[](int i) {return quadArr[i];};
-	DWORD &operator()(int x, int y) {return colorArr(x, y);};
 	void Update() {
-		  for(int x=_visibleX; x<_visibleColCount; x++)
-			  for(int y=_visibleY; y<_visibleRowCount; y++)
+		  for(int x=_visibleX; x<_visibleColCount+_visibleX; x++)
+			  for(int y=_visibleY; y<_visibleRowCount+_visibleY; y++)
 				  quadArr(x, y).setColor(colorArr(x, y));
 	};
 	void Render() {
-		  for(int x=_visibleX; x<_visibleColCount; x++)
-			  for(int y=_visibleY; y<_visibleRowCount; y++)
+		  for(int x=_visibleX; x<_visibleColCount+_visibleX; x++)
+			  for(int y=_visibleY; y<_visibleRowCount+_visibleY; y++)
 				  hge->Gfx_RenderQuad(quadArr(x, y).getQuad());
 	};
 	void setBackground(DWORD color) {
 		  _background = color;
 	};
 	void Clear() {
-		  for(int x=_visibleX; x<_visibleColCount; x++)
-			  for(int y=_visibleY; y<_visibleRowCount; y++)
+		  for(int x=_visibleX; x<_visibleColCount+_visibleX; x++)
+			  for(int y=_visibleY; y<_visibleRowCount+_visibleY; y++)
 				  colorArr(x, y) = _background;
 	};
 	bool getMousePos(int mpx, int mpy, int *colPos, int *rowPos) {
 		if (mpx<_screenWidth && mpy<_screenHeight) {
-			*colPos = mpx/(_cellWidth+_border);
-			*rowPos = mpy/(_cellHeight+_border);
+			*colPos = (mpx/(_cellWidth+_border))+_visibleX;
+			*rowPos = (mpy/(_cellHeight+_border))+_visibleY;
 			return true;
 		} else {
-			*colPos = 0;
-			*rowPos = 0;
+			*colPos = -1;
+			*rowPos = -1;
 			return false;
 		}
+	};
+	bool checkVisiblity(int x, int y) {
+		if (x>=_visibleX && y>=_visibleY &&
+			x<_visibleColCount + _visibleX &&
+			y<_visibleRowCount + _visibleY) 
+			return true;
+		return false;
 	};
 
 	void RenderInfo(std::vector <std::vector <Vector <int>>> *polygons) {
@@ -163,4 +152,61 @@ public:
 
 	int getCellWidth() {return _cellWidth;};
 	int getCellHeight() {return _cellHeight;};
+
+	int getVisibleX() {return _visibleX;};
+	int getVisibleY() {return _visibleY;};
+	
+	void setZoom(float coef) {
+		coef*=10;
+		coef = (int) coef;
+		coef/=10;
+		int tempX = _visibleX;
+		int tempY = _visibleY;
+		int tempVisibleCol = _visibleColCount;
+		int tempVisibleRow = _visibleRowCount;
+
+		int visibleCol = _colCount/coef;
+		int visibleRow = _rowCount/coef;
+		int visibleX = (_colCount-visibleCol)/2;
+		int visibleY = (_rowCount-visibleRow)/2;
+		if ((visibleCol - visibleX)%2 != 0) visibleCol++;
+		if ((visibleRow - visibleY)%2 != 0) visibleRow++;
+
+		if (visibleCol+visibleX <= _colCount && visibleRow+visibleY <=_rowCount &&
+			visibleX >=0  && visibleY >=0)
+			setVisibleArea(visibleX, visibleY, visibleCol, visibleRow);
+		setPos(tempX+(tempVisibleCol-visibleCol)/2, tempY+(tempVisibleRow-visibleRow)/2);
+	};
+
+	void setPos(int x, int y) {
+		if (x<=0) x = 0;
+		else if (x>_colCount-_visibleColCount) x = _colCount-_visibleColCount;
+		if (y<=0) y = 0;
+		else if (y>_rowCount-_visibleRowCount) y = _rowCount-_visibleRowCount;
+			setVisibleArea(x, y, _visibleColCount, _visibleRowCount);
+	};
+
+private:
+	void setVisibleArea(int visibleX, int visibleY, int visibleColCount, int visibleRowCount) {
+		  if (visibleX<=0) _visibleX = 0;
+		  if (visibleX>=_colCount) visibleX = _colCount;
+		  if (visibleY<=0) visibleY = 0;
+		  if (visibleY>=_rowCount) visibleY = _rowCount;
+		  _visibleY = visibleY;
+		  _visibleX = visibleX;
+
+		  if (visibleColCount<=0) visibleColCount = 1;
+		  if (visibleRowCount<=0) visibleRowCount = 1;
+
+		  _visibleColCount = visibleColCount;
+		  _visibleRowCount = visibleRowCount;
+
+		  _cellWidth = (float)_screenWidth/(float)visibleColCount - _border;
+		  _cellHeight = (float)_screenHeight/(float)visibleRowCount - _border;
+		  for(int _x=visibleX; _x<visibleColCount+visibleX; _x++)
+			  for(int _y=visibleY; _y<visibleRowCount+visibleY; _y++)
+				  quadArr(_x, _y).setQuad(_cellWidth*(_x-visibleX)+(_border*(_x-visibleX)),
+				  _cellHeight*(_y-visibleY)+(_border*(_y-visibleY)), 
+				  _cellWidth, _cellHeight);
+	};
 };
