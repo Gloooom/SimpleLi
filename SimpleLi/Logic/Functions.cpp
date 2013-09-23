@@ -10,12 +10,12 @@ bool func::randBool() {
 }
 
 float func::randf(float start, float end) {
-	return ((((float) rand())/(RAND_MAX/(end-start))) + start);
+	return (((float) rand())/RAND_MAX)*(end-start) + start;
 }
 
 long long int func::randi(long long int start, long long int end) {
 	end++;
-	return ((((float) rand())/(RAND_MAX/(end-start))) + start);
+	return randf(start, ((float)end)-0.00001);
 }
 
 bool func::randPercentBool(float percent) {

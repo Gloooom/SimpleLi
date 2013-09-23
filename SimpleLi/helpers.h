@@ -88,9 +88,11 @@ public:
 		return result;
 	};
 	Vector operator/(T P) {
-		Vector <T> result;
-		result.x=x/P;
-		result.y=y/P;
+		Vector <T> result = *this;
+		if (P != 0) {
+			result.x=x/P;
+			result.y=y/P;
+		}
 		return result;
 	};
 	bool operator<(Vector v) {
@@ -119,7 +121,7 @@ public:
 	};
 	Vector getNorm() const {
 		Vector <T> result = *this;
-		if (x!=0 || y!=0) {
+		if (!(x == 0 && y == 0)) {
 			double lenRcp = 1/sqrt(x*x+y*y);
 			result.x *= lenRcp; //Делю на длину вектора и получаю нормированный вектор.
 			result.y *= lenRcp;
@@ -130,9 +132,10 @@ public:
 		return result;
 	};
 	double getAngle(Vector v) const {
-		if (x!=0 || y!=0)
+		if ((x == 0 && y == 0) || (v.x == 0 && v.y == 0)) 
+			return 0;
+		else
 			return acos((x*v.x+y*v.y)/(sqrt(x*x+y*y)*sqrt(v.x*v.x+v.y*v.y)));
-		else return 0;
 	};
 	void setAngle(double angle) {
 		double length = getLength();
@@ -154,25 +157,28 @@ public:
 		*this = result;
 	};
 	double getDeg() const {
-		double angle;
-		if (x!=0 || y!=0) {
+		if (x == 0 && y == 0) 
+			return 0;
+		else {
 			if (y<0)
-				angle=(2*M_PI)-acos(x/sqrt(x*x+y*y));
+				return (2*M_PI)-acos(x/sqrt(x*x+y*y));
 			else
-				angle=acos(x/sqrt(x*x+y*y));
-			return angle;
-		} else return 0;
+				return acos(x/sqrt(x*x+y*y));
+		}
 	};
 	void fromDeg(double angle) {
 		x = cos(angle);
 		y = sin(angle);
 	};
 	double getLength() {
+		if (x == 0 && y == 0) return 0;
 		return sqrt((double)(x*x+y*y));
 	};
 	double getDot(Vector v) {
-		if (getLength()==0 || v.getLength()==0) return 0;
-		return acos((x*v.x + y*v.y)/sqrt((x*x+y*y)*(v.x*v.x+v.y*v.y)));
+		if ((x == 0 && y == 0) || (v.x == 0 && v.y == 0)) 
+			return 0;
+		else 
+			return acos((x*v.x + y*v.y)/sqrt((x*x+y*y)*(v.x*v.x+v.y*v.y)));
 	}
 };
 

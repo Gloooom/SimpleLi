@@ -53,7 +53,6 @@ GeneticCode GeneticCode::mutation(float maxDelta, int mutGenCount, float eyeAddC
 		for (int j=0; j<end_of_soc; j++)
 			result.soc[i][j] = soc[i][j];
 	
-
 	for (int i = 0; i<mutGenCount; i++) {
 		int selectStatus, selectSoc;
 		selectStatus = randi(0, end_of_status-1);
@@ -68,6 +67,7 @@ GeneticCode GeneticCode::mutation(float maxDelta, int mutGenCount, float eyeAddC
 		int selectEye = randi(0, eyes.size()-1);
 		result.eyes[selectEye] = eyes[selectEye].mutation(maxDelta);
 	}
+
 	if (randPercentBool(eyeAddChance)) result.eyes.push_back(FOV_Tri(randf(-M_PI, M_PI), randf(0,50), randf(0,50)));
 	if (randPercentBool(radEyeMutationChance)) result.radialEye = radialEye.mutation(maxDelta);
 
@@ -81,8 +81,8 @@ void GeneticCode::randomize() {
 		eyes.push_back(FOV_Tri(func::randf(-M_PI, M_PI), func::randi(5, 40), func::randi(5, 40)));
 	for (int i=0; i<end_of_status; i++) {
 		soc[i][max_speed] = func::randf(0.5, 5);
-		soc[i][libido] = func::randf(-10, 10);
 		soc[i][rand_way] = func::randf(0, M_PI*2);
+		soc[i][libido] = func::randf(-10, 10);
 		soc[i][partner] = func::randf(-10, 10);
 		soc[i][cohesion_partner] = func::randf(-10, 10);
 		soc[i][separation_partner] = func::randf(-10, 10);

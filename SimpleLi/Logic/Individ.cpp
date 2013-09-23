@@ -293,7 +293,6 @@ IndMemory <long long int> Individ::whoIsNearby(Array <Individ*> *field) {
 			selectCell.x = pos.x+delta[x];
 			selectCell.y = pos.y+delta[y];
 			if (field->isValid(selectCell)) {
-				//Individ *he = (*field)(selectCell.x, selectCell.y);
 				Individ *he = (*field)(selectCell);
 				if (he->ID != 0 && he->ID != ID && he->live
 					&& he->state != REPRODUCT

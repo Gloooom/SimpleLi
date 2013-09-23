@@ -107,11 +107,12 @@ public:
 	FOV_Tri mutation(float coef) {
 		FOV_Tri result;
 			result._angle = getVariation(_angle, coef);
-			result._height = getVariation(_height, coef, false);
-			result._width = getVariation(_width, coef, false); 
+			result._height = getVariation(_height, coef, false, false);
+			result._width = getVariation(_width, coef, false, false); 
 		result.calculatPolygon();
 		return result;
 	};
+
 	FOV_Tri hibrid(FOV_Tri eye) {
 		FOV_Tri result;
 		if (eye._angle > M_PI) eye._angle-=M_PI*2;

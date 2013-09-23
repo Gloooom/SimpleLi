@@ -197,6 +197,7 @@ void randDNA() {
 	genes = new GeneticCode();
 	genes->randomize();
 	state_list_upd();
+	getEye();
 	update_EyeEdit();
 }
 
@@ -822,38 +823,40 @@ void CreateMainGUI() {
 }
 
 void CheckButtons() {
-	if (hgeButtonGetState(mainGUI, CMD_WIN_S_L)) {
-		winManager->Activate(WIN_S_L);
-		winManager->setFocus(WIN_S_L);
-	}
-	if (hgeButtonGetState(mainGUI, CMD_WIN_EDIT_MUT)) {
-		winManager->Activate(WIN_EDIT_MUT);
-		winManager->setFocus(WIN_EDIT_MUT);
-	}
-	if (hgeButtonGetState(mainGUI, CMD_WIN_EDIT_DNA)) {
-		winManager->Activate(WIN_EDIT_DNA);
-		winManager->setFocus(WIN_EDIT_DNA);
-	}
-	if (hgeButtonGetState(mainGUI, CMD_WIN_EDIT_PHIS)) {
-		winManager->Activate(WIN_EDIT_PHIS);
-		winManager->setFocus(WIN_EDIT_PHIS);
+	if (!winManager->checkHit(state.mp.x, state.mp.y)) {
+		if (hgeButtonGetState(mainGUI, CMD_WIN_S_L)) {
+			winManager->Activate(WIN_S_L);
+			winManager->setFocus(WIN_S_L);
+		}
+		if (hgeButtonGetState(mainGUI, CMD_WIN_EDIT_MUT)) {
+			winManager->Activate(WIN_EDIT_MUT);
+			winManager->setFocus(WIN_EDIT_MUT);
+		}
+		if (hgeButtonGetState(mainGUI, CMD_WIN_EDIT_DNA)) {
+			winManager->Activate(WIN_EDIT_DNA);
+			winManager->setFocus(WIN_EDIT_DNA);
+		}
+		if (hgeButtonGetState(mainGUI, CMD_WIN_EDIT_PHIS)) {
+			winManager->Activate(WIN_EDIT_PHIS);
+			winManager->setFocus(WIN_EDIT_PHIS);
 
-		get_PhisGenes();
-	}
-	if (hgeButtonGetState(mainGUI, CMD_CLEAR)) {
-		env.clear();
-	}
-	if (hgeButtonGetState(mainGUI, CMD_RAND_POP)) {
-		randPopulation(sqrt((double)(env.H()*env.W())));
-		hgeButtonSetState(mainGUI, CMD_RAND_POP, false);
-	}
-	if (hgeButtonGetState(mainGUI, CMD_PAUSE)) {
-		state.play = false;
-	} else state.play = true;
+			get_PhisGenes();
+		}
+		if (hgeButtonGetState(mainGUI, CMD_CLEAR)) {
+			env.clear();
+		}
+		if (hgeButtonGetState(mainGUI, CMD_RAND_POP)) {
+			randPopulation(sqrt((double)(env.H()*env.W())));
+			hgeButtonSetState(mainGUI, CMD_RAND_POP, false);
+		}
+		if (hgeButtonGetState(mainGUI, CMD_PAUSE)) {
+			state.play = false;
+		} else state.play = true;
 
-	if (zoom != hgeSliderGetValue(mainGUI, CMD_ZOOM)) {
-		zoom = hgeSliderGetValue(mainGUI, CMD_ZOOM);
-		display->setZoom(zoom);
+		if (zoom != hgeSliderGetValue(mainGUI, CMD_ZOOM)) {
+			zoom = hgeSliderGetValue(mainGUI, CMD_ZOOM);
+			display->setZoom(zoom);
+		}
 	}
 }
 
