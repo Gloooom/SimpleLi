@@ -1,0 +1,144 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Файлы исходного кода">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Заголовочные файлы">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Файлы ресурсов">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Файлы исходного кода\Logic">
+      <UniqueIdentifier>{b241d0b1-3bcd-40cb-8754-0936ddb0bed1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы исходного кода\GUI">
+      <UniqueIdentifier>{058c555b-b3f8-42c3-98b6-eb78b79a43dc}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="main.cpp">
+      <Filter>Файлы исходного кода</Filter>
+    </ClCompile>
+    <ClCompile Include="Logic\GeneticCode.cpp">
+      <Filter>Файлы исходного кода\Logic</Filter>
+    </ClCompile>
+    <ClCompile Include="Logic\Individ.cpp">
+      <Filter>Файлы исходного кода\Logic</Filter>
+    </ClCompile>
+    <ClCompile Include="Logic\Functions.cpp">
+      <Filter>Файлы исходного кода\Logic</Filter>
+    </ClCompile>
+    <ClCompile Include="Logic\Environment.cpp">
+      <Filter>Файлы исходного кода\Logic</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Gui_color.cpp">
+      <Filter>Файлы исходного кода\GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Gui_window.cpp">
+      <Filter>Файлы исходного кода\GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Gui_win_manager.cpp">
+      <Filter>Файлы исходного кода\GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="Something.h">
+      <Filter>Файлы исходного кода</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="HGE\hge.h">
+      <Filter>Заголовочные файлы</Filter>
+    </ClInclude>
+    <ClInclude Include="HGE\hgeanim.h">
+      <Filter>Заголовочные файлы</Filter>
+    </ClInclude>
+    <ClInclude Include="HGE\hgecolor.h">
+      <Filter>Заголовочные файлы</Filter>
+    </ClInclude>
+    <ClInclude Include="HGE\hgedistort.h">
+      <Filter>Заголовочные файлы</Filter>
+    </ClInclude>
+    <ClInclude Include="HGE\hgefont.h">
+      <Filter>Заголовочные файлы</Filter>
+    </ClInclude>
+    <ClInclude Include="HGE\hgeparticle.h">
+      <Filter>Заголовочные файлы</Filter>
+    </ClInclude>
+    <ClInclude Include="HGE\hgerect.h">
+      <Filter>Заголовочные файлы</Filter>
+    </ClInclude>
+    <ClInclude Include="HGE\hgeresource.h">
+      <Filter>Заголовочные файлы</Filter>
+    </ClInclude>
+    <ClInclude Include="HGE\hgesprite.h">
+      <Filter>Заголовочные файлы</Filter>
+    </ClInclude>
+    <ClInclude Include="HGE\hgestrings.h">
+      <Filter>Заголовочные файлы</Filter>
+    </ClInclude>
+    <ClInclude Include="HGE\hgevector.h">
+      <Filter>Заголовочные файлы</Filter>
+    </ClInclude>
+    <ClInclude Include="Logic\Functions.h">
+      <Filter>Файлы исходного кода\Logic</Filter>
+    </ClInclude>
+    <ClInclude Include="Logic\GeneticCode.h">
+      <Filter>Файлы исходного кода\Logic</Filter>
+    </ClInclude>
+    <ClInclude Include="Logic\Individ.h">
+      <Filter>Файлы исходного кода\Logic</Filter>
+    </ClInclude>
+    <ClInclude Include="Logic\Types.h">
+      <Filter>Файлы исходного кода\Logic</Filter>
+    </ClInclude>
+    <ClInclude Include="HGE\hgegui.h">
+      <Filter>Заголовочные файлы</Filter>
+    </ClInclude>
+    <ClInclude Include="HGE\hgeguictrls.h">
+      <Filter>Заголовочные файлы</Filter>
+    </ClInclude>
+    <ClInclude Include="GUI\Gui_color.h">
+      <Filter>Файлы исходного кода\GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="GUI\Gui_inclusion.h">
+      <Filter>Файлы исходного кода\GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="GUI\Gui_types.h">
+      <Filter>Файлы исходного кода\GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="GUI\Gui_win_manager.h">
+      <Filter>Файлы исходного кода\GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="GUI\Gui_window.h">
+      <Filter>Файлы исходного кода\GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="Main_inclusion.h">
+      <Filter>Файлы исходного кода</Filter>
+    </ClInclude>
+    <ClInclude Include="GUI\Gui_graphic_area.h">
+      <Filter>Файлы исходного кода\GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="GUI_structure.h">
+      <Filter>Файлы исходного кода</Filter>
+    </ClInclude>
+    <ClInclude Include="helpers.h">
+      <Filter>Файлы исходного кода</Filter>
+    </ClInclude>
+    <ClInclude Include="Logic\Inclusion.h">
+      <Filter>Файлы исходного кода\Logic</Filter>
+    </ClInclude>
+    <ClInclude Include="Logic\Eyes.h">
+      <Filter>Файлы исходного кода\Logic</Filter>
+    </ClInclude>
+    <ClInclude Include="Logic\Environment.h">
+      <Filter>Файлы исходного кода\Logic</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ClassDiagram1.cd" />
+  </ItemGroup>
+</Project>

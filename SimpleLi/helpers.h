@@ -6,36 +6,6 @@
 
 #define M_PI       3.14159265358979323846
 
-template <typename Type> class Array {
-private:
-	int _rowCount;
-	int _colCount;
-	Type *arr;
-	Type null;
-public:
-	Array(int colCount, int rowCount) {
-		_rowCount = rowCount;
-		_colCount = colCount;
-		arr = new Type[rowCount*colCount];
-	};
-	~Array() {
-		delete[] arr;
-	};
-	Type &operator[](int i) {return arr[i];};
-	Type &operator()(int x, int y) {
-		try {
-			if (x>=0 && x<_colCount && y>=0 && y<_rowCount)
-				return arr[x + y*_colCount];
-			else
-				throw 1;
-		} catch(int i) {
-			MessageBox(NULL, (Convert(x) + ", " + Convert(y)).c_str(), "Error", MB_OK | MB_ICONERROR | MB_SYSTEMMODAL);
-		}
-	};
-	int getW() {return _colCount;};
-	int getH() {return _rowCount;};
-};
-
 template <typename T> class Point {
 public:
 	T x;
@@ -62,12 +32,6 @@ public:
 		Vector v = *this;
 		*a=v.getDeg();
 	};
-	Point <int> round() {
-		Point <int> result;
-		result.x=(int) floor(x + 0.5);
-		result.y=(int) floor(y + 0.5);
-		return result;
-	}
 };
 
 template <typename T> class Vector: public Point <T> {
@@ -76,6 +40,25 @@ public:
 	Vector() : Point() {};
 	Vector(Point <T> p) : Point(p) {};
 
+
+	Vector <int> toInt() {
+		Vector <int> v;
+		v.x = (int)x;
+		v.y = (int)y;
+		return v;
+	};
+	Vector <double> toDouble() {
+		Vector <double> v;
+		v.x = (double)x;
+		v.y = (double)y;
+		return v;
+	};
+	Vector <int> round() {
+		Vector <int> v;
+		v.x = func::round(x);
+		v.y = func::round(y);
+		return v;
+	};
 	void operator=(Point <T> p) {
 		x=p.x;
 		y=p.y;
@@ -105,9 +88,11 @@ public:
 		return result;
 	};
 	Vector operator/(T P) {
-		Vector <T> result;
-		result.x=x/P;
-		result.y=y/P;
+		Vector <T> result = *this;
+		if (P != 0) {
+			result.x=x/P;
+			result.y=y/P;
+		}
 		return result;
 	};
 	bool operator<(Vector v) {
@@ -136,9 +121,9 @@ public:
 	};
 	Vector getNorm() const {
 		Vector <T> result = *this;
-		if (x!=0 || y!=0) {
+		if (!(x == 0 && y == 0)) {
 			double lenRcp = 1/sqrt(x*x+y*y);
-			result.x *= lenRcp;
+			result.x *= lenRcp; //Делю на длину вектора и получаю нормированный вектор.
 			result.y *= lenRcp;
 		} else {
 			result.x=0;
@@ -147,9 +132,10 @@ public:
 		return result;
 	};
 	double getAngle(Vector v) const {
-		if (x!=0 || y!=0)
+		if ((x == 0 && y == 0) || (v.x == 0 && v.y == 0)) 
+			return 0;
+		else
 			return acos((x*v.x+y*v.y)/(sqrt(x*x+y*y)*sqrt(v.x*v.x+v.y*v.y)));
-		else return 0;
 	};
 	void setAngle(double angle) {
 		double length = getLength();
@@ -171,25 +157,28 @@ public:
 		*this = result;
 	};
 	double getDeg() const {
-		double angle;
-		if (x!=0 || y!=0) {
+		if (x == 0 && y == 0) 
+			return 0;
+		else {
 			if (y<0)
-				angle=(2*M_PI)-acos(x/sqrt(x*x+y*y));
+				return (2*M_PI)-acos(x/sqrt(x*x+y*y));
 			else
-				angle=acos(x/sqrt(x*x+y*y));
-			return angle;
-		} else return 0;
+				return acos(x/sqrt(x*x+y*y));
+		}
 	};
 	void fromDeg(double angle) {
 		x = cos(angle);
 		y = sin(angle);
 	};
 	double getLength() {
+		if (x == 0 && y == 0) return 0;
 		return sqrt((double)(x*x+y*y));
 	};
 	double getDot(Vector v) {
-		if (getLength()==0 || v.getLength()==0) return 0;
-		return acos((x*v.x + y*v.y)/sqrt((x*x+y*y)*(v.x*v.x+v.y*v.y)));
+		if ((x == 0 && y == 0) || (v.x == 0 && v.y == 0)) 
+			return 0;
+		else 
+			return acos((x*v.x + y*v.y)/sqrt((x*x+y*y)*(v.x*v.x+v.y*v.y)));
 	}
 };
 
@@ -199,3 +188,44 @@ std::string Convert (T number) {
 	buff << number;
 	return buff.str();
 }
+
+		
+template <typename Type> class Array {
+private:
+	int _rowCount;
+	int _colCount;
+	Type *arr;
+	Type null;
+public:
+	Array(int colCount, int rowCount) {
+		_rowCount = rowCount;
+		_colCount = colCount;
+		arr = new Type[rowCount*colCount];
+	};
+	~Array() {
+		delete[] arr;
+	};
+	Type &operator[](int i) {return arr[i];};
+	Type &operator()(int x, int y) {
+		try {
+			if (x>=0 && x<_colCount && y>=0 && y<_rowCount)
+				return arr[x + y*_colCount];
+			else
+				throw 1;
+		} catch(int i) {
+			MessageBox(NULL, (Convert(x) + ", " + Convert(y)).c_str(), "Error", MB_OK | MB_ICONERROR | MB_SYSTEMMODAL);
+		}
+	};
+	Type &operator()(Point <int> pos) {
+		return (*this)(pos.x, pos.y);
+	};
+	int getW() {return _colCount;};
+	int getH() {return _rowCount;};
+
+	bool isValid(Point <int> pos) {
+		if (pos.x >= 0 && pos.x <_colCount && 
+			pos.y >= 0 && pos.y <_rowCount)
+			return true;
+		else return false;
+	};
+};

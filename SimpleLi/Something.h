@@ -139,3 +139,12 @@
 //      end;
 //    end;
 //}
+
+
+			//Cell c = quadArr[p->second.pos.x + p->second.pos.y*env->W()];
+			//float x1, y1, x2, y2;
+			//x1 = (c.getQuad()->v[0].x +  c.getQuad()->v[2].x)/2;
+			//y1 = (c.getQuad()->v[0].y +  c.getQuad()->v[2].y)/2;
+			//x2 = x1 + p->second.way.x*20;
+			//y2 = y1 + p->second.way.y*20;
+			//hge->Gfx_RenderLine(x1, y1, x2, y2, 0xAA00AA00);

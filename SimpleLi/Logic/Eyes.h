@@ -11,7 +11,7 @@ public:
 		_angle(0),
 		_height(0),
 		_width(0) {};
-	FOV_Tri(float ang, float hgt, float wdt):
+	FOV_Tri(float ang, float wdt, float hgt):
 		_angle(ang),
 		_height(hgt),
 		_width(wdt) {calculatPolygon();};
@@ -19,7 +19,13 @@ public:
 	float getAngle()	{return _angle;};
 	float getHeight()	{return _height;};
 	float getWidth()	{return _width;};
-	Point <double> *getPolygon() {return polygon;};
+	std::vector < Vector <double> >  getPolygon() {
+		std::vector < Vector <double> > v;
+		v.push_back(polygon[0]);
+		v.push_back(polygon[1]);
+		v.push_back(polygon[2]);
+		return v;
+	};
 
 	void setAngle(float _a)	{
 		_angle = _a;
@@ -54,7 +60,7 @@ public:
 		}
 	};
 
-	std::vector <Vector <int> > getVectors(double rotateAngle) {
+	std::vector <Vector <int> > getVectors(double rotateAngle = 0) {
 		std::vector <Vector <int> > result;
 		if (_height > 0 && _width > 0) {
 			double sint = sin(rotateAngle);
@@ -101,15 +107,13 @@ public:
 	FOV_Tri mutation(float coef) {
 		FOV_Tri result;
 			result._angle = getVariation(_angle, coef);
-			result._height = getVariation(_height, coef, false);
-			result._width = getVariation(_width, coef, false); 
+			result._height = getVariation(_height, coef, false, false);
+			result._width = getVariation(_width, coef, false, false); 
 		result.calculatPolygon();
 		return result;
 	};
+
 	FOV_Tri hibrid(FOV_Tri eye) {
-		//Конечно всё очень круто, но если у одной особи глаз имеет 1 градус, а у другой 359, то
-		//в итоге у потомка будет глаз на жопе.
-		//Вроде починил.
 		FOV_Tri result;
 		if (eye._angle > M_PI) eye._angle-=M_PI*2;
 		if (eye._angle < -M_PI) eye._angle+=M_PI*2;
@@ -118,6 +122,35 @@ public:
 		result._width = (_width + eye._width)/2;
 		result.calculatPolygon();
 		return result;
+	};
+
+	bool checkHit(Vector <double> point, Vector <double> offset, double rotateAngle = 0) {
+		//нужна оптимизация.
+		if (_height == 0 || _width == 0) return false; 
+		double sint = sin(rotateAngle);
+		double cost = cos(rotateAngle);
+
+		Vector <double> vert[3];
+		vert[0]=polygon[0];
+		vert[1]=polygon[1];
+		vert[2]=polygon[2];
+
+		vert[1].multiplying(cost, -sint, sint, cost);
+		vert[2].multiplying(cost, -sint, sint, cost);
+		
+		vert[0]+=offset;
+		vert[1]+=offset;
+		vert[2]+=offset;
+
+		double pl1, pl2, pl3;
+		pl1 = (vert[0].x - point.y)*(vert[1].y - vert[0].y)-(vert[1].x - vert[0].x)*(vert[0].y - point.x);
+		pl2 = (vert[1].x - point.y)*(vert[2].y - vert[1].y)-(vert[2].x - vert[1].x)*(vert[1].y - point.x);
+		pl3 = (vert[2].x - point.y)*(vert[0].y - vert[2].y)-(vert[0].x - vert[2].x)*(vert[2].y - point.x);
+		if ((pl1 >= 0 && pl2 >= 0 && pl3 >= 0) || (pl1 <= 0 && pl2 <= 0 && pl3 <= 0)) {
+			return true;
+		} else {
+			return false;
+		}
 	};
 };
 

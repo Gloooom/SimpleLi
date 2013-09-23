@@ -14,7 +14,7 @@ namespace func {
 
 	long long int round(double value);
 
-	bool randPercent(float percent);
+	bool randPercentBool(float percent);
 
 	Point <double> crossLine(double k1, double b1, double k2, double b2);
 
@@ -24,17 +24,13 @@ namespace func {
 	T getMax(T a, T b) {return a>b ? a : b;};
 
 	template <typename F>
-	F getVariation (F d, double coef, bool negativeValue = true) {
+	F getVariation (F d, double coef, bool negativeValue = true, bool zeroValue = true) {
 		//coef определяет максимально возможное отклонение в процентах.
-		if (negativeValue) {
-			if (d!=0) return (d + (d*(((((double) rand())/(RAND_MAX/2)) - 1) * coef)));
-			if (d==0) return (((((double) rand())/(RAND_MAX/2)) - 1) * coef);
-		} else {
-			d = (d + d*(((((double) rand())/(RAND_MAX/2)) - 1) * coef));
-			if (d<=0) return 0;
-			return d;
-		}
-		return 0;
+		F maxDelta = abs(d*coef);
+		F result = d + randf(maxDelta*(-1), maxDelta);
+		if (!negativeValue && result < 0) result = 0;
+		if (!zeroValue && result == 0) result = 0.0001;
+		return result;
 	}
 
 	template <typename Type>

@@ -13,7 +13,12 @@ void GUI_win_manager::addWindow(GUI_window *win, int ID, float startPosX, float 
 	((hgeGUIButton*)gui->GetCtrl(ID))->SetMode(false);
 	gui->EnableCtrl(ID, false);
 
-	setWinPos(ID, startPosX, startPosY);
+	
+	if (startPosX == 0 && startPosY == 0) {
+		setWinPos(ID, 600/2 - win->w/2, 600/2 - win->h/2);
+	} else {
+		setWinPos(ID, startPosX, startPosY);
+	}
 };
 
 GUI_window* GUI_win_manager::getFocusWin() {
