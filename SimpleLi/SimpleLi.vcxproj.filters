@@ -1,0 +1,122 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="Something.h" />
+    <ClCompile Include="GUI\Gui_color.cpp">
+      <Filter>GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Gui_win_manager.cpp">
+      <Filter>GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\Gui_window.cpp">
+      <Filter>GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="Logic\Environment.cpp">
+      <Filter>LOGIC</Filter>
+    </ClCompile>
+    <ClCompile Include="Logic\Functions.cpp">
+      <Filter>LOGIC</Filter>
+    </ClCompile>
+    <ClCompile Include="Logic\GeneticCode.cpp">
+      <Filter>LOGIC</Filter>
+    </ClCompile>
+    <ClCompile Include="Logic\Individ.cpp">
+      <Filter>LOGIC</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="helpers.h" />
+    <ClInclude Include="Main_inclusion.h" />
+    <ClInclude Include="HGE\hge.h">
+      <Filter>HGE</Filter>
+    </ClInclude>
+    <ClInclude Include="HGE\hgeanim.h">
+      <Filter>HGE</Filter>
+    </ClInclude>
+    <ClInclude Include="HGE\hgecolor.h">
+      <Filter>HGE</Filter>
+    </ClInclude>
+    <ClInclude Include="HGE\hgedistort.h">
+      <Filter>HGE</Filter>
+    </ClInclude>
+    <ClInclude Include="HGE\hgefont.h">
+      <Filter>HGE</Filter>
+    </ClInclude>
+    <ClInclude Include="HGE\hgegui.h">
+      <Filter>HGE</Filter>
+    </ClInclude>
+    <ClInclude Include="HGE\hgeguictrls.h">
+      <Filter>HGE</Filter>
+    </ClInclude>
+    <ClInclude Include="HGE\hgeparticle.h">
+      <Filter>HGE</Filter>
+    </ClInclude>
+    <ClInclude Include="HGE\hgerect.h">
+      <Filter>HGE</Filter>
+    </ClInclude>
+    <ClInclude Include="HGE\hgeresource.h">
+      <Filter>HGE</Filter>
+    </ClInclude>
+    <ClInclude Include="HGE\hgesprite.h">
+      <Filter>HGE</Filter>
+    </ClInclude>
+    <ClInclude Include="HGE\hgestrings.h">
+      <Filter>HGE</Filter>
+    </ClInclude>
+    <ClInclude Include="HGE\hgevector.h">
+      <Filter>HGE</Filter>
+    </ClInclude>
+    <ClInclude Include="GUI\Gui_color.h">
+      <Filter>GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="GUI\Gui_graphic_area.h">
+      <Filter>GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="GUI\Gui_inclusion.h">
+      <Filter>GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="GUI\Gui_types.h">
+      <Filter>GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="GUI\Gui_win_manager.h">
+      <Filter>GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="GUI\Gui_window.h">
+      <Filter>GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="Logic\Environment.h">
+      <Filter>LOGIC</Filter>
+    </ClInclude>
+    <ClInclude Include="Logic\Eyes.h">
+      <Filter>LOGIC</Filter>
+    </ClInclude>
+    <ClInclude Include="Logic\Functions.h">
+      <Filter>LOGIC</Filter>
+    </ClInclude>
+    <ClInclude Include="Logic\GeneticCode.h">
+      <Filter>LOGIC</Filter>
+    </ClInclude>
+    <ClInclude Include="Logic\Inclusion.h">
+      <Filter>LOGIC</Filter>
+    </ClInclude>
+    <ClInclude Include="Logic\Individ.h">
+      <Filter>LOGIC</Filter>
+    </ClInclude>
+    <ClInclude Include="Logic\Types.h">
+      <Filter>LOGIC</Filter>
+    </ClInclude>
+    <ClInclude Include="GUI_structure.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="HGE">
+      <UniqueIdentifier>{18886712-1b74-4737-b6fa-a6d85f0d6721}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GUI">
+      <UniqueIdentifier>{75728c76-e251-4631-b39b-b69a438139b6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="LOGIC">
+      <UniqueIdentifier>{da09f684-7fd5-4878-885c-fd425ba86d74}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

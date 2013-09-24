@@ -34,8 +34,6 @@ float zoom = 1;
 
 #include "GUI_structure.h"
 
-Individ *selectInd=&(env.empty);
-
 float			timer = 0;
 int				mp_x = 0;
 int				mp_y = 0;
@@ -90,7 +88,7 @@ bool RenderFunc()
 
 	std::vector <std::vector < Vector <int>>> polygons;
 	//формируются сырые полигоны глаз c абсолютной позицией по ячейкам
-	std::map <long long int, Individ> ::iterator p = env.population.begin();
+	std::map <long long int, Individ*> ::iterator p = env.population.begin();
 	while (p != env.population.end()) {
 		//std::vector <FOV_Tri> ::iterator e = p->second.dna.eyes.begin();		
 		//while (e != p->second.dna.eyes.end()) {
@@ -108,11 +106,11 @@ bool RenderFunc()
 		//	e++;
 		//}
 		
-		if (display->checkVisiblity(p->second.pos.x, p->second.pos.y)) {
-			Cell c = (*display)[p->second.pos.x + p->second.pos.y*env.W()];
+		if (display->checkVisiblity(p->second->pos.x, p->second->pos.y)) {
+			Cell c = (*display)[p->second->pos.x + p->second->pos.y*env.W()];
 			Vector <double> start, end;
 			start = c.getCenterPos();
-			end = start + p->second.way*20*zoom;
+			end = start + p->second->way*20*zoom;
 			hge->Gfx_RenderLine(start.x, start.y, end.x, end.y, 0xAA00AA00);
 		}
 		p++;
@@ -209,7 +207,7 @@ void addIndivid(Vector <int> p, Mode_feeding diet) {
 		g.soc[0][libido] = 0;
 		g.soc[2][libido] = 0;
 		g.color = 0xFF009900;
-		env.addIndivid(Individ(p.round(), g));
+		env.addIndivid(&Individ_Auto(p.round(), g));
 }
 
 void InitEnvironment() {

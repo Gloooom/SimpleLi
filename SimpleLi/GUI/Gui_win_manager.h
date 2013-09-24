@@ -15,6 +15,9 @@
 #define SetWinListboxSelect(manager, winid, ctrlname, select) (((hgeGUIListbox*)(manager->getWin(winid)->getCtrl(ctrlname)))->SetSelectedItem(select))
 #define SetWinText(manager, winid, ctrlname, text) (((hgeGUIText*)(manager->getWin(winid)->getCtrl(ctrlname)))->SetText(text));
 
+#define SetLink(manager, winID, sliderID, textID) SetWinText(manager, winID, textID, Convert(GetWinSliderValue(winManager, winID, sliderID)).c_str())
+#define SetValLink(manager, winID, value, textID) SetWinText(manager, winID, textID, Convert(value).c_str())
+
 class GUI_win_manager {
 private:
 	std::map <int, GUI_window*> windows;

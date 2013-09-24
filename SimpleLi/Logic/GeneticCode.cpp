@@ -81,7 +81,7 @@ void GeneticCode::randomize() {
 		eyes.push_back(FOV_Tri(func::randf(-M_PI, M_PI), func::randi(5, 40), func::randi(5, 40)));
 	for (int i=0; i<end_of_status; i++) {
 		soc[i][max_speed] = func::randf(0.5, 5);
-		soc[i][rand_way] = func::randf(0, M_PI*2);
+		soc[i][rand_way] = func::randf(0, M_PI);
 		soc[i][libido] = func::randf(-10, 10);
 		soc[i][partner] = func::randf(-10, 10);
 		soc[i][cohesion_partner] = func::randf(-10, 10);

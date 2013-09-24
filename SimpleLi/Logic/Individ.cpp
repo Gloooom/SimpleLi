@@ -14,7 +14,7 @@ Individ::Individ(): way(0,0) {
 }
 
 Individ::Individ(Vector <int> _pos, GeneticCode _dna) {
-	ID=count;
+	ID = count;
 	count++;
 
 	way.fromDeg(func::randf(0, M_PI*2));
@@ -32,13 +32,13 @@ Individ::Individ(Vector <int> _pos, GeneticCode _dna) {
 	spouseID = ID;
 }
 
-bool Individ::operator==(Individ i) {
-	if (ID == i.ID) return true;
+bool Individ::operator==(Individ *i) {
+	if (ID == i->ID) return true;
 	else return false;
 }
 
-bool Individ::operator!=(Individ i) {
-	if (ID == i.ID) return false;
+bool Individ::operator!=(Individ *i) {
+	if (ID == i->ID) return false;
 	else return true;
 }
 
@@ -47,7 +47,7 @@ void Individ::move(Array <Individ*> *field) {
 	Vector <double> tempPos(0, 0);
 	Individ *he=this;
 	while (way.getLength()!=0 &&
-		(he->ID == 0 || (*he) == (*this)) &&
+		(he->ID == 0 || *he == this) &&
 		(tempPos+way)<=(way*speed) &&
 		func::round(pos.x+tempPos.x+way.x)>=0 && 
 		func::round(pos.x+tempPos.x+way.x)<field->getW() && 
@@ -57,7 +57,7 @@ void Individ::move(Array <Individ*> *field) {
 				func::round(tempPos.x + way.x + (double) pos.x), 
 				func::round(tempPos.y + way.y + (double) pos.y)
 				);
-			if (he->ID == 0 || (*he) == (*this)) {
+			if (he->ID == 0 || *he == this) {
 				tempPos+=way;
 				collision=false;
 			} else { break; }
@@ -88,8 +88,8 @@ void Individ::look(Array <Individ*> *field) {
 			Vector <int> absP;
 			absP = *p + pos;
 			if (absP.x >= 0 && absP.x < field->getW() && absP.y >= 0 && absP.y < field->getH()) {
-				Individ *he = (*field)(absP.x, absP.y);
-				if (he->ID != 0 && *he != *this) {
+				Individ *he = (*field)(absP);
+				if (he->ID != 0 && *he != this) {
 					if (he->dna.diet != dna.diet && !func::isIn(mem.enemies, he)) 
 						mem.enemies.push_back(he);
 					if (he->dna.diet == dna.diet && !func::isIn(mem.partners, he))
@@ -101,18 +101,18 @@ void Individ::look(Array <Individ*> *field) {
 	}
 }
 
-void Individ::look(std::map <long long int, Individ> *population) {
+void Individ::look(std::map <long long int, Individ*> *population) {
 	//Пока слишком криво. Почему-то точки попадания определяются абсолютно правильно, но особи ведут себя слишком странно
 	mem.clear();
 	double wayAngle = way.getDeg();
 
 	std::vector <FOV_Tri> ::iterator e = dna.eyes.begin();
 	while (e != dna.eyes.end()) {
-		std::map <long long int, Individ> ::iterator p = population->begin();
+		std::map <long long int, Individ*> ::iterator p = population->begin();
 		while (p != population->end()) {
-			if (e->checkHit(p->second.pos.toDouble(), pos.toDouble(), wayAngle)) {
-				Individ *he = &p->second;
-				if (he->ID != 0 && *he != *this) {
+			if (e->checkHit(p->second->pos.toDouble(), pos.toDouble(), wayAngle)) {
+				Individ *he = p->second;
+				if (he->ID != 0 && *he != this) {
 					if (he->dna.diet != dna.diet && !func::isIn(mem.enemies, he)) 
 						mem.enemies.push_back(he);
 					if (he->dna.diet == dna.diet && !func::isIn(mem.partners, he))
@@ -177,7 +177,7 @@ void Individ::checkWay() {
 }
 
 void Individ::checkState() {
-	if (reproduction_timer == dna.phis[reproduction_pause] && energy >= dna.phis[reproduction_cost]) 
+	if (reproduction_timer >= dna.phis[reproduction_pause] && energy >= dna.phis[energy_mature]) 
 		state = MATURE;
 	else if (energy < dna.phis[energy_hungry]) 
 		state = HUNGRY;
@@ -185,49 +185,29 @@ void Individ::checkState() {
 		state = WAIT;
 }
 
-void Individ::eat() {
-	if (dna.diet==AUTO && energy < dna.phis[energy_max]) {
-		energy+=dna.phis[saturation];
-	} else if (energy > dna.phis[energy_max]) 
-		energy = dna.phis[energy_max];
-}
-
-void Individ::eat(long long int targetID, std::map <long long int, Individ> *population) {
-	if (dna.diet == GETERO 
-		&& energy+dna.phis[saturation]<=dna.phis[energy_max] 
-		&& (*population)[targetID].live == true
-		) {
-		energy+=dna.phis[saturation];
-		(*population)[targetID].hp-=dna.phis[saturation];
-		(*population)[targetID].state = STOP;
-	}
-	if (energy+dna.phis[saturation]>dna.phis[energy_max])
-		(*population)[targetID].checkState();
-}
-
-void Individ::beginReproduction(long long int _spouseID, std::map <long long int, Individ> *population) {
-	if (state != REPRODUCT && (*population)[_spouseID].state != REPRODUCT) {
+void Individ::beginReproduction(long long int _spouseID, std::map <long long int, Individ*> *population) {
+	if (state != REPRODUCT && (*population)[_spouseID]->state != REPRODUCT) {
 		mem.clear();
-		(*population)[_spouseID].mem.clear();
+		(*population)[_spouseID]->mem.clear();
 		reproduction_timer = 0;
-		(*population)[_spouseID].reproduction_timer = 0;
+		(*population)[_spouseID]->reproduction_timer = 0;
 		state = REPRODUCT;
-		(*population)[_spouseID].state = REPRODUCT;
+		(*population)[_spouseID]->state = REPRODUCT;
 		spouseID = _spouseID;
-		(*population)[_spouseID].spouseID = ID;
+		(*population)[_spouseID]->spouseID = ID;
 	}
 }
 
-void Individ::reproduction(Array <Individ*> *field, std::deque <Individ> *cradle, std::map <long long int, Individ> *population) {
+void Individ::reproduction(Array <Individ*> *field, std::deque <Individ*> *cradle, std::map <long long int, Individ*> *population) {
 	if (population->find(spouseID) != population->end()) {
 		if (reproduction_timer < dna.phis[reproduction_time]) {
 			reproduction_timer++;
 		} else {
 			if (gender == FEMALE) {
-				cradle->push_back(
-					Individ(
+				cradle->push_back(new 
+					Individ_Auto(
 					getNearestEmpty(field), 
-					dna.hibridization((*population)[spouseID].dna, AVERAGE))
+					dna.hibridization((*population)[spouseID]->dna, AVERAGE))
 					);
 			}
 			energy -= dna.phis[reproduction_cost];
@@ -319,70 +299,82 @@ bool isLess(Individ *first, Individ *second) {
 	else return false;
 }
 
-void Individ::step(Array <Individ*> *field, std::deque <Individ> *cradle, std::map <long long int, Individ> *population) {
-	isLive();
+void Individ::calcMove(Array <Individ*> *field) {
+	if (state != REPRODUCT && state != STOP) {
+		look(field);
+		checkState();
+		checkWay();
+		double energyCost;
+		//Костыль. Исправить.
+		if (dna.soc[state][max_speed] != 0 && dna.phis[stamina] != 0) 
+			energyCost = (speed/dna.soc[state][max_speed])/dna.phis[stamina];
+		else
+			energyCost = dna.phis[energy_max];
 
-	if (live == true) {
-		if (reproduction_timer < dna.phis[reproduction_pause] && state != REPRODUCT) 
-			reproduction_timer++;
-
-		if (state != REPRODUCT && state != STOP) {
-			look(field);
-			checkState();
-			checkWay();
-			double energyCost;
-			//Костыль. Исправить.
-			if (dna.soc[state][max_speed] != 0 && dna.phis[stamina] != 0) 
-				energyCost = (speed/dna.soc[state][max_speed])/dna.phis[stamina];
-			else
-				energyCost = dna.phis[energy_max];
-
-			if (energy-energyCost>=0) {
-				energy -= energyCost;
-				move(field);
-			}
-
-			if (speed + dna.phis[acceleration] <= dna.soc[state][max_speed])
-				speed += dna.phis[acceleration];
-			else 
-				speed = dna.soc[state][max_speed];
+		if (energy-energyCost>=0) {
+			energy -= energyCost;
+			move(field);
 		}
 
-		if (dna.diet == AUTO) {
-			eat();
-
-			if (state == HUNGRY) {
-
-			} else if (state == MATURE && gender == MALE) {
-				IndMemory <long long int> nearInd;
-				nearInd = whoIsNearby(field);
-				if (!nearInd.partners.empty()) {
-					//написать функцию поиска сильнейшей особи или осуществить какой-то отбор партнёров
-					beginReproduction(*nearInd.partners.begin(), population);
-				}
-				//что бы всё нормаьно работало - перелапатить функцию движения.
-			} else if (state == REPRODUCT) {
-				reproduction(field, cradle, population);
-			} else if (state == WAIT) {
-
-			}
-		}
-
-		if (dna.diet == GETERO) {
-			if (state == HUNGRY) {
-				//IndMemory <long long int> nearInd;
-				//nearInd = whoIsNearby(field);
-				//if (!nearInd.enemies.empty()) {
-					//std::sort(nearInd.enemies.begin(), nearInd.enemies.end(), isLess);
-					//eat(nearInd.enemies.end());
-				//}
-			} else if (state == MATURE) {
-
-			} else if (state == REPRODUCT) {
-
-			} else if (state == WAIT) {
-
-			}
-		}
+		if (speed + dna.phis[acceleration] <= dna.soc[state][max_speed])
+			speed += dna.phis[acceleration];
+		else 
+			speed = dna.soc[state][max_speed];
 	}
 }
+
+Individ_Auto::Individ_Auto() : Individ() {
+	dna.diet = AUTO;
+}
+
+Individ_Auto::Individ_Auto(Vector <int> _pos, GeneticCode _dna) : Individ(_pos, _dna) {
+	dna.diet = AUTO;
+}
+
+void Individ_Auto::eat() {
+	if (dna.diet==AUTO && energy < dna.phis[energy_max]) {
+		energy+=dna.phis[saturation];
+	} else if (energy > dna.phis[energy_max]) 
+		energy = dna.phis[energy_max];
+}
+
+void Individ_Auto::step(Array <Individ*> *field, std::deque <Individ*> *cradle, std::map <long long int, Individ*> *population) {
+	isLive();
+	if (reproduction_timer < dna.phis[reproduction_pause] && state != REPRODUCT) 
+		reproduction_timer++;
+
+	calcMove(field);
+	eat();
+
+	if (state == HUNGRY) {
+
+	} else if (state == MATURE && gender == MALE) {
+		IndMemory <long long int> nearInd;
+		nearInd = whoIsNearby(field);
+		if (!nearInd.partners.empty()) {
+			//написать функцию поиска сильнейшей особи или осуществить какой-то отбор партнёров
+			beginReproduction(*nearInd.partners.begin(), population);
+		}
+		//что бы всё нормаьно работало - перелапатить функцию движения.
+	} else if (state == REPRODUCT) {
+		reproduction(field, cradle, population);
+	} else if (state == WAIT) {
+
+	}
+}
+
+//void Individ_Getero::eat(long long int targetID, std::map <long long int, Individ> *population) {
+//	if (energy+dna.phis[saturation]<=dna.phis[energy_max] 
+//	&& (*population)[targetID].live == true
+//		) {
+//			energy+=dna.phis[saturation];
+//			(*population)[targetID].hp-=dna.phis[saturation];
+//			(*population)[targetID].state = STOP;
+//
+//			if (energy+dna.phis[saturation]>dna.phis[energy_max])
+//				(*population)[targetID].checkState();
+//	}
+//}
+//void Individ_Getero::step(Array <Individ*> *field, std::deque <Individ> *cradle, std::map <long long int, Individ> *population) {
+//
+//}

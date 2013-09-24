@@ -1,6 +1,10 @@
 #include "Gui_window.h"
 #include "Gui_color.h"
 
+#define OBJ_CLOSE_BUT 0
+#define OBJ_TITLE_BAR 1
+#define OBJ_TITLE_TEX 2
+
 int GUI_window::objCount = 3;
 void nullf() {};
 
@@ -26,12 +30,12 @@ GUI_window::GUI_window(
 	b_ptr[0] = _colorBar;
 	hge->Texture_Unlock(texBar);
 	
-	closeBut = new hgeGUIButton(0, x+w-15, y, 15, 15, closeButTex, 0, 0);
+	closeBut = new hgeGUIButton(OBJ_CLOSE_BUT, x+w-15, y, 15, 15, closeButTex, 0, 0);
 	closeBut->SetMode(false);
 	
-	titleBar = new hgeGUIButton(1, x, y, w, 15, texBar, 0, 0);
+	titleBar = new hgeGUIButton(OBJ_TITLE_BAR, x, y, w, 15, texBar, 0, 0);
 	
-	titleText = new hgeGUIText(2, x+5, y+5, w, 15, fnt);	
+	titleText = new hgeGUIText(OBJ_TITLE_TEX, x+5, y+5, w, 15, fnt);	
 	titleText->SetMode(HGETEXT_LEFT);
 	titleText->SetColor(0xFFFFFFFF);
 	titleText->SetText(title.c_str());
@@ -88,9 +92,9 @@ void GUI_window::Render() {
 
 void GUI_window::setPos(int _x, int _y) { //баг: перемещается кнопка закрытия окна в левый верхний угол
 	setQuadPos(&background, _x, _y);
-	gui->MoveCtrl(0, _x+w-15, _y);
-	gui->MoveCtrl(1, _x, _y);
-	gui->MoveCtrl(2, _x+5, _y+5);
+	gui->MoveCtrl(OBJ_CLOSE_BUT, _x+w-15, _y);
+	gui->MoveCtrl(OBJ_TITLE_BAR, _x, _y);
+	gui->MoveCtrl(OBJ_TITLE_TEX, _x+5, _y+5);
 	std::map <std::string, objInfo> ::iterator p = objectsID.begin();
 	while (p != objectsID.end()) {
 		gui->MoveCtrl(p->second.ID, _x+p->second.x, _y+p->second.y);
