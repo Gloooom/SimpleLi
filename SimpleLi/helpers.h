@@ -229,3 +229,19 @@ public:
 		else return false;
 	};
 };
+
+//
+//class Error {
+//private:
+//	static Error *_self;
+//	Error() {};
+//	~Error() {};
+//public:
+//	static void throwError(std::string err) {
+//
+//	}
+//};
+
+
+
+

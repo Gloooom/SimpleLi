@@ -45,8 +45,6 @@ GUI_window::GUI_window(
 	gui->AddCtrl(titleText);
 	gui->AddCtrl(closeBut);
 
-	updateFunc = nullf;
-
 	background.v[0].x=x;
 	background.v[0].y=y;
 	background.v[1].x=x+w;
@@ -138,7 +136,7 @@ void GUI_window::Update(float dt, float mx, float my) {
 		}
 		p++;
 	}
-	updateFunc();
+	UpdateFunc();
 	if (closeBut->GetState()) {
 		visible = false;
 		buttonPressFlag = false;
@@ -221,8 +219,4 @@ void GUI_window::setAColor(BYTE alpha) {
 		_col.b[3] = alpha;
 		background.v[i].col = _col.dw;
 	}
-}
-
-void GUI_window::setUpdateFunc(void (*func)()) {
-	updateFunc = func;
 }

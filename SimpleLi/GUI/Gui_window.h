@@ -1,5 +1,22 @@
 #include "Gui_inclusion.h"
 
+#define GetWinButton(win, ctrlname) ((hgeGUIButton*)(win->getCtrl(ctrlname)))
+#define GetWinSlider(win, ctrlname) ((hgeGUISlider*)(win->getCtrl(ctrlname)))
+#define GetWinListbox(win, ctrlname) ((hgeGUIListbox*)(win->getCtrl(ctrlname)))
+
+#define GetWinButtonState(win, ctrlname) (((hgeGUIButton*)(win->getCtrl(ctrlname)))->GetState())
+#define GetWinSliderValue(win, ctrlname) (((hgeGUISlider*)(win->getCtrl(ctrlname)))->GetValue())
+#define GetWinListboxSelect(win, ctrlname) (((hgeGUIListbox*)(win->getCtrl(ctrlname)))->GetSelectedItem())
+
+#define SetWinButtonState(win, ctrlname, state) (((hgeGUIButton*)(win->getCtrl(ctrlname)))->SetState(state))
+#define SetWinSliderValue(win, ctrlname, val) (((hgeGUISlider*)(win->getCtrl(ctrlname)))->SetValue(val))
+#define SetWinListboxSelect(win, ctrlname, select) (((hgeGUIListbox*)(win->getCtrl(ctrlname)))->SetSelectedItem(select))
+#define SetWinText(win, ctrlname, text) (((hgeGUIText*)(win->getCtrl(ctrlname)))->SetText(text))
+
+#define SetWinLink(win, sliderID, textID) (SetWinText(win, textID, Convert(GetWinSliderValue(win, sliderID)).c_str()))
+#define SetWinValLink(win, value, textID) (SetWinText(win, textID, Convert(value).c_str()))
+
+
 extern HGE *hge;
 
 struct objInfo {
@@ -27,7 +44,6 @@ private:
 	std::string		title;
 	hgeGUIText		*titleText;
 	hgeGUI			*gui;
-	void			(*updateFunc)();
 	float			m_dx, m_dy;
 	bool			touchFlag;
 	bool			buttonDoneFlag;
@@ -44,8 +60,7 @@ private:
 private:
 	void setQuadPos(hgeQuad *quad, float _x, float _y);
 
-public:
-	GUI_window() {};
+protected:
 	GUI_window( 
 		float _w, float _h, 
 		std::string _title, hgeFont *fnt,
@@ -53,15 +68,17 @@ public:
 
 	~GUI_window() {
 	};
+	
+	virtual void UpdateFunc() = 0;
 
+public:
 	void setColor(DWORD color);
 	void setAColor(BYTE alpha);
 	void Update(float dt, float mx, float my);
 	void Render();
 	void setPos(int _x, int _y);
-	void setUpdateFunc(void (*func)());
 	void addCtrl(hgeGUIObject* obj, float _x, float _y, std::string name, void (*func)() = nullf);
 	hgeGUIObject *getCtrl(std::string name);
-	objInfo getCtrlInfo(std::string name);
+	objInfo getCtrlInfo(std::string name);	
 };
 

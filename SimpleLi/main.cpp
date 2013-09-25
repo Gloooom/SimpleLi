@@ -86,54 +86,41 @@ bool RenderFunc()
 
 	display->Render();
 
-	std::vector <std::vector < Vector <int>>> polygons;
-	//формируются сырые полигоны глаз c абсолютной позицией по ячейкам
-	std::map <long long int, Individ*> ::iterator p = env.population.begin();
-	while (p != env.population.end()) {
-		//std::vector <FOV_Tri> ::iterator e = p->second.dna.eyes.begin();		
-		//while (e != p->second.dna.eyes.end()) {
-		//	std::vector < Vector <double> >  poly_to_arr_doub;
-		//	std::vector < Vector <int> >  poly_to_arr_int;
+	if (state.play) {
+		std::vector <std::vector < Vector <int>>> polygons;
+		//формируются сырые полигоны глаз c абсолютной позицией по ячейкам
+		std::map <long long int, Individ*> ::iterator p = env.population.begin();
+		while (p != env.population.end()) {
+			//std::vector <FOV_Tri> ::iterator e = p->second.dna.eyes.begin();		
+			//while (e != p->second.dna.eyes.end()) {
+			//	std::vector < Vector <double> >  poly_to_arr_doub;
+			//	std::vector < Vector <int> >  poly_to_arr_int;
 
-		//	//Сделать что-то с этим говном. О боги, какое же это говно.
-		//	poly_to_arr_doub = e->getPolygon();
-		//	for(int i=0; i<3; i++ ) {
-		//		poly_to_arr_doub[i].rotate(p->second.way.getDeg()-M_PI/2);
-		//		poly_to_arr_doub[i]+=p->second.pos.toDouble();
-		//		poly_to_arr_int.push_back(poly_to_arr_doub[i].toInt());
-		//	}
-		//	polygons.push_back(poly_to_arr_int);
-		//	e++;
-		//}
-		
-		if (display->checkVisiblity(p->second->pos.x, p->second->pos.y)) {
-			Cell c = (*display)[p->second->pos.x + p->second->pos.y*env.W()];
-			Vector <double> start, end;
-			start = c.getCenterPos();
-			end = start + p->second->way*20*zoom;
-			hge->Gfx_RenderLine(start.x, start.y, end.x, end.y, 0xAA00AA00);
+			//	//Сделать что-то с этим говном. О боги, какое же это говно.
+			//	poly_to_arr_doub = e->getPolygon();
+			//	for(int i=0; i<3; i++ ) {
+			//		poly_to_arr_doub[i].rotate(p->second.way.getDeg()-M_PI/2);
+			//		poly_to_arr_doub[i]+=p->second.pos.toDouble();
+			//		poly_to_arr_int.push_back(poly_to_arr_doub[i].toInt());
+			//	}
+			//	polygons.push_back(poly_to_arr_int);
+			//	e++;
+			//}
+
+			if (display->checkVisiblity(p->second->pos.x, p->second->pos.y)) {
+				Cell c = (*display)[p->second->pos.x + p->second->pos.y*env.W()];
+				Vector <double> start, end;
+				start = c.getCenterPos();
+				end = start + p->second->way*20*zoom;
+				hge->Gfx_RenderLine(start.x, start.y, end.x, end.y, 0xAA00AA00);
+			}
+			p++;
 		}
-		p++;
 	}
 
 	//display->RenderInfo(&polygons);
 
 	hge->Gfx_RenderQuad(&rightBar);
-
-	if (!env.population.empty())
-		fnt->printf(605, 5, HGETEXT_LEFT, 
-		"FPS: %d "
-		"\nPopulation: %d"
-		"\nStep: %d"
-		"\nMousePos:%d  %d"
-		"\nZoom: %f",
-		hge->Timer_GetFPS(), 
-		env.population.size(), 
-		(int) env.stepCount,
-		mp_x,
-		mp_y,
-		zoom
-		);
 
 	mainGUI->Render();
 	winManager->Render();

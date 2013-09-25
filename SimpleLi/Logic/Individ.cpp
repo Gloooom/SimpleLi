@@ -304,10 +304,10 @@ void Individ::calcMove(Array <Individ*> *field) {
 		look(field);
 		checkState();
 		checkWay();
-		double energyCost;
+		float energyCost;
 		//Костыль. Исправить.
-		if (dna.soc[state][max_speed] != 0 && dna.phis[stamina] != 0) 
-			energyCost = (speed/dna.soc[state][max_speed])/dna.phis[stamina];
+		if (dna.phis[stamina] != 0) 
+			energyCost = speed/dna.phis[stamina];
 		else
 			energyCost = dna.phis[energy_max];
 
