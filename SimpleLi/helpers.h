@@ -228,6 +228,13 @@ public:
 			return true;
 		else return false;
 	};
+
+	void fill(Type obj) {
+		Type *addrBuffer = arr;
+		Type *endBuffer = addrBuffer + (_colCount * _rowCount-1);
+		for (; addrBuffer <= endBuffer; addrBuffer++) 
+			*addrBuffer = obj;
+	};
 };
 
 //

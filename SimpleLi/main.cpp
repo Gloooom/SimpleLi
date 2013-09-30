@@ -13,11 +13,11 @@
 
 
 #define POP_A 100
-#define POP_G 0
+#define POP_G 40
 
 HGE *hge=0;
 
-Environment env(200, 200);
+Environment env(70, 70);
 EditorState	state;
 
 hgeGUI			*mainGUI;
@@ -64,10 +64,17 @@ bool FrameFunc()
 			display->Clear();
 			for (int x=0; x<env.W(); x++)
 				for (int y=0; y<env.H(); y++) {
-					if (env.field(x, y)->gender == MALE)
-						(*display)(x, y) = 0xFF990000;
-					if (env.field(x, y)->gender == FEMALE)
-						(*display)(x, y) = 0xFF000099;
+					if (env.field(x, y)->dna.diet == AUTO) {
+						if (env.field(x, y)->gender == MALE)
+							(*display)(x, y) = 0xFFAA0000;
+						if (env.field(x, y)->gender == FEMALE)
+							(*display)(x, y) = 0xFF0000AA;
+					} else if (env.field(x, y)->dna.diet == GETERO) {
+						if (env.field(x, y)->gender == MALE)
+							(*display)(x, y) = 0xFFAAAA00;
+						if (env.field(x, y)->gender == FEMALE)
+							(*display)(x, y) = 0xFF00AAAA;
+					}
 				}
 			display->Update();
 			timer=0;
@@ -89,7 +96,7 @@ bool RenderFunc()
 	if (state.play) {
 		std::vector <std::vector < Vector <int>>> polygons;
 		//формируются сырые полигоны глаз c абсолютной позицией по ячейкам
-		std::map <long long int, Individ*> ::iterator p = env.population.begin();
+		std::map <long long int, Individ_Proto*> ::iterator p = env.population.begin();
 		while (p != env.population.end()) {
 			//std::vector <FOV_Tri> ::iterator e = p->second.dna.eyes.begin();		
 			//while (e != p->second.dna.eyes.end()) {
@@ -167,7 +174,7 @@ void addIndivid(Vector <int> p, Mode_feeding diet) {
 		g.phis[hp_max] = 10; 
 		g.phis[energy_max] = 3000;
 		g.phis[saturation] = 10;
-		g.phis[stamina] = 2;
+		g.phis[stamina] = 1.5;
 		g.phis[fertility] = 4;
 		g.phis[live_time] = 400;
 		g.phis[reproduction_time] = 10; 
@@ -185,7 +192,20 @@ void addIndivid(Vector <int> p, Mode_feeding diet) {
 				g.soc[i][cohesion_partner] = 1;
 				g.soc[i][separation_partner] = 0.2;
 				g.soc[i][alignment_partner] = 0.1;
-				g.soc[i][enemy] = 1;
+				g.soc[i][enemy] = 2;
+				g.soc[i][cohesion_enemy] = -1;
+				g.soc[i][separation_enemy] = 1;
+				g.soc[i][alignment_enemy] = 1;
+			}
+			if (diet==GETERO) {
+				g.soc[i][max_speed] = 2;
+				g.soc[i][libido] = 1;
+				g.soc[i][rand_way] = 1;
+				g.soc[i][partner] = 1;
+				g.soc[i][cohesion_partner] = 1;
+				g.soc[i][separation_partner] = 0.2;
+				g.soc[i][alignment_partner] = 0.1;
+				g.soc[i][enemy] = 2;
 				g.soc[i][cohesion_enemy] = 1;
 				g.soc[i][separation_enemy] = 1;
 				g.soc[i][alignment_enemy] = 1;
@@ -194,7 +214,7 @@ void addIndivid(Vector <int> p, Mode_feeding diet) {
 		g.soc[0][libido] = 0;
 		g.soc[2][libido] = 0;
 		g.color = 0xFF009900;
-		env.addIndivid(&Individ_Auto(p.round(), g));
+		env.addIndivid(CreateIndivid(p.round(), g));
 }
 
 void InitEnvironment() {

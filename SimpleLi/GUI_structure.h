@@ -18,7 +18,7 @@
 #define WIN_ENV_STAT			7
 
 GeneticCode *genes = new GeneticCode();
-Individ *selectInd = &env.empty;
+Individ_Proto *selectInd = &env.empty;
 long long int selectID = 0;
 
 hgeGUIText *slidersValText;
@@ -29,7 +29,7 @@ RGBColor headCol(0xFF999999);
 RGBColor colPix(0xFF00DD00);
 
 
-void regetDNA();
+void resetDNA();
 void randDNA();
 void randPopulation(int count);
 void call_EyeEdit();
@@ -108,165 +108,6 @@ public:
 	};
 };
 Win_SaveLoad *Win_SaveLoad::self = NULL;
-
-
-class Win_EditDNA : public GUI_window {
-private:
-	static Win_EditDNA *self;
-private:
-	Win_EditDNA(DWORD _headCol, DWORD _backCol, DWORD _objsColor):
-	   GUI_window(380, 305, "DNA", fnt, _headCol, _backCol, _objsColor) {
-
-		   HTEXTURE *sliderTex = new HTEXTURE(getButtonTex(10, 10, 0xFFFFFFFF, 0.1));
-		   hgeGUIListbox *stateList;
-		   stateList = new hgeGUIListbox(0, 0, 0, 100, 100, fnt, 0xFFFFFFFF, 0xFFFFFFFF, objsColor);
-		   stateList->AddItem("HUNGRY");
-		   stateList->AddItem("MATURE");
-		   stateList->AddItem("WAIT");
-		   addCtrl(stateList, 0, 50, "state_list", getDNA);
-
-		   hgeGUISlider *indSlider;
-		   indSlider = new hgeGUISlider(0, 0, 0, 200, 10, *sliderTex, 1, 0, 5, 10);
-		   indSlider->SetValue(0);
-
-		   indSlider->SetMode(0, 10, HGESLIDER_BAR);
-		   addCtrl(indSlider, 160, 35, "max_speed_s");
-		   indSlider->SetMode(0, M_PI, HGESLIDER_BAR);
-		   addCtrl(indSlider, 160, 60, "rand_way_s");
-		   indSlider->SetMode(-10, 10, HGESLIDER_BARRELATIVE);
-		   addCtrl(indSlider, 160, 85, "libido_s");
-		   addCtrl(indSlider, 160, 110, "partner_s");
-		   addCtrl(indSlider, 160, 135, "cohesion_partner_s");
-		   addCtrl(indSlider, 160, 160, "separation_partner_s");
-		   addCtrl(indSlider, 160, 185, "alignment_partner_s");
-		   addCtrl(indSlider, 160, 210, "enemy_s");
-		   addCtrl(indSlider, 160, 235, "cohesion_enemy_s");
-		   addCtrl(indSlider, 160, 260, "separation_enemy_s");
-		   addCtrl(indSlider, 160, 285, "alignment_enemy_s");
-
-		   slidersStaticText = new hgeGUIText(0, 0, 0, 100, 20, fnt);
-		   slidersStaticText->SetMode(HGETEXT_LEFT);
-		   slidersStaticText->bEnabled = false;
-
-		   slidersStaticText->SetText("Max speed:");
-		   addCtrl(slidersStaticText, 160, 25, "max_speed_t");
-		   slidersStaticText->SetText("Rand way:");
-		   addCtrl(slidersStaticText, 160, 50, "rand_way_t");
-		   slidersStaticText->SetText("libido:");
-		   addCtrl(slidersStaticText, 160, 75, "libido_t");
-		   slidersStaticText->SetText("Partners effect:");
-		   addCtrl(slidersStaticText, 160, 100, "partner_t");
-		   slidersStaticText->SetText("Partners cohesion:");
-		   addCtrl(slidersStaticText, 160, 125, "cohesion_partner_t");
-		   slidersStaticText->SetText("Partners separation:");
-		   addCtrl(slidersStaticText, 160, 150, "separation_partner_t");
-		   slidersStaticText->SetText("Partners alignment:");
-		   addCtrl(slidersStaticText, 160, 175, "alignment_partner_t");
-		   slidersStaticText->SetText("Enemies effect:");
-		   addCtrl(slidersStaticText, 160, 200, "enemy_t");
-		   slidersStaticText->SetText("Enemies cohesion:");
-		   addCtrl(slidersStaticText, 160, 225, "cohesion_enemy_t");
-		   slidersStaticText->SetText("Enemies separation:");
-		   addCtrl(slidersStaticText, 160, 250, "separation_enemy_t");
-		   slidersStaticText->SetText("Enemies alignment:");
-		   addCtrl(slidersStaticText, 160, 275, "alignment_enemy_t");
-
-		   slidersValText = new hgeGUIText(0, 0, 0, 100, 20, fnt);
-		   slidersValText->SetMode(HGETEXT_RIGHT);
-		   slidersValText->bEnabled = false;
-		   slidersValText->SetText("0");
-
-		   addCtrl(slidersValText, 260, 25, "max_speed_val");
-		   addCtrl(slidersValText, 260, 50, "rand_way_val");
-		   addCtrl(slidersValText, 260, 75, "libido_val");
-		   addCtrl(slidersValText, 260, 100, "partner_val");
-		   addCtrl(slidersValText, 260, 125, "cohesion_partner_val");
-		   addCtrl(slidersValText, 260, 150, "separation_partner_val");
-		   addCtrl(slidersValText, 260, 175, "alignment_partner_val");
-		   addCtrl(slidersValText, 260, 200, "enemy_val");
-		   addCtrl(slidersValText, 260, 225, "cohesion_enemy_val");
-		   addCtrl(slidersValText, 260, 250, "separation_enemy_val");
-		   addCtrl(slidersValText, 260, 275, "alignment_enemy_val");
-
-		   HTEXTURE dnaEditButtonsTex = getButtonTex(140, 20, objsColor, 0.1);
-		   hgeGUIButton *dnaEditButtons;
-		   dnaEditButtons = new hgeGUIButton(0, 0, 0, 140, 20, dnaEditButtonsTex, 0, 0);
-
-		   addCtrl(dnaEditButtons, 10, 175, "rand_dna_but", randDNA);
-		   addCtrl(dnaEditButtons, 10, 200, "new_dna_but", regetDNA);
-		   addCtrl(dnaEditButtons, 10, 225, "edit_eyes_but", call_EyeEdit);
-
-		   hgeGUIText *callEyeEditButText;
-		   callEyeEditButText = new hgeGUIText(0, 0, 0, 140, 20, fnt);
-		   callEyeEditButText->SetMode(HGETEXT_CENTER);
-		   callEyeEditButText->bEnabled = false;
-
-		   callEyeEditButText->SetText("Rand DNA");
-		   addCtrl(callEyeEditButText, 10, 180, "rand_dna_but_t");
-		   callEyeEditButText->SetText("New DNA");
-		   addCtrl(callEyeEditButText, 10, 205, "new_dna_but_t");
-		   callEyeEditButText->SetText("Edit eyes");
-		   addCtrl(callEyeEditButText, 10, 230, "edit_eyes_but_t");
-	   };
-
-public:
-	static void getDNA() {
-		int select_state = GetWinListboxSelect(self, "state_list");
-		SetWinSliderValue(self, "max_speed_s", genes->soc[select_state][max_speed]);
-		SetWinSliderValue(self, "rand_way_s", genes->soc[select_state][rand_way]);
-		SetWinSliderValue(self, "libido_s", genes->soc[select_state][libido]);
-		SetWinSliderValue(self, "partner_s", genes->soc[select_state][partner]);
-		SetWinSliderValue(self, "cohesion_partner_s", genes->soc[select_state][cohesion_partner]);
-		SetWinSliderValue(self, "separation_partner_s", genes->soc[select_state][separation_partner]);
-		SetWinSliderValue(self, "alignment_partner_s", genes->soc[select_state][alignment_partner]);
-		SetWinSliderValue(self, "enemy_s", genes->soc[select_state][enemy]);
-		SetWinSliderValue(self, "cohesion_enemy_s", genes->soc[select_state][cohesion_enemy]);
-		SetWinSliderValue(self, "separation_enemy_s", genes->soc[select_state][separation_enemy]);
-		SetWinSliderValue(self, "alignment_enemy_s", genes->soc[select_state][alignment_enemy]);
-	}
-
-private:
-	void UpdateFunc() {
-		int select_state = GetWinListboxSelect(self, "state_list");
-		genes->soc[select_state][max_speed] = GetWinSliderValue(self, "max_speed_s");
-		genes->soc[select_state][rand_way] = GetWinSliderValue(self, "rand_way_s");
-		genes->soc[select_state][libido] = GetWinSliderValue(self, "libido_s");
-		genes->soc[select_state][partner] = GetWinSliderValue(self, "partner_s");
-		genes->soc[select_state][cohesion_partner] = GetWinSliderValue(self, "cohesion_partner_s");
-		genes->soc[select_state][separation_partner] = GetWinSliderValue(self, "separation_partner_s");
-		genes->soc[select_state][alignment_partner] = GetWinSliderValue(self, "alignment_partner_s");
-		genes->soc[select_state][enemy] = GetWinSliderValue(self, "enemy_s");
-		genes->soc[select_state][cohesion_enemy] = GetWinSliderValue(self, "cohesion_enemy_s");
-		genes->soc[select_state][separation_enemy] = GetWinSliderValue(self, "separation_enemy_s");
-		genes->soc[select_state][alignment_enemy] = GetWinSliderValue(self, "alignment_enemy_s");
-
-		SetWinLink(self, "max_speed_s", "max_speed_val");
-		SetWinLink(self, "rand_way_s", "rand_way_val");
-		SetWinLink(self, "libido_s", "libido_val");
-		SetWinLink(self, "partner_s", "partner_val");
-		SetWinLink(self, "cohesion_partner_s", "cohesion_partner_val");
-		SetWinLink(self, "separation_partner_s", "separation_partner_val");
-		SetWinLink(self, "alignment_partner_s", "alignment_partner_val");
-		SetWinLink(self, "enemy_s", "enemy_val");
-		SetWinLink(self, "cohesion_enemy_s", "cohesion_enemy_val");
-		SetWinLink(self, "separation_enemy_s", "separation_enemy_val");
-		SetWinLink(self, "alignment_enemy_s", "alignment_enemy_val");
-	};
-
-public:
-
-	static Win_EditDNA *Create(DWORD _headCol, DWORD _backCol, DWORD _objsColor) {
-		if (self == NULL) {
-			self = new Win_EditDNA(_headCol, _backCol, _objsColor);
-		}
-		return self;
-	};
-
-	static void Destroy() {
-		delete self;
-	};
-};
-Win_EditDNA *Win_EditDNA::self = NULL;
 
 
 class Win_EditEye : public GUI_window {
@@ -615,7 +456,7 @@ public:
 		genes->phis[reproduction_pause] = GetWinSliderValue(self, "reproduction_pause_s");
 
 		if (!env.population.empty()) {
-			std::map <long long int, Individ*> ::iterator p = env.population.begin();
+			std::map <long long int, Individ_Proto*> ::iterator p = env.population.begin();
 			while (p != env.population.end()) {
 				p->second->dna.phis = genes->phis;
 				p++;
@@ -669,6 +510,202 @@ public:
 	};
 };
 Win_EditPhis *Win_EditPhis::self = NULL;
+
+
+class Win_EditDNA : public GUI_window {
+private:
+	static Win_EditDNA *self;
+private:
+	Win_EditDNA(DWORD _headCol, DWORD _backCol, DWORD _objsColor):
+	   GUI_window(380, 305, "DNA", fnt, _headCol, _backCol, _objsColor) {
+
+		   HTEXTURE *sliderTex = new HTEXTURE(getButtonTex(10, 10, 0xFFFFFFFF, 0.1));
+
+		   hgeGUIListbox *list;
+		   list = new hgeGUIListbox(0, 0, 0, 100, 100, fnt, 0xFFFFFFFF, 0xFFFFFFFF, objsColor);
+		   list->AddItem("HUNGRY");
+		   list->AddItem("MATURE");
+		   list->AddItem("WAIT");
+		   addCtrl(list, 0, 50, "state_list", getDNA);
+
+		   list = new hgeGUIListbox(0, 0, 0, 100, 100, fnt, 0xFFFFFFFF, 0xFFFFFFFF, objsColor);
+		   list->AddItem("AUTO");
+		   list->AddItem("GETERO");
+		   addCtrl(list, 0, 250, "diet_list");
+
+
+		   hgeGUISlider *indSlider;
+		   indSlider = new hgeGUISlider(0, 0, 0, 200, 10, *sliderTex, 1, 0, 5, 10);
+		   indSlider->SetValue(0);
+
+		   indSlider->SetMode(0, 10, HGESLIDER_BAR);
+		   addCtrl(indSlider, 160, 35, "max_speed_s");
+		   indSlider->SetMode(0, M_PI, HGESLIDER_BAR);
+		   addCtrl(indSlider, 160, 60, "rand_way_s");
+		   indSlider->SetMode(-10, 10, HGESLIDER_BARRELATIVE);
+		   addCtrl(indSlider, 160, 85, "libido_s");
+		   addCtrl(indSlider, 160, 110, "partner_s");
+		   addCtrl(indSlider, 160, 135, "cohesion_partner_s");
+		   addCtrl(indSlider, 160, 160, "separation_partner_s");
+		   addCtrl(indSlider, 160, 185, "alignment_partner_s");
+		   addCtrl(indSlider, 160, 210, "enemy_s");
+		   addCtrl(indSlider, 160, 235, "cohesion_enemy_s");
+		   addCtrl(indSlider, 160, 260, "separation_enemy_s");
+		   addCtrl(indSlider, 160, 285, "alignment_enemy_s");
+
+		   slidersStaticText = new hgeGUIText(0, 0, 0, 100, 20, fnt);
+		   slidersStaticText->SetMode(HGETEXT_LEFT);
+		   slidersStaticText->bEnabled = false;
+
+		   slidersStaticText->SetText("Max speed:");
+		   addCtrl(slidersStaticText, 160, 25, "max_speed_t");
+		   slidersStaticText->SetText("Rand way:");
+		   addCtrl(slidersStaticText, 160, 50, "rand_way_t");
+		   slidersStaticText->SetText("libido:");
+		   addCtrl(slidersStaticText, 160, 75, "libido_t");
+		   slidersStaticText->SetText("Partners effect:");
+		   addCtrl(slidersStaticText, 160, 100, "partner_t");
+		   slidersStaticText->SetText("Partners cohesion:");
+		   addCtrl(slidersStaticText, 160, 125, "cohesion_partner_t");
+		   slidersStaticText->SetText("Partners separation:");
+		   addCtrl(slidersStaticText, 160, 150, "separation_partner_t");
+		   slidersStaticText->SetText("Partners alignment:");
+		   addCtrl(slidersStaticText, 160, 175, "alignment_partner_t");
+		   slidersStaticText->SetText("Enemies effect:");
+		   addCtrl(slidersStaticText, 160, 200, "enemy_t");
+		   slidersStaticText->SetText("Enemies cohesion:");
+		   addCtrl(slidersStaticText, 160, 225, "cohesion_enemy_t");
+		   slidersStaticText->SetText("Enemies separation:");
+		   addCtrl(slidersStaticText, 160, 250, "separation_enemy_t");
+		   slidersStaticText->SetText("Enemies alignment:");
+		   addCtrl(slidersStaticText, 160, 275, "alignment_enemy_t");
+
+		   slidersValText = new hgeGUIText(0, 0, 0, 100, 20, fnt);
+		   slidersValText->SetMode(HGETEXT_RIGHT);
+		   slidersValText->bEnabled = false;
+		   slidersValText->SetText("0");
+
+		   addCtrl(slidersValText, 260, 25, "max_speed_val");
+		   addCtrl(slidersValText, 260, 50, "rand_way_val");
+		   addCtrl(slidersValText, 260, 75, "libido_val");
+		   addCtrl(slidersValText, 260, 100, "partner_val");
+		   addCtrl(slidersValText, 260, 125, "cohesion_partner_val");
+		   addCtrl(slidersValText, 260, 150, "separation_partner_val");
+		   addCtrl(slidersValText, 260, 175, "alignment_partner_val");
+		   addCtrl(slidersValText, 260, 200, "enemy_val");
+		   addCtrl(slidersValText, 260, 225, "cohesion_enemy_val");
+		   addCtrl(slidersValText, 260, 250, "separation_enemy_val");
+		   addCtrl(slidersValText, 260, 275, "alignment_enemy_val");
+
+		   HTEXTURE dnaEditButtonsTex = getButtonTex(140, 20, objsColor, 0.1);
+		   hgeGUIButton *dnaEditButtons;
+		   dnaEditButtons = new hgeGUIButton(0, 0, 0, 140, 20, dnaEditButtonsTex, 0, 0);
+
+
+		   hgeGUIText *callEyeEditButText;
+		   callEyeEditButText = new hgeGUIText(0, 0, 0, 140, 20, fnt);
+		   callEyeEditButText->SetMode(HGETEXT_CENTER);
+		   callEyeEditButText->bEnabled = false;
+
+		   
+		   addCtrl(dnaEditButtons, 10, 175, "rand_dna_but", randDNA);
+		   callEyeEditButText->SetText("Rand DNA");
+		   addCtrl(callEyeEditButText, 10, 180, "rand_dna_but_t");
+
+		   addCtrl(dnaEditButtons, 10, 200, "new_dna_but", resetDNA);
+		   callEyeEditButText->SetText("New DNA");
+		   addCtrl(callEyeEditButText, 10, 205, "new_dna_but_t");
+
+		   addCtrl(dnaEditButtons, 10, 225, "edit_eyes_but", call_EyeEdit);
+		   callEyeEditButText->SetText("Edit eyes");
+		   addCtrl(callEyeEditButText, 10, 230, "edit_eyes_but_t");
+	   };
+
+public:
+	static void call_EyeEdit() {
+		winManager->Activate(WIN_EDIT_EYE);
+		winManager->setFocus(WIN_EDIT_EYE);
+		Win_EditEye::getEye();
+	}
+
+	static void resetDNA() {
+		delete genes;
+		genes = new GeneticCode();
+		Win_EditPhis::standart_PhisGenes();
+		Win_EditDNA::getDNA();
+	}
+
+	static void randDNA() {
+		delete genes;
+		genes = new GeneticCode();
+		genes->randomize();
+		Win_EditPhis::standart_PhisGenes();
+		getDNA();
+		Win_EditEye::getEye();
+	}
+
+	static void getDNA() {
+		SetWinListboxSelect(self, "diet_list", genes->diet);
+		int select_state = GetWinListboxSelect(self, "state_list");
+
+		SetWinSliderValue(self, "max_speed_s", genes->soc[select_state][max_speed]);
+		SetWinSliderValue(self, "rand_way_s", genes->soc[select_state][rand_way]);
+		SetWinSliderValue(self, "libido_s", genes->soc[select_state][libido]);
+		SetWinSliderValue(self, "partner_s", genes->soc[select_state][partner]);
+		SetWinSliderValue(self, "cohesion_partner_s", genes->soc[select_state][cohesion_partner]);
+		SetWinSliderValue(self, "separation_partner_s", genes->soc[select_state][separation_partner]);
+		SetWinSliderValue(self, "alignment_partner_s", genes->soc[select_state][alignment_partner]);
+		SetWinSliderValue(self, "enemy_s", genes->soc[select_state][enemy]);
+		SetWinSliderValue(self, "cohesion_enemy_s", genes->soc[select_state][cohesion_enemy]);
+		SetWinSliderValue(self, "separation_enemy_s", genes->soc[select_state][separation_enemy]);
+		SetWinSliderValue(self, "alignment_enemy_s", genes->soc[select_state][alignment_enemy]);
+	}
+
+	static void setDNA() {
+		genes->diet = GetWinListboxSelect(self, "diet_list");
+		int select_state = GetWinListboxSelect(self, "state_list");
+		genes->soc[select_state][max_speed] = GetWinSliderValue(self, "max_speed_s");
+		genes->soc[select_state][rand_way] = GetWinSliderValue(self, "rand_way_s");
+		genes->soc[select_state][libido] = GetWinSliderValue(self, "libido_s");
+		genes->soc[select_state][partner] = GetWinSliderValue(self, "partner_s");
+		genes->soc[select_state][cohesion_partner] = GetWinSliderValue(self, "cohesion_partner_s");
+		genes->soc[select_state][separation_partner] = GetWinSliderValue(self, "separation_partner_s");
+		genes->soc[select_state][alignment_partner] = GetWinSliderValue(self, "alignment_partner_s");
+		genes->soc[select_state][enemy] = GetWinSliderValue(self, "enemy_s");
+		genes->soc[select_state][cohesion_enemy] = GetWinSliderValue(self, "cohesion_enemy_s");
+		genes->soc[select_state][separation_enemy] = GetWinSliderValue(self, "separation_enemy_s");
+		genes->soc[select_state][alignment_enemy] = GetWinSliderValue(self, "alignment_enemy_s");
+	}
+private:
+	void UpdateFunc() {
+		setDNA();
+		SetWinLink(self, "max_speed_s", "max_speed_val");
+		SetWinLink(self, "rand_way_s", "rand_way_val");
+		SetWinLink(self, "libido_s", "libido_val");
+		SetWinLink(self, "partner_s", "partner_val");
+		SetWinLink(self, "cohesion_partner_s", "cohesion_partner_val");
+		SetWinLink(self, "separation_partner_s", "separation_partner_val");
+		SetWinLink(self, "alignment_partner_s", "alignment_partner_val");
+		SetWinLink(self, "enemy_s", "enemy_val");
+		SetWinLink(self, "cohesion_enemy_s", "cohesion_enemy_val");
+		SetWinLink(self, "separation_enemy_s", "separation_enemy_val");
+		SetWinLink(self, "alignment_enemy_s", "alignment_enemy_val");
+	};
+
+public:
+
+	static Win_EditDNA *Create(DWORD _headCol, DWORD _backCol, DWORD _objsColor) {
+		if (self == NULL) {
+			self = new Win_EditDNA(_headCol, _backCol, _objsColor);
+		}
+		return self;
+	};
+
+	static void Destroy() {
+		delete self;
+	};
+};
+Win_EditDNA *Win_EditDNA::self = NULL;
 
 
 class Win_EditMut : public GUI_window {
@@ -777,7 +814,7 @@ private:
 	static Win_IndStat *self;
 private:
 	Win_IndStat(DWORD _headCol, DWORD _backCol, DWORD _objsColor):
-	   GUI_window(200, 110, "Individ Status", fnt, headCol, backCol, objsColor) {
+	   GUI_window(200, 120, "Individ Status", fnt, headCol, backCol, objsColor) {
 
 		   hgeGUIText *val;
 		   val = new hgeGUIText(0, 0, 0, 90, 10, fnt);
@@ -795,27 +832,30 @@ private:
 		   valText->SetText("ID:");
 		   addCtrl(valText, 10, 25, "id_t");
 		   addCtrl(val, 100, 25, "id_val");
+		   valText->SetText("Diet:");
+		   addCtrl(valText, 10, 35, "diet_t");
+		   addCtrl(val, 100, 35, "diet_val");
 		   valText->SetText("Gender:");
-		   addCtrl(valText, 10, 35, "gender_t");
-		   addCtrl(val, 100, 35, "gender_val");
+		   addCtrl(valText, 10, 45, "gender_t");
+		   addCtrl(val, 100, 45, "gender_val");
 		   valText->SetText("Status:");
-		   addCtrl(valText, 10, 45, "state_t");
-		   addCtrl(val, 100, 45, "state_val");
+		   addCtrl(valText, 10, 55, "state_t");
+		   addCtrl(val, 100, 55, "state_val");
 		   valText->SetText("HP:");
-		   addCtrl(valText, 10, 55, "hp_t");
-		   addCtrl(val, 100, 55, "hp_val");
+		   addCtrl(valText, 10, 65, "hp_t");
+		   addCtrl(val, 100, 65, "hp_val");
 		   valText->SetText("Energy");
-		   addCtrl(valText, 10, 65, "energy_t");
-		   addCtrl(val, 100, 65, "energy_val");
+		   addCtrl(valText, 10, 75, "energy_t");
+		   addCtrl(val, 100, 75, "energy_val");
 		   valText->SetText("Live timer:");
-		   addCtrl(valText, 10, 75, "live_timer_t");
-		   addCtrl(val, 100, 75, "live_timer_val");
+		   addCtrl(valText, 10, 85, "live_timer_t");
+		   addCtrl(val, 100, 85, "live_timer_val");
 		   valText->SetText("Reproduction timer:");
-		   addCtrl(valText, 10, 85, "reproduction_timer_t");
-		   addCtrl(val, 100, 85, "reproduction_timer_val");
+		   addCtrl(valText, 10, 95, "reproduction_timer_t");
+		   addCtrl(val, 100, 95, "reproduction_timer_val");
 		   valText->SetText("Speed:");
-		   addCtrl(valText, 10, 95, "speed_t");
-		   addCtrl(val, 100, 95, "speed_val");
+		   addCtrl(valText, 10, 105, "speed_t");
+		   addCtrl(val, 100, 105, "speed_val");
 
 	   };
 public:
@@ -825,6 +865,10 @@ public:
 			selectID = 0;
 		}
 		SetWinValLink(self, selectInd->ID, "id_val");
+		switch (selectInd->dna.diet) {
+		case 0: SetWinText(self, "diet_val", "AUTO"); break;
+		case 1: SetWinText(self, "diet_val", "GETERO"); break;
+		}
 		switch (selectInd->gender) {
 		case 0: SetWinText(self, "gender_val", "MALE"); break;
 		case 1: SetWinText(self, "gender_val", "FEMALE"); break;
@@ -834,6 +878,9 @@ public:
 		case 0: SetWinText(self, "state_val", "HUNGRY"); break;
 		case 1: SetWinText(self, "state_val", "MATURE"); break;
 		case 2: SetWinText(self, "state_val", "WAIT"); break;
+		case 4: SetWinText(self, "state_val", "REPRODUCTIN"); break;
+		case 5: SetWinText(self, "state_val", "STOP"); break;
+		case 6: SetWinText(self, "state_val", "EAT"); break;
 		}
 		SetWinValLink(self, selectInd->hp, "hp_val");
 		SetWinValLink(self, selectInd->energy, "energy_val");
@@ -911,31 +958,7 @@ public:
 };
 Win_EnvStat *Win_EnvStat::self = NULL;
 
-
-
-
-void call_EyeEdit() {
-	winManager->Activate(WIN_EDIT_EYE);
-	winManager->setFocus(WIN_EDIT_EYE);
-	Win_EditEye::getEye();
-}
-
-void regetDNA() {
-	delete genes;
-	genes = new GeneticCode();
-	Win_EditPhis::standart_PhisGenes();
-	Win_EditDNA::getDNA();
-}
-
-void randDNA() {
-	delete genes;
-	genes = new GeneticCode();
-	genes->randomize();
-	Win_EditPhis::standart_PhisGenes();
-	Win_EditDNA::getDNA();
-	Win_EditEye::getEye();
-}
-
+//переписать//
 void randPopulation(int count) {
 	env.clear();
 	genes->diet = AUTO;
@@ -1143,14 +1166,10 @@ void CheckKeys() {
 
 	if (hge->Input_GetKeyState(HGEK_RBUTTON) && 
 		display->getMousePos(state.mp.x, state.mp.y, &col, &row) &&
-		!winManager->checkHit(state.mp.x, state.mp.y)) 
-	{
-		genes->diet = AUTO;
-		Individ_Auto ind(Point <int>(col, row), *genes);
-		env.addIndivid(&ind);
+		!winManager->checkHit(state.mp.x, state.mp.y)) {
+		env.addIndivid(CreateIndivid(Vector <int> (col, row), *genes));
 	}
 }
-
 
 
 class Win_example : public GUI_window {

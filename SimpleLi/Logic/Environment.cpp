@@ -32,7 +32,7 @@ void Environment::save(std::string path) {
 	val.i = population.size();
 	saveVal(&outf, &val);
 
-	std::map <long long int, Individ*> ::iterator p = population.begin();
+	std::map <long long int, Individ_Proto*> ::iterator p = population.begin();
 	while (p != population.end()) {
 		//dna
 		val.dw = p->second->dna.color;
@@ -96,8 +96,7 @@ void Environment::save(std::string path) {
 }
 
 void Environment::load(std::string path) {
-	population.clear();
-	cradle.clear();
+	clear();
 
 	std::ifstream inf(path, std::ios::binary);
 	UnionVal val;
@@ -108,11 +107,10 @@ void Environment::load(std::string path) {
 
 	loadVal(&inf, &val);
 	for (int p = val.i; p>0; p--) {
-		Individ_Auto ind;
 		loadVal(&inf, &val);
-		ind.dna.color = val.dw;
+		Individ_Proto *ind = CreateIndivid(val.i);
 		loadVal(&inf, &val);
-		ind.dna.diet = val.i;
+		ind->dna.color = val.dw;
 		loadVal(&inf, &val);
 		for (int i = val.i; i>0; i--) {
 			FOV_Tri tempEye;
@@ -123,50 +121,50 @@ void Environment::load(std::string path) {
 			loadVal(&inf, &val);
 			tempEye.setWidth(val.f);
 			tempEye.calculatPolygon();
-			ind.dna.eyes.push_back(tempEye);
+			ind->dna.eyes.push_back(tempEye);
 		}
 		loadVal(&inf, &val);
-		ind.dna.radialEye.setHeight(val.f);
+		ind->dna.radialEye.setHeight(val.f);
 		for (int i = 0; i<end_of_phis; i++) {
 			loadVal(&inf, &val);
-			ind.dna.phis[i] = val.f;
+			ind->dna.phis[i] = val.f;
 		}
 		for (int i=0; i<end_of_status; i++)
 			for (int j=0; j<end_of_soc; j++) {
 				loadVal(&inf, &val);
-				ind.dna.soc[i][j] = val.f;
+				ind->dna.soc[i][j] = val.f;
 			}
 		//individ
 		loadVal(&inf, &val);
-		ind.energy = val.f;
+		ind->energy = val.f;
 		loadVal(&inf, &val);
-		ind.hp = val.f;
+		ind->hp = val.f;
 		loadVal(&inf, &val);
-		ind.way.x = val.f;
+		ind->way.x = val.f;
 		loadVal(&inf, &val);
-		ind.way.y = val.f;
+		ind->way.y = val.f;
 		loadVal(&inf, &val);
-		ind.pos.x = val.i;
+		ind->pos.x = val.i;
 		loadVal(&inf, &val);
-		ind.pos.y  = val.i;
+		ind->pos.y  = val.i;
 		loadVal(&inf, &val);
-		ind.gender = val.i;
+		ind->gender = val.i;
 		loadVal(&inf, &val);
-		ind.live_timer = val.li;
+		ind->live_timer = val.li;
 		loadVal(&inf, &val);
-		ind.live = val.i;
+		ind->live = val.i;
 		loadVal(&inf, &val);
-		ind.state = val.i;
+		ind->state = val.i;
 		loadVal(&inf, &val);
-		ind.ID = val.li;
+		ind->ID = val.li;
 		loadVal(&inf, &val);
-		ind.speed = val.d;
+		ind->speed = val.d;
 		loadVal(&inf, &val);
-		ind.reproduction_timer = val.li;
+		ind->reproduction_timer = val.li;
 		loadVal(&inf, &val);
-		ind.spouseID = val.i;
+		ind->spouseID = val.i;
 
-		population[ind.ID] = new Individ_Auto(ind);
+		population[ind->ID] = ind;
 		inf.clear();
 	}
 	}
@@ -174,11 +172,9 @@ void Environment::load(std::string path) {
 }
 
 void Environment::fill() {
-	for (int i=0; i<_width; i++)
-			for (int j=0; j<_height; j++)
-				field(i, j) = &empty;
+	field.fill(&empty);
 
-	std::map <long long int, Individ*> ::iterator p = population.begin();
+	std::map <long long int, Individ_Proto*> ::iterator p = population.begin();
 	while (p != population.end()) {
 		field(p->second->pos.x, p->second->pos.y) = p->second;
 		p++;
@@ -186,7 +182,7 @@ void Environment::fill() {
 }
 
 void Environment::checkDead() {
-	std::map <long long int, Individ*> ::iterator p = population.begin();
+	std::map <long long int, Individ_Proto*> ::iterator p = population.begin();
 	while (p != population.end()) {
 		if (p->second->live == false) {
 			delete p->second;
@@ -197,7 +193,7 @@ void Environment::checkDead() {
 }
 
 void Environment::born() {
-	std::deque <Individ*> ::iterator c = cradle.begin();
+	std::deque <Individ_Proto*> ::iterator c = cradle.begin();
 	while (c != cradle.end()) {
 		(*c)->dna = (*c)->dna.mutation(mutation_maxDelta, mutation_mutGenCount, mutation_eyeAddChance, 
 			mutation_eyeMutationChance, mutation_radEyeMutationChance);
@@ -207,8 +203,8 @@ void Environment::born() {
 	cradle.clear();
 }
 
-void Environment::addIndivid(Individ *ind) {
-	cradle.push_back(new Individ_Auto(*(Individ_Auto*)ind));
+void Environment::addIndivid(Individ_Proto *ind) {
+	cradle.push_back(ind);
 }
 
 void Environment::step() {
@@ -219,7 +215,7 @@ void Environment::step() {
 	born();
 	fill();
 
-	std::map <long long int, Individ*> ::iterator p = population.begin();
+	std::map <long long int, Individ_Proto*> ::iterator p = population.begin();
 	while (p != population.end()) {
 		p->second->step(&field, &cradle, &population);
 		p++;
@@ -237,6 +233,12 @@ void Environment::setMutation(float maxDelta, int mutGenCount, float eyeAddChanc
 
 void Environment::clear() {
 	stepCount = 0;
+	std::map <long long int, Individ_Proto*> ::iterator p = population.begin();
+	while (p != population.end()) {
+		delete p->second;
+		p++;
+	}
+
 	population.clear();
 	cradle.clear();
 }

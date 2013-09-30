@@ -10,8 +10,8 @@ private:
 public:
 	long long int stepCount;
 	Individ_Auto empty;
-	Array <Individ*> field;
-	std::map <long long int, Individ*> population;
+	Array <Individ_Proto*> field;
+	std::map <long long int, Individ_Proto*> population;
 public:
 	float mutation_maxDelta;
 	int	  mutation_mutGenCount;
@@ -22,7 +22,7 @@ public:
 	void setMutation(float maxDelta, int mutGenCount, float eyeAddChance, float eyeMutationChance, 
 								  float radEyeMutationChance);
 private:
-	std::deque <Individ*> cradle;
+	std::deque <Individ_Proto*> cradle;
 
 public:
 	Environment(int width, int height):
@@ -45,7 +45,7 @@ public:
 	void save(std::string path);
 	void load(std::string path);
 
-	void addIndivid(Individ *ind);
+	void addIndivid(Individ_Proto *ind);
 	void checkDead();
 	void born();
 	void fill();
