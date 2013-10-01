@@ -17,7 +17,7 @@
 
 HGE *hge=0;
 
-Environment env(70, 70);
+Environment env(400, 400);
 EditorState	state;
 
 hgeGUI			*mainGUI;
@@ -43,8 +43,7 @@ void			DoneEditor();
 void			InitEnvironment();
 void			addIndivid(Vector <int> p, Mode_feeding diet); 
 
-bool FrameFunc()
-{
+bool FrameFunc() {
 	float		dt=hge->Timer_GetDelta();
 	
 	hge->Input_GetMousePos(&state.mp.x, &state.mp.y);
@@ -170,15 +169,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 
 void addIndivid(Vector <int> p, Mode_feeding diet) {
 	GeneticCode g;
-		g.phis[acceleration] = 0.3;
-		g.phis[hp_max] = 10; 
-		g.phis[energy_max] = 3000;
-		g.phis[saturation] = 10;
-		g.phis[stamina] = 1.5;
-		g.phis[fertility] = 4;
-		g.phis[live_time] = 400;
-		g.phis[reproduction_time] = 10; 
-		g.phis[reproduction_pause] = 100;
+
 		g.radialEye.setHeight(0);
 		g.eyes.push_back(FOV_Tri(0, 30, 20));
 		g.diet=diet;
@@ -196,6 +187,22 @@ void addIndivid(Vector <int> p, Mode_feeding diet) {
 				g.soc[i][cohesion_enemy] = -1;
 				g.soc[i][separation_enemy] = 1;
 				g.soc[i][alignment_enemy] = 1;
+
+
+				g.phis[acceleration] = 0.2;
+				g.phis[hp_max] = 50;
+				g.phis[saturation] = 10;
+				g.phis[consumption] = 2;
+				g.phis[fertility] = 0;
+				g.phis[live_time] = 600;
+
+				g.phis[energy_max] = 800;
+				g.phis[energy_mature] = 300;
+				g.phis[energy_hungry] = 200;
+
+				g.phis[reproduction_cost] = 150;
+				g.phis[reproduction_time] = 15;
+				g.phis[reproduction_pause] = 100;
 			}
 			if (diet==GETERO) {
 				g.soc[i][max_speed] = 2;
@@ -203,12 +210,28 @@ void addIndivid(Vector <int> p, Mode_feeding diet) {
 				g.soc[i][rand_way] = 1;
 				g.soc[i][partner] = 1;
 				g.soc[i][cohesion_partner] = 1;
-				g.soc[i][separation_partner] = 0.2;
-				g.soc[i][alignment_partner] = 0.1;
-				g.soc[i][enemy] = 2;
+				g.soc[i][separation_partner] = 0.5;
+				g.soc[i][alignment_partner] = 1.5;
+				g.soc[i][enemy] = 3;
 				g.soc[i][cohesion_enemy] = 1;
-				g.soc[i][separation_enemy] = 1;
-				g.soc[i][alignment_enemy] = 1;
+				g.soc[i][separation_enemy] = -1;
+				g.soc[i][alignment_enemy] = 0;
+
+
+				g.phis[acceleration] = 0.2;
+				g.phis[hp_max] = 50;
+				g.phis[saturation] = 10;
+				g.phis[consumption] = 2;
+				g.phis[fertility] = 0;
+				g.phis[live_time] = 600;
+
+				g.phis[energy_max] = 600;
+				g.phis[energy_mature] = 300;
+				g.phis[energy_hungry] = 200;
+
+				g.phis[reproduction_cost] = 150;
+				g.phis[reproduction_time] = 15;
+				g.phis[reproduction_pause] = 100;
 			}
 		}
 		g.soc[0][libido] = 0;

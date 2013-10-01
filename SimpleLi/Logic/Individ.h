@@ -50,7 +50,7 @@ public:
 	void		look(std::map <long long int, Individ_Proto*> *population);
 	void		checkWay();
 	void		checkState();
-	void		move(Array <Individ_Proto*> *field);
+	bool		move(Array <Individ_Proto*> *field);
 
 	virtual void step(Array <Individ_Proto*> *field, std::deque <Individ_Proto*> *cradle, std::map <long long int, Individ_Proto*> *population) = 0;
 };

@@ -8,7 +8,7 @@ enum Phis {
 	acceleration,
 	hp_max,
 	saturation, 
-	stamina, 
+	consumption, 
 	fertility,
 	live_time,
 

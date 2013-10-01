@@ -55,7 +55,8 @@ bool Individ_Proto::operator!=(Individ_Proto *i) {
 }
 
 //Переписать полностью. Полное говно.
-void Individ_Proto::move(Array <Individ_Proto*> *field) {
+bool Individ_Proto::move(Array <Individ_Proto*> *field) {
+	Vector <int> oldPos = pos;
 	Vector <double> tempPos(0, 0);
 	Individ_Proto *he=this;
 	while (way.getLength()!=0 &&
@@ -82,6 +83,9 @@ void Individ_Proto::move(Array <Individ_Proto*> *field) {
 	if (pos.x <=0) pos.x = 0;
 	if (pos.y >=field->getH()) pos.y = field->getH()-1;
 	if (pos.y <=0) pos.y = 0;
+
+	if (oldPos == pos) return true;
+	else return false;
 }
 
 //дописать обработку глаза типа сектор
@@ -318,22 +322,18 @@ void Individ_Proto::calcMove(Array <Individ_Proto*> *field) {
 	look(field);
 	checkWay();
 	float energyCost;
-	//Костыль. Исправить.
-	if (dna.phis[stamina] != 0) 
-		energyCost = speed/dna.phis[stamina];
-	else
-		energyCost = dna.phis[energy_max];
+
+	energyCost = dna.phis[consumption] * speed;
 
 	if (energy-energyCost>=0) {
-		energy -= energyCost;
-		move(field);
+		if (move(field))
+			energy -= energyCost;
 	}
 
 	if (speed + dna.phis[acceleration] <= dna.soc[state][max_speed])
 		speed += dna.phis[acceleration];
 	else 
 		speed = dna.soc[state][max_speed];
-
 }
 
 void Individ_Auto::eat() {
@@ -349,36 +349,44 @@ void Individ_Auto::step(Array <Individ_Proto*> *field, std::deque <Individ_Proto
 	if (reproduction_timer < dna.phis[reproduction_pause] && state != REPRODUCT) 
 		reproduction_timer++;
 	
-	if (state < end_of_status) {
+	if (state == HUNGRY) {
 		checkState();
 		calcMove(field);
 		eat();
-	}
-
-	if (state == HUNGRY) {
-
-	} else if (state == MATURE && gender == MALE) {
-		IndMemory <long long int> nearInd;
-		nearInd = whoIsNearby(field);
-		if (!nearInd.partners.empty()) {
-			//написать функцию поиска сильнейшей особи или осуществить какой-то отбор партнёров
-			beginReproduction(*nearInd.partners.begin(), population);
+	} else if (state == MATURE) {
+		checkState();
+		calcMove(field);
+		eat();
+		if (gender == MALE) {
+			IndMemory <long long int> nearInd;
+			nearInd = whoIsNearby(field);
+			if (!nearInd.partners.empty()) {
+				//написать функцию поиска сильнейшей особи или осуществить какой-то отбор партнёров
+				beginReproduction(*nearInd.partners.begin(), population);
+			}
 		}
+	} else if (state == WAIT) {
+		checkState();
+		calcMove(field);
+		eat();
 	} else if (state == REPRODUCT) {
 		reproduction(field, cradle, population);
-	} else if (state == WAIT) {
-
+	} else if (state == STOP) {
+	} else if (state == EAT) {
 	}
 }
 
 void Individ_Getero::eat(std::map <long long int, Individ_Proto*> *population) {
-	if (population->find(victimID) != population->end()) {
+	if (victimID != ID && population->find(victimID) != population->end()) {
 		if (energy+dna.phis[saturation]<=dna.phis[energy_max] 
 		&& (*population)[victimID]->live == true) {
-				energy+=dna.phis[saturation];
-				(*population)[victimID]->hp-=dna.phis[saturation];
-				(*population)[victimID]->isLive();
-		}
+			energy+=dna.phis[saturation];
+			(*population)[victimID]->hp--;
+			(*population)[victimID]->isLive();
+		} else {
+			checkState();
+			(*population)[victimID]->checkState();
+		} 
 	} else {
 		checkState();
 	}
@@ -398,30 +406,37 @@ void Individ_Getero::step(Array <Individ_Proto*> *field, std::deque <Individ_Pro
 	isLive();
 	if (reproduction_timer < dna.phis[reproduction_pause] && state != REPRODUCT) 
 		reproduction_timer++;
-	
-	checkState();
-	calcMove(field);
+
 	if (state == HUNGRY) {
+		checkState();
+		calcMove(field);
+
 		IndMemory <long long int> nearVictim;
 		nearVictim = whoIsNearby(field);
-		if (!nearVictim.partners.empty()) {
+		if (!nearVictim.enemies.empty()) {
 			//написать функцию отбора
-			beginEating(*nearVictim.partners.begin(), population);
+			beginEating(*nearVictim.enemies.begin(), population);
 		}
-	} else if (state == EAT) {
-		eat(population);
-	} else if (state == MATURE && gender == MALE) {
-		IndMemory <long long int> nearInd;
-		nearInd = whoIsNearby(field);
-		if (!nearInd.partners.empty()) {
-			//написать функцию поиска сильнейшей особи или осуществить какой-то отбор партнёров
-			beginReproduction(*nearInd.partners.begin(), population);
+	} else if (state == MATURE) {
+		checkState();
+		calcMove(field);
+
+		if (gender == MALE) {
+			IndMemory <long long int> nearInd;
+			nearInd = whoIsNearby(field);
+			if (!nearInd.partners.empty()) {
+				//написать функцию поиска сильнейшей особи или осуществить какой-то отбор партнёров
+				beginReproduction(*nearInd.partners.begin(), population);
+			}
 		}
-		//что бы всё нормаьно работало - перелапатить функцию движения.
+	} else if (state == WAIT) {
+		checkState();
+		calcMove(field);
 	} else if (state == REPRODUCT) {
 		reproduction(field, cradle, population);
-	} else if (state == WAIT) {
-
+	} else if (state == STOP) {
+	} else if (state == EAT) {
+		eat(population);
 	}
 }
 

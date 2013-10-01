@@ -348,7 +348,7 @@ private:
 		   addCtrl(phisSlider, 10, 60, "hp_max_s");
 		   phisSlider->SetMode(0, 100, HGESLIDER_BAR);
 		   addCtrl(phisSlider, 10, 85, "saturation_s");
-		   addCtrl(phisSlider, 10, 110, "stamina_s");
+		   addCtrl(phisSlider, 10, 110, "consumption_s");
 		   addCtrl(phisSlider, 10, 135, "fertility_s");
 		   phisSlider->SetMode(0, 1000, HGESLIDER_BAR);
 		   addCtrl(phisSlider, 10, 160, "live_time_s");
@@ -370,7 +370,7 @@ private:
 		   slidersStaticText->SetText("Saturation:");
 		   addCtrl(slidersStaticText, 10, 75, "saturation_t");
 		   slidersStaticText->SetText("Stamina:");
-		   addCtrl(slidersStaticText, 10, 100, "stamina_t");
+		   addCtrl(slidersStaticText, 10, 100, "consumption_t");
 		   slidersStaticText->SetText("Fertility:");
 		   addCtrl(slidersStaticText, 10, 125, "fertility_t");
 		   slidersStaticText->SetText("Live time:");
@@ -396,7 +396,7 @@ private:
 		   addCtrl(slidersValText, 210, 25, "acceleration_val");
 		   addCtrl(slidersValText, 210, 50, "hp_max_val");
 		   addCtrl(slidersValText, 210, 75, "saturation_val");
-		   addCtrl(slidersValText, 210, 100, "stamina_val");
+		   addCtrl(slidersValText, 210, 100, "consumption_val");
 		   addCtrl(slidersValText, 210, 125, "fertility_val");
 		   addCtrl(slidersValText, 210, 150, "live_time_val");
 		   addCtrl(slidersValText, 210, 175, "energy_max_val");
@@ -430,7 +430,7 @@ public:
 		SetWinSliderValue(self, "acceleration_s", genes->phis[acceleration]);
 		SetWinSliderValue(self, "hp_max_s", genes->phis[hp_max]);
 		SetWinSliderValue(self, "saturation_s", genes->phis[saturation]);
-		SetWinSliderValue(self, "stamina_s", genes->phis[stamina]);
+		SetWinSliderValue(self, "consumption_s", genes->phis[consumption]);
 		SetWinSliderValue(self, "fertility_s", genes->phis[fertility]);
 		SetWinSliderValue(self, "live_time_s", genes->phis[live_time]);
 		SetWinSliderValue(self, "energy_max_s", genes->phis[energy_max]);
@@ -445,7 +445,7 @@ public:
 		genes->phis[acceleration] = GetWinSliderValue(self, "acceleration_s");
 		genes->phis[hp_max] = GetWinSliderValue(self, "hp_max_s");
 		genes->phis[saturation] = GetWinSliderValue(self, "saturation_s");
-		genes->phis[stamina] = GetWinSliderValue(self, "stamina_s");
+		genes->phis[consumption] = GetWinSliderValue(self, "consumption_s");
 		genes->phis[fertility] = GetWinSliderValue(self, "fertility_s");
 		genes->phis[live_time] = GetWinSliderValue(self, "live_time_s");
 		genes->phis[energy_max] = GetWinSliderValue(self, "energy_max_s");
@@ -468,7 +468,7 @@ public:
 		genes->phis[acceleration] = 0.3;
 		genes->phis[hp_max] = 10; 
 		genes->phis[saturation] = 10;
-		genes->phis[stamina] = 2;
+		genes->phis[consumption] = 2;
 		genes->phis[fertility] = 4;
 		genes->phis[live_time] = 400;
 		genes->phis[energy_max] = 1000;
@@ -486,7 +486,7 @@ public:
 		SetWinLink(self, "acceleration_s", "acceleration_val");
 		SetWinLink(self, "hp_max_s", "hp_max_val");
 		SetWinLink(self, "saturation_s", "saturation_val");
-		SetWinLink(self, "stamina_s", "stamina_val");
+		SetWinLink(self, "consumption_s", "consumption_val");
 		SetWinLink(self, "fertility_s", "fertility_val");
 		SetWinLink(self, "live_time_s", "live_time_val");
 		SetWinLink(self, "energy_max_s", "energy_max_val");
@@ -961,12 +961,43 @@ Win_EnvStat *Win_EnvStat::self = NULL;
 //переписать//
 void randPopulation(int count) {
 	env.clear();
-	genes->diet = AUTO;
 	GeneticCode temp = *genes;
 	for (int i=0; i<count; i++) {
 		genes->randomize();
+		genes->diet = func::randBool();
+		if (genes->diet == AUTO) {
+			genes->phis[acceleration] = 0.2;
+			genes->phis[hp_max] = 50;
+			genes->phis[saturation] = 10;
+			genes->phis[consumption] = 2;
+			genes->phis[fertility] = 0;
+			genes->phis[live_time] = 600;
+
+			genes->phis[energy_max] = 1000;
+			genes->phis[energy_mature] = 300;
+			genes->phis[energy_hungry] = 200;
+
+			genes->phis[reproduction_cost] = 150;
+			genes->phis[reproduction_time] = 15;
+			genes->phis[reproduction_pause] = 100;
+		} else {
+			genes->phis[acceleration] = 0.2;
+			genes->phis[hp_max] = 50;
+			genes->phis[saturation] = 20;
+			genes->phis[consumption] = 2;
+			genes->phis[fertility] = 0;
+			genes->phis[live_time] = 1500;
+
+			genes->phis[energy_max] = 800;
+			genes->phis[energy_mature] = 300;
+			genes->phis[energy_hungry] = 600;
+
+			genes->phis[reproduction_cost] = 150;
+			genes->phis[reproduction_time] = 15;
+			genes->phis[reproduction_pause] = 100;
+		}
 		env.addIndivid(
-			new Individ_Auto(Vector <int> (func::randi(0, env.W()-2), func::randi(0, env.H()-2)), *genes)
+			CreateIndivid(Vector <int> (func::randi(0, env.W()-2), func::randi(0, env.H()-2)), *genes)
 			);
 	}
 	(*genes) = temp;
@@ -1109,7 +1140,7 @@ void CheckButtons() {
 			env.clear();
 		}
 		if (hgeButtonGetState(mainGUI, CMD_RAND_POP)) {
-			randPopulation(sqrt((double)(env.H()*env.W())));
+			randPopulation(sqrt((double)(env.H()*env.W()))*2);
 		}
 		if (hgeButtonGetState(mainGUI, CMD_PAUSE)) {
 			state.play = false;

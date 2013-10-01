@@ -6,10 +6,18 @@ struct Cell {
 private:
 	hgeQuad q;
 public:
-	Cell() {};
+	Cell() {
+		*this = Cell(0, 0, 1, 1);
+	};
 	Cell(int x, int y, int w, int h) {
 		setQuad(x, y, w, h);
 		setColor(0xFFFFFFFF);
+		q.v[0].z=
+			q.v[1].z=
+			q.v[2].z=
+			q.v[3].z=0.5f;
+		q.blend=BLEND_COLORMUL | BLEND_ALPHABLEND | BLEND_NOZWRITE;
+		q.tex=0;
 	};
 
 	void setQuad(int x, int y, int w, int h) {
@@ -91,17 +99,17 @@ public:
 				  quadArr(x, y).setColor(colorArr(x, y));
 	};
 	void Render() {
-		  for(int x=_visibleX; x<_visibleColCount+_visibleX; x++)
-			  for(int y=_visibleY; y<_visibleRowCount+_visibleY; y++)
-				  hge->Gfx_RenderQuad(quadArr(x, y).getQuad());
+		for(int x=_visibleX; x<_visibleColCount+_visibleX; x++)
+			for(int y=_visibleY; y<_visibleRowCount+_visibleY; y++)
+				hge->Gfx_RenderQuad(quadArr(x, y).getQuad());
 	};
 	void setBackground(DWORD color) {
-		  _background = color;
+		_background = color;
 	};
 	void Clear() {
-		  for(int x=_visibleX; x<_visibleColCount+_visibleX; x++)
-			  for(int y=_visibleY; y<_visibleRowCount+_visibleY; y++)
-				  colorArr(x, y) = _background;
+		for(int x=_visibleX; x<_visibleColCount+_visibleX; x++)
+			for(int y=_visibleY; y<_visibleRowCount+_visibleY; y++)
+				colorArr(x, y) = _background;
 	};
 	bool getMousePos(int mpx, int mpy, int *colPos, int *rowPos) {
 		if (mpx<_screenWidth && mpy<_screenHeight) {
@@ -167,13 +175,12 @@ public:
 
 		int visibleCol = _colCount/coef;
 		int visibleRow = _rowCount/coef;
-		int visibleX = (_colCount-visibleCol)/2;
-		int visibleY = (_rowCount-visibleRow)/2;
-		if ((visibleCol - visibleX)%2 != 0) visibleCol++;
-		if ((visibleRow - visibleY)%2 != 0) visibleRow++;
+		int visibleX = 0;
+		int visibleY = 0;
+		if (visibleCol % 2 != 0) visibleCol++;
+		if (visibleRow % 2 != 0) visibleRow++;
 
-		if (visibleCol+visibleX <= _colCount && visibleRow+visibleY <=_rowCount &&
-			visibleX >=0  && visibleY >=0)
+		if (visibleCol <= _colCount && visibleRow <=_rowCount)
 			setVisibleArea(visibleX, visibleY, visibleCol, visibleRow);
 		setPos(
 			(tempX*2+tempVisibleCol)/2 - visibleCol/2, 
