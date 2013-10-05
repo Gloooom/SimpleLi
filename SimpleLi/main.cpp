@@ -17,10 +17,9 @@
 
 HGE *hge=0;
 
-Environment env(400, 400);
+Environment env(20, 20);
 EditorState	state;
 
-hgeGUI			*mainGUI;
 GUI_win_manager *winManager;
 GraphicArea		*display;
 
@@ -48,40 +47,40 @@ bool FrameFunc() {
 	
 	hge->Input_GetMousePos(&state.mp.x, &state.mp.y);
 
-	CheckButtons();
 	CheckKeys();
 
 	winManager->Update(dt, state.mp.x, state.mp.y);
 	display->getMousePos(state.mp.x, state.mp.y, &mp_x, &mp_y);
-
-	mainGUI->Update(dt);
 
 	if (state.play) {
 		timer+=dt;
 		if (timer>0.1) {
 			env.step();
 			display->Clear();
-			for (int x=0; x<env.W(); x++)
-				for (int y=0; y<env.H(); y++) {
-					if (env.field(x, y)->dna.diet == AUTO) {
-						if (env.field(x, y)->gender == MALE)
-							(*display)(x, y) = 0xFFAA0000;
-						if (env.field(x, y)->gender == FEMALE)
-							(*display)(x, y) = 0xFF0000AA;
-					} else if (env.field(x, y)->dna.diet == GETERO) {
-						if (env.field(x, y)->gender == MALE)
-							(*display)(x, y) = 0xFFAAAA00;
-						if (env.field(x, y)->gender == FEMALE)
-							(*display)(x, y) = 0xFF00AAAA;
-					}
+			std::map <long long int, Individ_Proto*> ::iterator p = env.population.begin();
+			while (p != env.population.end()) {
+				if (p->second->dna.diet == AUTO) {
+					if (p->second->gender == MALE)
+						(*display)(p->second->pos) = 0xFFAA0000;
+					if (p->second->gender == FEMALE)
+						(*display)(p->second->pos) = 0xFF0000AA;
+				} else if (p->second->dna.diet == GETERO) {
+					if (p->second->gender == MALE)
+						(*display)(p->second->pos) = 0xFFAAAA00;
+					if (p->second->gender == FEMALE)
+						(*display)(p->second->pos) = 0xFF00AAAA;
 				}
+				p++;
+			}
+			if (selectInd->ID != 0) (*display)(selectInd->pos) = 0xFF00FF00;
+
 			display->Update();
 			timer=0;
 		}
 	}
-	
 
-	return false;
+	
+	return state.down;
 }
 
 
@@ -128,7 +127,6 @@ bool RenderFunc()
 
 	hge->Gfx_RenderQuad(&rightBar);
 
-	mainGUI->Render();
 	winManager->Render();
 
 	hge->Gfx_EndScene();
@@ -170,74 +168,74 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 void addIndivid(Vector <int> p, Mode_feeding diet) {
 	GeneticCode g;
 
-		g.radialEye.setHeight(0);
-		g.eyes.push_back(FOV_Tri(0, 30, 20));
-		g.diet=diet;
-		g.color = 0xFF000000;
-		for (int i=0; i<end_of_status; i++) {
-			if (diet==AUTO) {
-				g.soc[i][max_speed] = 2;
-				g.soc[i][libido] = 1;
-				g.soc[i][rand_way] = 1;
-				g.soc[i][partner] = 1;
-				g.soc[i][cohesion_partner] = 1;
-				g.soc[i][separation_partner] = 0.2;
-				g.soc[i][alignment_partner] = 0.1;
-				g.soc[i][enemy] = 2;
-				g.soc[i][cohesion_enemy] = -1;
-				g.soc[i][separation_enemy] = 1;
-				g.soc[i][alignment_enemy] = 1;
+	g.radialEye.setHeight(0);
+	g.eyes.push_back(FOV_Tri(0, 30, 20));
+	g.diet=diet;
+	g.color = 0xFF000000;
+	for (int i=0; i<end_of_status; i++) {
+		if (diet==AUTO) {
+			g.soc[i][max_speed] = 2;
+			g.soc[i][libido] = 1;
+			g.soc[i][rand_way] = 1;
+			g.soc[i][partner] = 1;
+			g.soc[i][cohesion_partner] = 1;
+			g.soc[i][separation_partner] = 0.2;
+			g.soc[i][alignment_partner] = 0.1;
+			g.soc[i][enemy] = 2;
+			g.soc[i][cohesion_enemy] = -1;
+			g.soc[i][separation_enemy] = 1;
+			g.soc[i][alignment_enemy] = 1;
 
 
-				g.phis[acceleration] = 0.2;
-				g.phis[hp_max] = 50;
-				g.phis[saturation] = 10;
-				g.phis[consumption] = 2;
-				g.phis[fertility] = 0;
-				g.phis[live_time] = 600;
+			g.phis[acceleration] = 0.2;
+			g.phis[hp_max] = 50;
+			g.phis[saturation] = 10;
+			g.phis[consumption] = 2;
+			g.phis[fertility] = 0;
+			g.phis[live_time] = 600;
 
-				g.phis[energy_max] = 800;
-				g.phis[energy_mature] = 300;
-				g.phis[energy_hungry] = 200;
+			g.phis[energy_max] = 800;
+			g.phis[energy_mature] = 300;
+			g.phis[energy_hungry] = 200;
 
-				g.phis[reproduction_cost] = 150;
-				g.phis[reproduction_time] = 15;
-				g.phis[reproduction_pause] = 100;
-			}
-			if (diet==GETERO) {
-				g.soc[i][max_speed] = 2;
-				g.soc[i][libido] = 1;
-				g.soc[i][rand_way] = 1;
-				g.soc[i][partner] = 1;
-				g.soc[i][cohesion_partner] = 1;
-				g.soc[i][separation_partner] = 0.5;
-				g.soc[i][alignment_partner] = 1.5;
-				g.soc[i][enemy] = 3;
-				g.soc[i][cohesion_enemy] = 1;
-				g.soc[i][separation_enemy] = -1;
-				g.soc[i][alignment_enemy] = 0;
-
-
-				g.phis[acceleration] = 0.2;
-				g.phis[hp_max] = 50;
-				g.phis[saturation] = 10;
-				g.phis[consumption] = 2;
-				g.phis[fertility] = 0;
-				g.phis[live_time] = 600;
-
-				g.phis[energy_max] = 600;
-				g.phis[energy_mature] = 300;
-				g.phis[energy_hungry] = 200;
-
-				g.phis[reproduction_cost] = 150;
-				g.phis[reproduction_time] = 15;
-				g.phis[reproduction_pause] = 100;
-			}
+			g.phis[reproduction_cost] = 150;
+			g.phis[reproduction_time] = 15;
+			g.phis[reproduction_pause] = 100;
 		}
-		g.soc[0][libido] = 0;
-		g.soc[2][libido] = 0;
-		g.color = 0xFF009900;
-		env.addIndivid(CreateIndivid(p.round(), g));
+		if (diet==GETERO) {
+			g.soc[i][max_speed] = 2;
+			g.soc[i][libido] = 1;
+			g.soc[i][rand_way] = 1;
+			g.soc[i][partner] = 1;
+			g.soc[i][cohesion_partner] = 1;
+			g.soc[i][separation_partner] = 0.5;
+			g.soc[i][alignment_partner] = 1.5;
+			g.soc[i][enemy] = 3;
+			g.soc[i][cohesion_enemy] = 1;
+			g.soc[i][separation_enemy] = -1;
+			g.soc[i][alignment_enemy] = 0;
+
+
+			g.phis[acceleration] = 0.2;
+			g.phis[hp_max] = 50;
+			g.phis[saturation] = 10;
+			g.phis[consumption] = 2;
+			g.phis[fertility] = 0;
+			g.phis[live_time] = 600;
+
+			g.phis[energy_max] = 600;
+			g.phis[energy_mature] = 300;
+			g.phis[energy_hungry] = 200;
+
+			g.phis[reproduction_cost] = 150;
+			g.phis[reproduction_time] = 15;
+			g.phis[reproduction_pause] = 100;
+		}
+	}
+	g.soc[0][libido] = 0;
+	g.soc[2][libido] = 0;
+	g.color = 0xFF009900;
+	env.addIndivid(CreateIndivid(p.round(), g));
 }
 
 void InitEnvironment() {
@@ -254,7 +252,7 @@ void InitEnvironment() {
 		p.y=func::randi(0, env.H()-2); 
 		addIndivid(p, GETERO);
 	}
-	
+
 	env.step();
 	display->Update();
 }
@@ -285,8 +283,6 @@ void InitEditor() {
 	fnt = new hgeFont("123.fnt");
 	fnt->SetScale(0.5);
 
-	mainGUI=new hgeGUI();
-	CreateMainGUI();
 
 	winManager = new GUI_win_manager();
 	CreateWinManager();

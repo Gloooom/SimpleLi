@@ -1,14 +1,5 @@
 #define GUI_TEXT				0
 
-#define CMD_WIN_S_L				1
-#define CMD_WIN_EDIT_DNA		2
-#define CMD_WIN_EDIT_PHIS		3
-#define CMD_PAUSE				4
-#define CMD_CLEAR				5
-#define CMD_WIN_EDIT_MUT		6
-#define CMD_ZOOM				7
-#define CMD_RAND_POP			8
-
 #define WIN_S_L					1
 #define WIN_EDIT_DNA			2
 #define WIN_EDIT_EYE			3
@@ -16,6 +7,7 @@
 #define WIN_EDIT_MUT			5
 #define WIN_IND_STAT			6
 #define WIN_ENV_STAT			7
+#define WIN_MAIN_MENU			8
 
 GeneticCode *genes = new GeneticCode();
 Individ_Proto *selectInd = &env.empty;
@@ -971,7 +963,7 @@ void randPopulation(int count) {
 			genes->phis[saturation] = 10;
 			genes->phis[consumption] = 2;
 			genes->phis[fertility] = 0;
-			genes->phis[live_time] = 600;
+			genes->phis[live_time] = 400;
 
 			genes->phis[energy_max] = 1000;
 			genes->phis[energy_mature] = 300;
@@ -986,7 +978,7 @@ void randPopulation(int count) {
 			genes->phis[saturation] = 20;
 			genes->phis[consumption] = 2;
 			genes->phis[fertility] = 0;
-			genes->phis[live_time] = 1500;
+			genes->phis[live_time] = 800;
 
 			genes->phis[energy_max] = 800;
 			genes->phis[energy_mature] = 300;
@@ -1003,155 +995,129 @@ void randPopulation(int count) {
 	(*genes) = temp;
 }
 
-void CreateWinManager() {
-	winManager->addWindow(Win_SaveLoad::Create(headCol, backCol, objsColor), WIN_S_L);
-	winManager->addWindow(Win_EditDNA::Create(headCol, backCol, objsColor), WIN_EDIT_DNA);
-	winManager->addWindow(Win_EditEye::Create(headCol, backCol, objsColor), WIN_EDIT_EYE);
-	winManager->addWindow(Win_EditPhis::Create(headCol, backCol, objsColor), WIN_EDIT_PHIS);
-	Win_EditPhis::standart_PhisGenes();
-	winManager->addWindow(Win_EditMut::Create(headCol, backCol, objsColor), WIN_EDIT_MUT);
-	winManager->addWindow(Win_IndStat::Create(headCol, backCol, objsColor), WIN_IND_STAT, 600, 150);
-	winManager->addWindow(Win_EnvStat::Create(headCol, backCol, objsColor), WIN_ENV_STAT, 600, 0);
-	winManager->Activate(WIN_ENV_STAT);
-}
 
-void CreateMainGUI() {
-	hgeGUIButton *button;
-	hgeGUIText	 *text;
+class Win_MainMenu : public GUI_window {
+private:
+	static Win_MainMenu *self;
+private:
+	Win_MainMenu(DWORD _headCol, DWORD _backCol, DWORD _objsColor):
+	   GUI_window(200, 300, "Menu", fnt, _headCol, _backCol, _objsColor) {
+		   hgeGUIButton		*button;
+		   hgeGUIText		*text;
 
-	HTEXTURE butTex = getButtonTex(180, 20, objsColor, 0.1);
+		   HTEXTURE butTex = getButtonTex(180, 20, objsColor, 0.1);
+		   HTEXTURE Tex = getButtonTex(10, 10, 0xFFFFFFFF, 0.1);
 
-	button=new hgeGUIButton(CMD_WIN_S_L, 610, 350, 180, 20, butTex, 0, 0);
-	button->SetMode(false);
-	mainGUI->AddCtrl(button);
+		   button=new hgeGUIButton(0, 0, 0, 180, 20, butTex, 0, 0);
+		   button->SetMode(false);
 
-	text = new hgeGUIText(GUI_TEXT, 610, 350, 180, 30, fnt);
-	text->SetMode(HGETEXT_CENTER);
-	text->SetColor(0xFFFFFFFF);
-	text->SetText("Save/Load");
-	text->bEnabled = false;
-	mainGUI->AddCtrl(text);
+		   text = new hgeGUIText(0, 0, 0, 180, 30, fnt);
+		   text->SetMode(HGETEXT_CENTER);
+		   text->SetColor(0xFFFFFFFF);
+		   text->bEnabled = false;
+		   
+		   
+		   text->SetText("Save/Load");
+		   addCtrl(button, 10, 25, "cmd_win_s_l_but", cmd_win_s_l);
+		   addCtrl(text, 10, 25, "cmd_win_s_l_t");
+		   
+		   text->SetText("Set mutation");
+		   addCtrl(button, 10, 50, "cmd_edit_mut_but", cmd_win_edit_mut);
+		   addCtrl(text, 10, 50, "cmd_edit_mut_t");
+		   
+		   text->SetText("Edit DNA");
+		   addCtrl(button, 10, 75, "cmd_edit_dna_but", cmd_win_edit_dna);
+		   addCtrl(text, 10, 75, "cmd_edit_dna_t");
+		   
+		   text->SetText("Edit phis attributes");
+		   addCtrl(button, 10, 100, "cmd_edit_phis_but", cmd_win_edit_phis);
+		   addCtrl(text, 10, 100, "cmd_edit_phis_t");
+		   
+		   text->SetText("Clear");
+		   addCtrl(button, 10, 125, "cmd_clear_but", cmd_clear);
+		   addCtrl(text, 10, 125, "cmd_clear_t");
+		   
+		   text->SetText("Rand population");
+		   addCtrl(button, 10, 150, "cmd_rand_pop_but", cmd_rand_pop);
+		   addCtrl(text, 10, 150, "cmd_rand_pop_t");
+		   
+		   text->SetText("Pause");
+		   addCtrl(button, 10, 175, "cmd_pause_but", cmd_pause);
+		   addCtrl(text, 10, 175, "cmd_pause_t");
 
-	button=new hgeGUIButton(CMD_WIN_EDIT_MUT, 610, 400, 180, 20, butTex, 0, 0);
-	button->SetMode(false);
-	mainGUI->AddCtrl(button);
-
-	text = new hgeGUIText(GUI_TEXT, 610, 400, 180, 30, fnt);
-	text->SetMode(HGETEXT_CENTER);
-	text->SetColor(0xFFFFFFFF);
-	text->SetText("Set mutation");
-	text->bEnabled = false;
-	mainGUI->AddCtrl(text);
-
-	button=new hgeGUIButton(CMD_WIN_EDIT_DNA, 610, 430, 180, 20, butTex, 0, 0);
-	button->SetMode(false);
-	mainGUI->AddCtrl(button);
-
-	text = new hgeGUIText(GUI_TEXT, 610, 430, 180, 30, fnt);
-	text->SetMode(HGETEXT_CENTER);
-	text->SetColor(0xFFFFFFFF);
-	text->SetText("Edit DNA");
-	text->bEnabled = false;
-	mainGUI->AddCtrl(text);
-
-	button=new hgeGUIButton(CMD_WIN_EDIT_PHIS, 610, 460, 180, 20, butTex, 0, 0);
-	button->SetMode(false);
-	mainGUI->AddCtrl(button);
-
-	text = new hgeGUIText(GUI_TEXT, 610, 460, 180, 30, fnt);
-	text->SetMode(HGETEXT_CENTER);
-	text->SetColor(0xFFFFFFFF);
-	text->SetText("Edit phis attributes");
-	text->bEnabled = false;
-	mainGUI->AddCtrl(text);
-
-	button=new hgeGUIButton(CMD_PAUSE, 610, 560, 180, 20, butTex, 0, 0);
-	button->SetMode(true);
-	button->SetState(true);
-	mainGUI->AddCtrl(button);
-
-	text = new hgeGUIText(GUI_TEXT, 610, 560, 180, 30, fnt);
-	text->SetMode(HGETEXT_CENTER);
-	text->SetColor(0xFFFFFFFF);
-	text->SetText("Pause");
-	text->bEnabled = false;
-	mainGUI->AddCtrl(text);
-
-	button=new hgeGUIButton(CMD_CLEAR, 610, 490, 180, 20, butTex, 0, 0);
-	button->SetMode(false);
-	mainGUI->AddCtrl(button);
-
-	text = new hgeGUIText(GUI_TEXT, 610, 490, 180, 30, fnt);
-	text->SetMode(HGETEXT_CENTER);
-	text->SetColor(0xFFFFFFFF);
-	text->SetText("Clear");
-	text->bEnabled = false;
-	mainGUI->AddCtrl(text);
-
-	button=new hgeGUIButton(CMD_RAND_POP, 610, 520, 180, 20, butTex, 0, 0);
-	button->SetMode(false);
-	mainGUI->AddCtrl(button);
-
-	text = new hgeGUIText(GUI_TEXT, 610, 520, 180, 30, fnt);
-	text->SetMode(HGETEXT_CENTER);
-	text->SetColor(0xFFFFFFFF);
-	text->SetText("Rand Population");
-	text->bEnabled = false;
-	mainGUI->AddCtrl(text);
-
-	HTEXTURE Tex = getButtonTex(10, 10, 0xFFFFFFFF, 0.1);
-
-	text = new hgeGUIText(GUI_TEXT, 610, 285, 180, 30, fnt);
-	text->SetMode(HGETEXT_CENTER);
-	text->SetColor(0xFFFFFFFF);
-	text->SetText("Zoom");
-	text->bEnabled = false;
-	mainGUI->AddCtrl(text);
-
-	hgeGUISlider *slid;
-	slid = new hgeGUISlider(CMD_ZOOM, 610, 300, 180, 10, Tex, 1, 0, 5, 10);
-	slid->SetMode(1, env.H()/10, HGESLIDER_BAR);
-	slid->SetValue(1);
-	mainGUI->AddCtrl(slid);
-}
-
-void CheckButtons() {
-	//Запихать в окно
-	if (!winManager->checkHit(state.mp.x, state.mp.y)) {
-		if (hgeButtonGetState(mainGUI, CMD_WIN_S_L)) {
-			winManager->Activate(WIN_S_L);
-			winManager->setFocus(WIN_S_L);
-		}
-		if (hgeButtonGetState(mainGUI, CMD_WIN_EDIT_MUT)) {
-			winManager->Activate(WIN_EDIT_MUT);
-			winManager->setFocus(WIN_EDIT_MUT);
-		}
-		if (hgeButtonGetState(mainGUI, CMD_WIN_EDIT_DNA)) {
-			winManager->Activate(WIN_EDIT_DNA);
-			winManager->setFocus(WIN_EDIT_DNA);
-		}
-		if (hgeButtonGetState(mainGUI, CMD_WIN_EDIT_PHIS)) {
-			winManager->Activate(WIN_EDIT_PHIS);
-			winManager->setFocus(WIN_EDIT_PHIS);
-
-			Win_EditPhis::get_PhisGenes();
-		}
-		if (hgeButtonGetState(mainGUI, CMD_CLEAR)) {
-			env.clear();
-		}
-		if (hgeButtonGetState(mainGUI, CMD_RAND_POP)) {
-			randPopulation(sqrt((double)(env.H()*env.W()))*2);
-		}
-		if (hgeButtonGetState(mainGUI, CMD_PAUSE)) {
-			state.play = false;
-		} else state.play = true;
-
-		if (zoom != hgeSliderGetValue(mainGUI, CMD_ZOOM)) {
-			zoom = hgeSliderGetValue(mainGUI, CMD_ZOOM);
-			display->setZoom(zoom);
-		}
+		   text->SetText("Exit");
+		   addCtrl(button, 10, 270, "cmd_exit_but", cmd_exit);
+		   addCtrl(text, 10, 270, "cmd_exit_t");
+	   }
+public:
+	static void cmd_win_s_l() {
+		winManager->Activate(WIN_S_L);
+		winManager->setFocus(WIN_S_L);
 	}
-}
+	static void cmd_win_edit_mut() {
+		winManager->Activate(WIN_EDIT_MUT);
+		winManager->setFocus(WIN_EDIT_MUT);
+	}
+	static void cmd_win_edit_dna() {
+		winManager->Activate(WIN_EDIT_DNA);
+		winManager->setFocus(WIN_EDIT_DNA);
+	}
+	static void cmd_win_edit_phis() {
+		winManager->Activate(WIN_EDIT_PHIS);
+		winManager->setFocus(WIN_EDIT_PHIS);
+		Win_EditPhis::get_PhisGenes();
+	}
+	static void cmd_clear() {
+		env.clear();
+	}
+	static void cmd_rand_pop() {
+		//randPopulation(sqrt((double)(env.H()*env.W()))*2);
+		randPopulation(10);
+	}
+	static void cmd_pause() {
+		state.play = !state.play;
+	}
+	static void cmd_exit() {
+		state.shutdown();
+	}
+
+
+	void UpdateFunc() {};
+
+public:
+	static Win_MainMenu *Create(DWORD _headCol, DWORD _backCol, DWORD _objsColor) {
+		if (self == NULL) {
+			self = new Win_MainMenu(_headCol, _backCol, _objsColor);
+		}
+		return self;
+	}
+
+	static void Destroy() {
+		delete self;
+	};
+};
+Win_MainMenu *Win_MainMenu::self = NULL;
+
+
+//организовать ещё окно для настройки отображения
+//if (zoom != hgeSliderGetValue(mainGUI, CMD_ZOOM)) {
+//	zoom = hgeSliderGetValue(mainGUI, CMD_ZOOM);
+//	display->setZoom(zoom);
+//}
+
+
+//text = new hgeGUIText(GUI_TEXT, 610, 285, 180, 30, fnt);
+//text->SetMode(HGETEXT_CENTER);
+//text->SetColor(0xFFFFFFFF);
+//text->SetText("Zoom");
+//text->bEnabled = false;
+//mainGUI->AddCtrl(text);
+
+//hgeGUISlider *slid;
+//slid = new hgeGUISlider(CMD_ZOOM, 610, 300, 180, 10, Tex, 1, 0, 5, 10);
+//slid->SetMode(1, env.H()/10, HGESLIDER_BAR);
+//slid->SetValue(1);
+//mainGUI->AddCtrl(slid);
 
 void CheckKeys() {
 	int col, row;
@@ -1171,8 +1137,7 @@ void CheckKeys() {
 		display->setPos(display->getVisibleX()+1, display->getVisibleY());
 	}
 	if (hge->Input_KeyDown(HGEK_SPACE)) {
-		hgeButtonSetState(mainGUI, CMD_PAUSE, !hgeButtonGetState(mainGUI, CMD_PAUSE));
-		state.play = !state.play;
+		Win_MainMenu::cmd_pause();
 	}
 
 	//Мыша
@@ -1203,26 +1168,21 @@ void CheckKeys() {
 }
 
 
-class Win_example : public GUI_window {
-private:
-	static Win_example *self;
-private:
-	Win_example(DWORD _headCol, DWORD _backCol, DWORD _objsColor):
-	   GUI_window(0, 0, "", fnt, _headCol, _backCol, _objsColor) {
-	   }
-private:
-	void UpdateFunc() {};
 
-public:
-	static Win_example *Create(DWORD _headCol, DWORD _backCol, DWORD _objsColor) {
-		if (self == NULL) {
-			self = new Win_example(_headCol, _backCol, _objsColor);
-		}
-		return self;
-	}
 
-	static void Destroy() {
-		delete self;
-	};
-};
-Win_example *Win_example::self = NULL;
+
+void CreateWinManager() {
+	winManager->addWindow(Win_SaveLoad::Create(headCol, backCol, objsColor), WIN_S_L);
+	winManager->addWindow(Win_EditDNA::Create(headCol, backCol, objsColor), WIN_EDIT_DNA);
+	winManager->addWindow(Win_EditEye::Create(headCol, backCol, objsColor), WIN_EDIT_EYE);
+	winManager->addWindow(Win_EditPhis::Create(headCol, backCol, objsColor), WIN_EDIT_PHIS);
+	Win_EditPhis::standart_PhisGenes();
+	winManager->addWindow(Win_EditMut::Create(headCol, backCol, objsColor), WIN_EDIT_MUT);
+	winManager->addWindow(Win_IndStat::Create(headCol, backCol, objsColor), WIN_IND_STAT, 600, 150);
+	winManager->addWindow(Win_EnvStat::Create(headCol, backCol, objsColor), WIN_ENV_STAT, 600, 0);
+	winManager->Activate(WIN_ENV_STAT);
+	winManager->addWindow(Win_MainMenu::Create(headCol, backCol, objsColor), WIN_MAIN_MENU, 600, 300);
+	winManager->Activate(WIN_MAIN_MENU);
+}
+
+

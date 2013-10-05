@@ -82,3 +82,36 @@ public:
 	objInfo getCtrlInfo(std::string name);	
 };
 
+
+
+/*
+//Пример создания потомка класса окна.
+
+class Win_example : public GUI_window {
+private:
+	static Win_example *self;
+private:
+	Win_example(DWORD _headCol, DWORD _backCol, DWORD _objsColor):
+	   GUI_window(0, 0, "", fnt, _headCol, _backCol, _objsColor) {
+	   //тут описываются элементов интерфейса
+	   }
+private:
+	void UpdateFunc() {
+		//обработка элементов интерфейса
+	};
+
+public:
+	static Win_example *Create(DWORD _headCol, DWORD _backCol, DWORD _objsColor) {
+		if (self == NULL) {
+			self = new Win_example(_headCol, _backCol, _objsColor);
+		}
+		return self;
+	}
+
+	static void Destroy() {
+		delete self;
+	};
+};
+Win_example *Win_example::self = NULL;
+
+*/

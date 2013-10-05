@@ -87,6 +87,7 @@ public:
 	  
 	Cell operator[](int i) {return quadArr[i];};
 	DWORD &operator()(int x, int y) {return colorArr(x, y);};
+	DWORD &operator()(Point <int> p) {return colorArr(p); };
 
 	void setBorder(int b) {
 		  _border = b;
