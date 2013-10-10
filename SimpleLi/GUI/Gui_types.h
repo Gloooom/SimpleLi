@@ -6,7 +6,7 @@ extern HGE *hge;
 
 struct EditorState {
 	bool down;
-	hgeVector mp;
+	Vector <int> mp;
 	bool play;
 	void shutdown() {down = true;};
 	EditorState():

@@ -94,6 +94,7 @@
     <ClCompile Include="Something.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Error.h" />
     <ClInclude Include="GUI\Gui_color.h" />
     <ClInclude Include="GUI\Gui_graphic_area.h" />
     <ClInclude Include="GUI\Gui_inclusion.h" />
@@ -120,7 +121,6 @@
     <ClInclude Include="Logic\Functions.h" />
     <ClInclude Include="Logic\GeneticCode.h" />
     <ClInclude Include="Logic\Inclusion.h" />
-    <ClInclude Include="Logic\Individ.h" />
     <ClInclude Include="Logic\Types.h" />
     <ClInclude Include="Main_inclusion.h" />
   </ItemGroup>

@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "Individ.h"
+#include "Environment.h"
 
 
 Individ_Proto *CreateIndivid(Vector <int> _pos, GeneticCode _dna) {
@@ -55,18 +55,19 @@ bool Individ_Proto::operator!=(Individ_Proto *i) {
 }
 
 //Переписать полностью. Полное говно.
-bool Individ_Proto::move(Array <Individ_Proto*> *field) {
+bool Individ_Proto::move() {
 	Vector <int> oldPos = pos;
+
 	Vector <double> tempPos(0, 0);
 	Individ_Proto *he=this;
 	while (way.getLength()!=0 &&
 		(he->ID == 0 || *he == this) &&
 		(tempPos+way)<=(way*speed) &&
 		func::round(pos.x+tempPos.x+way.x)>=0 && 
-		func::round(pos.x+tempPos.x+way.x)<field->getW() && 
+		func::round(pos.x+tempPos.x+way.x)<env->W() && 
 		func::round(pos.y+tempPos.y+way.y)>=0 && 
-		func::round(pos.y+tempPos.y+way.y)<field->getH()) {
-			he = (*field)(
+		func::round(pos.y+tempPos.y+way.y)<env->H()) {
+			he = env->field(
 				func::round(tempPos.x + way.x + (double) pos.x), 
 				func::round(tempPos.y + way.y + (double) pos.y)
 				);
@@ -79,13 +80,13 @@ bool Individ_Proto::move(Array <Individ_Proto*> *field) {
 	if (tempPos.getLength()==0) { way.x*=(-1); way.y*=(-1); }
 
 	pos += tempPos.round();
-	if (pos.x >=field->getW()) pos.x = field->getW()-1;
+	if (pos.x >=env->W()) pos.x = env->W()-1;
 	if (pos.x <=0) pos.x = 0;
-	if (pos.y >=field->getH()) pos.y = field->getH()-1;
+	if (pos.y >=env->H()) pos.y = env->H()-1;
 	if (pos.y <=0) pos.y = 0;
 
-	if (oldPos == pos) return true;
-	else return false;
+	if (oldPos == pos) return false;
+	else return true;
 }
 
 //дописать обработку глаза типа сектор
@@ -201,31 +202,33 @@ void Individ_Proto::checkState() {
 		state = WAIT;
 }
 
-void Individ_Proto::beginReproduction(long long int _spouseID, std::map <long long int, Individ_Proto*> *population) {
-	if (state != REPRODUCT && (*population)[_spouseID]->state != REPRODUCT) {
+void Individ_Proto::beginReproduction(long long int _spouseID) {
+	if (state != REPRODUCT && env->population[_spouseID]->state != REPRODUCT) {
 		mem.clear();
-		(*population)[_spouseID]->mem.clear();
+		env->population[_spouseID]->mem.clear();
 		reproduction_timer = 0;
-		(*population)[_spouseID]->reproduction_timer = 0;
+		env->population[_spouseID]->reproduction_timer = 0;
 		state = REPRODUCT;
-		(*population)[_spouseID]->state = REPRODUCT;
+		env->population[_spouseID]->state = REPRODUCT;
 		spouseID = _spouseID;
-		(*population)[_spouseID]->spouseID = ID;
+		env->population[_spouseID]->spouseID = ID;
 	}
 }
 
-void Individ_Proto::reproduction(Array <Individ_Proto*> *field, 
-	std::deque <Individ_Proto*> *cradle, 
-	std::map <long long int, Individ_Proto*> *population) {
-		if (population->find(spouseID) != population->end()) {
+
+//void Individ_Proto::reproduction(Array <Individ_Proto*> *field, 
+//	std::deque <Individ_Proto*> *cradle, 
+//	std::map <long long int, Individ_Proto*> *population) {
+void Individ_Proto::reproduction() {
+		if (env->population.find(spouseID) != env->population.end()) {
 			if (reproduction_timer < dna.phis[reproduction_time]) {
 				reproduction_timer++;
 			} else {
 				if (gender == FEMALE) {
-					cradle->push_back(new 
+					env->addIndivid(new 
 						Individ_Auto(
-						getNearestEmpty(field), 
-						dna.hibridization((*population)[spouseID]->dna, AVERAGE))
+						getNearestEmpty(), 
+						dna.hibridization(env->population[spouseID]->dna, AVERAGE))
 						);
 				}
 				energy -= dna.phis[reproduction_cost];
@@ -240,21 +243,21 @@ void Individ_Proto::reproduction(Array <Individ_Proto*> *field,
 }
 
 
-Point <int> Individ_Proto::getNearestEmpty(Array <Individ_Proto*> *field) {
+Point <int> Individ_Proto::getNearestEmpty() {
 	double R = 10;
 	std::vector <Vector <int> > emptyNear;
 	Vector <int> P;
 
 	int start_x = (pos.x-R>0) ? pos.x-R : 0;
 	int start_y = (pos.y-R>0) ? pos.y-R : 0;
-	for (int _x=start_x; _x<pos.x+R, _x<field->getW(); _x++) { 
+	for (int _x=start_x; _x<pos.x+R, _x<env->W(); _x++) { 
 		P.x=_x-pos.x;
-		for (int _y=start_y; _y<pos.y+R, _y<field->getH(); _y++) {
+		for (int _y=start_y; _y<pos.y+R, _y<env->H(); _y++) {
 			P.y=_y-pos.y;
 			if (P.y*P.y+P.x*P.x<R*R) {
 				Point <int> absP;
 				absP = P + pos;
-				Individ_Proto *he = (*field)(absP.x, absP.y);
+				Individ_Proto *he = env->field(absP);
 				if (he->ID == 0) 
 					emptyNear.push_back(P);
 			}
@@ -272,15 +275,15 @@ void Individ_Proto::heal() {
 	hp++;
 }
 
-bool Individ_Proto::isNearby(Individ_Proto* target) {
-	Vector <int> R = target->pos - pos;
+bool Individ_Proto::isNearby(long long int target) {
+	Vector <int> R = env->population[target]->pos - pos;
 	R.x = abs(R.x);
 	R.y = abs(R.y);
 	if (R.x>1 || R.y>1) return false;
 	else return true;
 }
 
-IndMemory <long long int> Individ_Proto::whoIsNearby(Array <Individ_Proto*> *field) {
+IndMemory <long long int> Individ_Proto::whoIsNearby() {
 	IndMemory <long long int> result;
 
 	int delta[] = {-1, 0, 1};
@@ -290,8 +293,8 @@ IndMemory <long long int> Individ_Proto::whoIsNearby(Array <Individ_Proto*> *fie
 		for (int y=0; y<=2; y++) {
 			selectCell.x = pos.x+delta[x];
 			selectCell.y = pos.y+delta[y];
-			if (field->isValid(selectCell)) {
-				Individ_Proto *he = (*field)(selectCell);
+			if (env->field.isValid(selectCell)) {
+				Individ_Proto *he = env->field(selectCell);
 				if (he->ID != 0 && he->ID != ID && he->live
 					&& he->state != REPRODUCT) {
 						if (he->dna.diet == dna.diet && he->gender != gender && he->state == MATURE)
@@ -316,16 +319,16 @@ bool isLess(Individ_Proto *first, Individ_Proto *second) {
 	else return false;
 }
 
-void Individ_Proto::calcMove(Array <Individ_Proto*> *field) {
+void Individ_Proto::calcMove() {
 	//Тут надо поработать над логикой. Пока всё очень плохо.
-	look(field);
+	look(&env->field);
 	checkWay();
 	float energyCost;
 
 	energyCost = dna.phis[consumption] * speed;
 
 	if (energy-energyCost>=0) {
-		if (move(field))
+		if (move())
 			energy -= energyCost;
 	}
 
@@ -343,7 +346,7 @@ void Individ_Auto::eat() {
 	}
 }
 
-void Individ_Auto::step(Array <Individ_Proto*> *field, std::deque <Individ_Proto*> *cradle, std::map <long long int, Individ_Proto*> *population) {
+void Individ_Auto::step() {
 	isLive();
 	if (live) {
 		if (reproduction_timer < dna.phis[reproduction_pause] && state != REPRODUCT) 
@@ -351,41 +354,41 @@ void Individ_Auto::step(Array <Individ_Proto*> *field, std::deque <Individ_Proto
 
 		if (state == HUNGRY) {
 			checkState();
-			calcMove(field);
+			calcMove();
 			eat();
 		} else if (state == MATURE) {
 			checkState();
-			calcMove(field);
+			calcMove();
 			eat();
 			if (gender == MALE) {
 				IndMemory <long long int> nearInd;
-				nearInd = whoIsNearby(field);
+				nearInd = whoIsNearby();
 				if (!nearInd.partners.empty()) {
 					//написать функцию поиска сильнейшей особи или осуществить какой-то отбор партнёров
-					beginReproduction(*nearInd.partners.begin(), population);
+					beginReproduction(*nearInd.partners.begin());
 				}
 			}
 		} else if (state == WAIT) {
 			checkState();
-			calcMove(field);
+			calcMove();
 			eat();
 		} else if (state == REPRODUCT) {
-			reproduction(field, cradle, population);
+			reproduction();
 		} else if (state == STOP) {
 		} else if (state == EAT) {
 		}
 	}
 }
 
-void Individ_Getero::eat(std::map <long long int, Individ_Proto*> *population) {
-	if (population->find(victimID) != population->end()) {
+void Individ_Getero::eat() {
+	if (env->population.find(victimID) != env->population.end()) {
 		if (energy+dna.phis[saturation] <= dna.phis[energy_max]) {
 			energy+=dna.phis[saturation];
-			(*population)[victimID]->hp--;
-			(*population)[victimID]->isLive();
+			env->population[victimID]->hp--;
+			env->population[victimID]->isLive();
 		} else {
 			checkState();
-			(*population)[victimID]->checkState();
+			env->population[victimID]->checkState();
 			victimID = 0;
 		} 
 	} else {
@@ -394,17 +397,17 @@ void Individ_Getero::eat(std::map <long long int, Individ_Proto*> *population) {
 	}
 }
 
-void Individ_Getero::beginEating(long long int _victimID, std::map <long long int, Individ_Proto*> *population) {
-	if (state != EAT && (*population)[_victimID]->state != REPRODUCT) {
+void Individ_Getero::beginEating(long long int _victimID) {
+	if (state != EAT && env->population[_victimID]->state != REPRODUCT) {
 		mem.clear();
-		(*population)[_victimID]->mem.clear();
+		env->population[_victimID]->mem.clear();
 		state = EAT;
-		(*population)[_victimID]->state = STOP;
+		env->population[_victimID]->state = STOP;
 		victimID = _victimID;
 	}
 }
 
-void Individ_Getero::step(Array <Individ_Proto*> *field, std::deque <Individ_Proto*> *cradle, std::map <long long int, Individ_Proto*> *population) {
+void Individ_Getero::step() {
 	isLive();
 	if (live) {
 		if (reproduction_timer < dna.phis[reproduction_pause] && state != REPRODUCT) 
@@ -412,34 +415,34 @@ void Individ_Getero::step(Array <Individ_Proto*> *field, std::deque <Individ_Pro
 
 		if (state == HUNGRY) {
 			checkState();
-			calcMove(field);
+			calcMove();
 
 			IndMemory <long long int> nearVictim;
-			nearVictim = whoIsNearby(field);
+			nearVictim = whoIsNearby();
 			if (!nearVictim.enemies.empty()) {
 				//написать функцию отбора
-				beginEating(*nearVictim.enemies.begin(), population);
+				beginEating(*nearVictim.enemies.begin());
 			}
 		} else if (state == MATURE) {
 			checkState();
-			calcMove(field);
+			calcMove();
 
 			if (gender == MALE) {
 				IndMemory <long long int> nearInd;
-				nearInd = whoIsNearby(field);
+				nearInd = whoIsNearby();
 				if (!nearInd.partners.empty()) {
 					//написать функцию поиска сильнейшей особи или осуществить какой-то отбор партнёров
-					beginReproduction(*nearInd.partners.begin(), population);
+					beginReproduction(*nearInd.partners.begin());
 				}
 			}
 		} else if (state == WAIT) {
 			checkState();
-			calcMove(field);
+			calcMove();
 		} else if (state == REPRODUCT) {
-			reproduction(field, cradle, population);
+			reproduction();
 		} else if (state == STOP) {
 		} else if (state == EAT) {
-			eat(population);
+			eat();
 		}
 	}
 }

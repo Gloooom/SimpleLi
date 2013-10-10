@@ -204,6 +204,7 @@ void Environment::born() {
 }
 
 void Environment::addIndivid(Individ_Proto *ind) {
+	ind->env = this;
 	cradle.push_back(ind);
 }
 
@@ -213,13 +214,16 @@ void Environment::step() {
 	stepCount++;
 	checkDead();
 	born();
+	
 	fill();
 
 	std::map <long long int, Individ_Proto*> ::iterator p = population.begin();
 	while (p != population.end()) {
-		p->second->step(&field, &cradle, &population);
+		p->second->step();
 		p++;
 	}
+	
+	fill();
 }
 
 void Environment::setMutation(float maxDelta, int mutGenCount, float eyeAddChance, float eyeMutationChance, 

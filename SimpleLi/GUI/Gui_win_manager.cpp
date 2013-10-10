@@ -14,7 +14,7 @@ void GUI_win_manager::addWindow(GUI_window *win, int ID, float startPosX, float 
 	gui->EnableCtrl(ID, false);
 
 	
-	if (startPosX == 0 && startPosY == 0) {
+	if (startPosX == -1 && startPosY == -1) {
 		setWinPos(ID, 600/2 - win->w/2, 600/2 - win->h/2);
 	} else {
 		setWinPos(ID, startPosX, startPosY);

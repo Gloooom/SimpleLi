@@ -17,25 +17,22 @@
 
 HGE *hge=0;
 
-Environment env(20, 20);
+Environment env(200, 200);
 EditorState	state;
 
 GUI_win_manager *winManager;
 GraphicArea		*display;
 
-RGBColor		objsColor;
 hgeFont			*fnt;
 Pixel			*sliderTexture;
 hgeSprite		*testSpr;
 hgeQuad			rightBar;
 
-float zoom = 1;
-
 #include "GUI_structure.h"
 
 float			timer = 0;
-int				mp_x = 0;
-int				mp_y = 0;
+float			mp_x = 0;
+float			mp_y = 0;
 
 void			InitEditor();
 void			DoneEditor();
@@ -44,42 +41,42 @@ void			addIndivid(Vector <int> p, Mode_feeding diet);
 
 bool FrameFunc() {
 	float		dt=hge->Timer_GetDelta();
-	
-	hge->Input_GetMousePos(&state.mp.x, &state.mp.y);
+	hge->Input_GetMousePos(&mp_x, &mp_y);
 
-	CheckKeys();
-
-	winManager->Update(dt, state.mp.x, state.mp.y);
-	display->getMousePos(state.mp.x, state.mp.y, &mp_x, &mp_y);
+	state.mp.x = mp_x;
+	state.mp.y = mp_y;
 
 	if (state.play) {
 		timer+=dt;
 		if (timer>0.1) {
 			env.step();
-			display->Clear();
-			std::map <long long int, Individ_Proto*> ::iterator p = env.population.begin();
-			while (p != env.population.end()) {
-				if (p->second->dna.diet == AUTO) {
-					if (p->second->gender == MALE)
-						(*display)(p->second->pos) = 0xFFAA0000;
-					if (p->second->gender == FEMALE)
-						(*display)(p->second->pos) = 0xFF0000AA;
-				} else if (p->second->dna.diet == GETERO) {
-					if (p->second->gender == MALE)
-						(*display)(p->second->pos) = 0xFFAAAA00;
-					if (p->second->gender == FEMALE)
-						(*display)(p->second->pos) = 0xFF00AAAA;
-				}
-				p++;
-			}
-			if (selectInd->ID != 0) (*display)(selectInd->pos) = 0xFF00FF00;
-
-			display->Update();
 			timer=0;
 		}
 	}
-
 	
+	display->Clear();
+	std::map <long long int, Individ_Proto*> ::iterator p = env.population.begin();
+	while (p != env.population.end()) {
+		if (p->second->dna.diet == GETERO) {
+			if (p->second->gender == MALE)
+				(*display)(p->second->pos) = 0xFF990000;
+			if (p->second->gender == FEMALE)
+				(*display)(p->second->pos) = 0xFFCC0000;
+		} else if (p->second->dna.diet == AUTO) {
+			if (p->second->gender == MALE)
+				(*display)(p->second->pos) = 0xFF009900;
+			if (p->second->gender == FEMALE)
+				(*display)(p->second->pos) = 0xFF00CC00;
+		}
+		p++;
+	}
+
+	CheckKeys();
+	winManager->Update(dt, state.mp.x, state.mp.y);
+	
+	if (selectInd->ID != 0) (*display)(selectInd->pos) = 0xFF1111DD;
+	display->Update();
+
 	return state.down;
 }
 
@@ -115,7 +112,7 @@ bool RenderFunc()
 			if (display->checkVisiblity(p->second->pos.x, p->second->pos.y)) {
 				Cell c = (*display)[p->second->pos.x + p->second->pos.y*env.W()];
 				Vector <double> start, end;
-				start = c.getCenterPos();
+				start = c.getCenterPos()-display->getPos().toDouble();
 				end = start + p->second->way*20*zoom;
 				hge->Gfx_RenderLine(start.x, start.y, end.x, end.y, 0xAA00AA00);
 			}
@@ -125,7 +122,7 @@ bool RenderFunc()
 
 	//display->RenderInfo(&polygons);
 
-	hge->Gfx_RenderQuad(&rightBar);
+	//hge->Gfx_RenderQuad(&rightBar);
 
 	winManager->Render();
 
@@ -134,36 +131,6 @@ bool RenderFunc()
 	return false;
 }
 
-int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
-{
-	hge = hgeCreate(HGE_VERSION);
-
-	hge->System_SetState(HGE_INIFILE, "SimpleLi.ini");
-	hge->System_SetState(HGE_LOGFILE, "SimpleLi.log");
-	hge->System_SetState(HGE_FRAMEFUNC, FrameFunc);
-	hge->System_SetState(HGE_FOCUSGAINFUNC, FrameFunc);
-	hge->System_SetState(HGE_RENDERFUNC, RenderFunc);
-	hge->System_SetState(HGE_TITLE, "SimpleLi");
-	hge->System_SetState(HGE_WINDOWED, 1);
-	hge->System_SetState(HGE_HIDEMOUSE, 0);
-	hge->System_SetState(HGE_FPS, 100);
-	hge->System_SetState(HGE_SCREENWIDTH, 800);
-	hge->System_SetState(HGE_SCREENHEIGHT, 600);
-	hge->System_SetState(HGE_SCREENBPP, 32);
-	hge->System_SetState(HGE_USESOUND, false);
-
-	if(hge->System_Initiate()) {
-		InitEditor();
-		InitEnvironment();
-		hge->System_Start();
-		DoneEditor();
-	} else 
-		MessageBox(NULL, hge->System_GetErrorMessage(), "Error", MB_OK | MB_ICONERROR | MB_SYSTEMMODAL);
-
-	hge->System_Shutdown();
-	hge->Release();
-	return 0;
-}
 
 void addIndivid(Vector <int> p, Mode_feeding diet) {
 	GeneticCode g;
@@ -258,8 +225,6 @@ void InitEnvironment() {
 }
 
 void InitEditor() {
-	objsColor = 0xFF111177;
-
 	rightBar.v[0].x=600;
 	rightBar.v[0].y=0;
 	rightBar.v[1].x=800;
@@ -287,11 +252,45 @@ void InitEditor() {
 	winManager = new GUI_win_manager();
 	CreateWinManager();
 
-	display = new GraphicArea(env.W(), env.H(), 600, 600);
-	display->setBorder(1);
-
+	display = new GraphicArea(env.W(), env.H(), 800, 600);
 }
 
 void DoneEditor() {
 
+}
+
+
+
+
+
+
+int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
+{
+	hge = hgeCreate(HGE_VERSION);
+
+	hge->System_SetState(HGE_INIFILE, "SimpleLi.ini");
+	hge->System_SetState(HGE_LOGFILE, "SimpleLi.log");
+	hge->System_SetState(HGE_FRAMEFUNC, FrameFunc);
+	hge->System_SetState(HGE_DONTSUSPEND, true);
+	hge->System_SetState(HGE_RENDERFUNC, RenderFunc);
+	hge->System_SetState(HGE_TITLE, "SimpleLi");
+	hge->System_SetState(HGE_WINDOWED, 1);
+	hge->System_SetState(HGE_HIDEMOUSE, 0);
+	hge->System_SetState(HGE_FPS, 100);
+	hge->System_SetState(HGE_SCREENWIDTH, 800);
+	hge->System_SetState(HGE_SCREENHEIGHT, 600);
+	hge->System_SetState(HGE_SCREENBPP, 32);
+	hge->System_SetState(HGE_USESOUND, false);
+
+	if(hge->System_Initiate()) {
+		InitEditor();
+		InitEnvironment();
+		hge->System_Start();
+		DoneEditor();
+	} else 
+		MessageBox(NULL, hge->System_GetErrorMessage(), "Error", MB_OK | MB_ICONERROR | MB_SYSTEMMODAL);
+
+	hge->System_Shutdown();
+	hge->Release();
+	return 0;
 }

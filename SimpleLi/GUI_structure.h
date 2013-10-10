@@ -12,6 +12,7 @@
 GeneticCode *genes = new GeneticCode();
 Individ_Proto *selectInd = &env.empty;
 long long int selectID = 0;
+float zoom = 1.0f;
 
 hgeGUIText *slidersValText;
 hgeGUIText *slidersStaticText;
@@ -19,12 +20,7 @@ hgeGUIText *slidersStaticText;
 RGBColor backCol(0xFF666666);
 RGBColor headCol(0xFF999999);
 RGBColor colPix(0xFF00DD00);
-
-
-void resetDNA();
-void randDNA();
-void randPopulation(int count);
-void call_EyeEdit();
+RGBColor objsColor(0xFF111177);
 
 
 class Win_SaveLoad : public GUI_window {
@@ -956,7 +952,7 @@ void randPopulation(int count) {
 	GeneticCode temp = *genes;
 	for (int i=0; i<count; i++) {
 		genes->randomize();
-		genes->diet = func::randBool();
+		genes->diet = AUTO;
 		if (genes->diet == AUTO) {
 			genes->phis[acceleration] = 0.2;
 			genes->phis[hp_max] = 50;
@@ -1015,32 +1011,32 @@ private:
 		   text->SetMode(HGETEXT_CENTER);
 		   text->SetColor(0xFFFFFFFF);
 		   text->bEnabled = false;
-		   
-		   
+
+
 		   text->SetText("Save/Load");
 		   addCtrl(button, 10, 25, "cmd_win_s_l_but", cmd_win_s_l);
 		   addCtrl(text, 10, 25, "cmd_win_s_l_t");
-		   
+
 		   text->SetText("Set mutation");
 		   addCtrl(button, 10, 50, "cmd_edit_mut_but", cmd_win_edit_mut);
 		   addCtrl(text, 10, 50, "cmd_edit_mut_t");
-		   
+
 		   text->SetText("Edit DNA");
 		   addCtrl(button, 10, 75, "cmd_edit_dna_but", cmd_win_edit_dna);
 		   addCtrl(text, 10, 75, "cmd_edit_dna_t");
-		   
+
 		   text->SetText("Edit phis attributes");
 		   addCtrl(button, 10, 100, "cmd_edit_phis_but", cmd_win_edit_phis);
 		   addCtrl(text, 10, 100, "cmd_edit_phis_t");
-		   
+
 		   text->SetText("Clear");
 		   addCtrl(button, 10, 125, "cmd_clear_but", cmd_clear);
 		   addCtrl(text, 10, 125, "cmd_clear_t");
-		   
+
 		   text->SetText("Rand population");
 		   addCtrl(button, 10, 150, "cmd_rand_pop_but", cmd_rand_pop);
 		   addCtrl(text, 10, 150, "cmd_rand_pop_t");
-		   
+
 		   text->SetText("Pause");
 		   addCtrl(button, 10, 175, "cmd_pause_but", cmd_pause);
 		   addCtrl(text, 10, 175, "cmd_pause_t");
@@ -1071,8 +1067,8 @@ public:
 		env.clear();
 	}
 	static void cmd_rand_pop() {
-		//randPopulation(sqrt((double)(env.H()*env.W()))*2);
-		randPopulation(10);
+		randPopulation(sqrt((double)(env.H()*env.W()))*2);
+		//randPopulation(10);
 	}
 	static void cmd_pause() {
 		state.play = !state.play;
@@ -1082,7 +1078,7 @@ public:
 	}
 
 
-	void UpdateFunc() {};
+	void UpdateFunc() {}
 
 public:
 	static Win_MainMenu *Create(DWORD _headCol, DWORD _backCol, DWORD _objsColor) {
@@ -1120,7 +1116,14 @@ Win_MainMenu *Win_MainMenu::self = NULL;
 //mainGUI->AddCtrl(slid);
 
 void CheckKeys() {
-	int col, row;
+
+	static Vector <int> pastPos;
+	static Vector <int> downPos;
+	static Vector <int> deltaPos;
+	static Vector <int> selectCell;
+	static bool mouseLButtonState = false;
+	static float zoomStep;
+
 	Win_IndStat::upd();
 	Win_EnvStat::upd();
 
@@ -1141,23 +1144,49 @@ void CheckKeys() {
 	}
 
 	//Мыша
-	if (hge->Input_GetKeyState(HGEK_LBUTTON) && 
-		display->getMousePos(state.mp.x, state.mp.y, &col, &row) &&
-		!winManager->checkHit(state.mp.x, state.mp.y) &&
-		env.field(col, row)->ID != 0) 
+	int col, row;
+	if (winManager->checkHit(state.mp.x, state.mp.y))
+		mouseLButtonState = false;
+
+	if (display->getMousePos(state.mp.x, state.mp.y, &selectCell.x, &selectCell.y) &&
+		!winManager->checkHit(state.mp.x, state.mp.y)) 
 	{
-		*genes = env.field(col, row)->dna;
-		selectInd = env.field(col, row);
-		selectID = selectInd->ID;
-		Win_EditDNA::getDNA();
+		if (hge->Input_KeyDown(HGEK_LBUTTON)) {
+			if (!mouseLButtonState) {
+				downPos = state.mp;
+				pastPos = display->getPos();
+			}
+			mouseLButtonState = true;
+		}
 
-		Win_EditEye::Reset();
-		Win_EditEye::getEye();
+		if (mouseLButtonState) {
+			Vector <int> newPos;
+			newPos = state.mp;
+			deltaPos = newPos - downPos;
+		}
 
-		winManager->getWin(WIN_EDIT_DNA)->Render();
-		winManager->getWin(WIN_EDIT_EYE)->Render();
-		winManager->Activate(WIN_IND_STAT);
-		winManager->getWin(WIN_IND_STAT)->Render();
+		if (hge->Input_KeyUp(HGEK_LBUTTON) && mouseLButtonState) {
+			mouseLButtonState = false;
+			if (deltaPos.x == 0 && deltaPos.y == 0 && env.field(selectCell)->ID != 0) {
+				*genes = env.field(selectCell)->dna;
+				selectInd = env.field(selectCell);
+				selectID = selectInd->ID;
+				Win_EditDNA::getDNA();
+
+				Win_EditEye::Reset();
+				Win_EditEye::getEye();
+
+				winManager->getWin(WIN_EDIT_DNA)->Render();
+				winManager->getWin(WIN_EDIT_EYE)->Render();
+				winManager->Activate(WIN_IND_STAT);
+				winManager->getWin(WIN_IND_STAT)->Render();
+			} 
+			deltaPos.x = 0;
+			deltaPos.y = 0;
+		}
+
+		if (deltaPos.x != 0 || deltaPos.y !=0 && mouseLButtonState)
+			display->setPos(pastPos - deltaPos);
 	}
 
 	if (hge->Input_GetKeyState(HGEK_RBUTTON) && 
@@ -1165,9 +1194,20 @@ void CheckKeys() {
 		!winManager->checkHit(state.mp.x, state.mp.y)) {
 		env.addIndivid(CreateIndivid(Vector <int> (col, row), *genes));
 	}
+
+	int deltaZ = hge->Input_GetMouseWheel();
+	if (deltaZ != 0) {
+		if (zoomStep + deltaZ >= -8) 
+			zoomStep += deltaZ;
+		zoom = pow(1.1f, zoomStep);
+		display->setZoom(zoom);
+	}
+	
+	if (env.population.find(selectID) == env.population.end()) {
+		selectInd = &env.empty;
+		selectID = 0;
+	}
 }
-
-
 
 
 

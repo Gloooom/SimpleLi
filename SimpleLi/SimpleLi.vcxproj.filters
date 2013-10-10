@@ -100,13 +100,11 @@
     <ClInclude Include="Logic\Inclusion.h">
       <Filter>LOGIC</Filter>
     </ClInclude>
-    <ClInclude Include="Logic\Individ.h">
-      <Filter>LOGIC</Filter>
-    </ClInclude>
     <ClInclude Include="Logic\Types.h">
       <Filter>LOGIC</Filter>
     </ClInclude>
     <ClInclude Include="GUI_structure.h" />
+    <ClInclude Include="Error.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="HGE">
