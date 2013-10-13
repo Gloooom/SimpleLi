@@ -318,7 +318,10 @@ public:
 				colorArr(x, y) = _background;
 	};
 	bool getMousePos(int mpx, int mpy, int *colPos, int *rowPos) {
-		if (mpx<_screenWidth && mpy<_screenHeight) {
+		if (mpx<_screenWidth && mpy<_screenHeight &&
+			mpx+_pos.x >= 0 && mpy+_pos.y >= 0 &&
+			mpx+_pos.x < _totalW && mpy+_pos.y < _totalH) 
+		{
 			*colPos = ((mpx+_pos.x+_border/4)/(_cellWidth+_border));
 			*rowPos = ((mpy+_pos.y+_border/4)/(_cellHeight+_border));
 			return true;
@@ -379,15 +382,17 @@ public:
 		int tempTotalW = _totalW;
 		int tempTotalH = _totalH;
 
+		if (coef >= 1) {
 		_border= (int) (coef/2);
 
 		float maxResoluution = getMin(_screenWidth, _screenHeight);
+		
 		_cellWidth = (maxResoluution*coef)/(float) _colCount - (float) _border;
 		_cellHeight = (maxResoluution*coef)/(float) _rowCount - (float) _border;
 
 		_totalW = _colCount*(_cellWidth+_border);
 		_totalH = _rowCount*(_cellHeight+_border);
-		if (_totalW >= 0 && _totalH >= 0) {
+
 			for(int _x=0; _x<_colCount; _x++)
 				for(int _y=0; _y<_rowCount; _y++)
 					quadArr(_x, _y).setQuad(_cellWidth*_x+_border*_x+_border/2,

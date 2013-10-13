@@ -6,6 +6,7 @@
 
 #define GetWinButtonState(win, ctrlname) (((hgeGUIButton*)(win->getCtrl(ctrlname)))->GetState())
 #define GetWinSliderValue(win, ctrlname) (((hgeGUISlider*)(win->getCtrl(ctrlname)))->GetValue())
+#define ptr_GetWinSliderValue(win, ctrlname, value) (*value = ((hgeGUISlider*)(win->getCtrl(ctrlname)))->GetValue())
 #define GetWinListboxSelect(win, ctrlname) (((hgeGUIListbox*)(win->getCtrl(ctrlname)))->GetSelectedItem())
 
 #define SetWinButtonState(win, ctrlname, state) (((hgeGUIButton*)(win->getCtrl(ctrlname)))->SetState(state))

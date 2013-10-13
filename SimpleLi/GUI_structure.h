@@ -12,7 +12,6 @@
 GeneticCode *genes = new GeneticCode();
 GeneticCode phisGetero;
 GeneticCode phisAuto;
-Individ_Proto *selectInd = &env.empty;
 long long int selectID = 0;
 float zoom = 1.0f;
 
@@ -594,6 +593,33 @@ public:
 	}
 
 	static void set_PhisGenes() {
+		ptr_GetWinSliderValue(self, "acceleration_s_auto", &phisAuto.phis[acceleration]);
+		ptr_GetWinSliderValue(self, "hp_max_s_auto", &phisAuto.phis[hp_max]);
+		ptr_GetWinSliderValue(self, "saturation_s_auto", &phisAuto.phis[saturation]);
+		ptr_GetWinSliderValue(self, "consumption_s_auto", &phisAuto.phis[consumption]);
+		ptr_GetWinSliderValue(self, "fertility_s_auto", &phisAuto.phis[fertility]);
+		ptr_GetWinSliderValue(self, "live_time_s_auto", &phisAuto.phis[live_time]);
+		ptr_GetWinSliderValue(self, "energy_max_s_auto", &phisAuto.phis[energy_max]);
+		ptr_GetWinSliderValue(self, "energy_mature_s_auto", &phisAuto.phis[energy_mature]);
+		ptr_GetWinSliderValue(self, "energy_hungry_s_auto", &phisAuto.phis[energy_hungry]);
+		ptr_GetWinSliderValue(self, "reproduction_cost_s_auto", &phisAuto.phis[reproduction_cost]);
+		ptr_GetWinSliderValue(self, "reproduction_time_s_auto", &phisAuto.phis[reproduction_time]);
+		ptr_GetWinSliderValue(self, "reproduction_pause_s_auto", &phisAuto.phis[reproduction_pause]);
+
+		
+		ptr_GetWinSliderValue(self, "acceleration_s_getero", &phisGetero.phis[acceleration]);
+		ptr_GetWinSliderValue(self, "hp_max_s_getero", &phisGetero.phis[hp_max]);
+		ptr_GetWinSliderValue(self, "saturation_s_getero", &phisGetero.phis[saturation]);
+		ptr_GetWinSliderValue(self, "consumption_s_getero", &phisGetero.phis[consumption]);
+		ptr_GetWinSliderValue(self, "fertility_s_getero", &phisGetero.phis[fertility]);
+		ptr_GetWinSliderValue(self, "live_time_s_getero", &phisGetero.phis[live_time]);
+		ptr_GetWinSliderValue(self, "energy_max_s_getero", &phisGetero.phis[energy_max]);
+		ptr_GetWinSliderValue(self, "energy_mature_s_getero", &phisGetero.phis[energy_mature]);
+		ptr_GetWinSliderValue(self, "energy_hungry_s_getero", &phisGetero.phis[energy_hungry]);
+		ptr_GetWinSliderValue(self, "reproduction_cost_s_getero", &phisGetero.phis[reproduction_cost]);
+		ptr_GetWinSliderValue(self, "reproduction_time_s_getero", &phisGetero.phis[reproduction_time]);
+		ptr_GetWinSliderValue(self, "reproduction_pause_s_getero", &phisGetero.phis[reproduction_pause]);
+
 		if (!env.population.empty()) {
 			std::map <long long int, Individ_Proto*> ::iterator p = env.population.begin();
 			while (p != env.population.end()) {
@@ -1033,11 +1059,11 @@ private:
 	   };
 public:
 	void UpdateFunc() {
-		if (env.population.find(selectID) == env.population.end()) {
-			selectInd = &env.empty;
-			selectID = 0;
-		}
-		SetWinValLink(self, selectInd->ID, "id_val");
+		Individ_Proto *selectInd = &env.empty;
+		if (env.population.find(selectID) != env.population.end()) 
+			selectInd = env.population[selectID];
+		
+		SetWinValLink(self, selectID, "id_val");
 		switch (selectInd->dna.diet) {
 		case 0: SetWinText(self, "diet_val", "AUTO"); break;
 		case 1: SetWinText(self, "diet_val", "GETERO"); break;
@@ -1259,7 +1285,7 @@ void CheckKeys() {
 	static Vector <int> deltaPos;
 	static Vector <int> selectCell;
 	static bool mouseLButtonState = false;
-	static float zoomStep;
+	static float zoomStep = 0;
 
 	Win_IndStat::upd();
 	Win_EnvStat::upd();
@@ -1306,8 +1332,7 @@ void CheckKeys() {
 			mouseLButtonState = false;
 			if (deltaPos.x == 0 && deltaPos.y == 0 && env.field(selectCell)->ID != 0) {
 				*genes = env.field(selectCell)->dna;
-				selectInd = env.field(selectCell);
-				selectID = selectInd->ID;
+				selectID = env.field(selectCell)->ID;
 				Win_EditDNA::getDNA();
 
 				Win_EditEye::Reset();
@@ -1340,14 +1365,14 @@ void CheckKeys() {
 		deltaZ = 1;
 
 	if (deltaZ != 0) {
-		if (zoomStep + deltaZ >= -8) 
+		if (zoomStep + deltaZ >= 0) 
 			zoomStep += deltaZ;
 		zoom = pow(1.1f, zoomStep);
 		display->setZoom(zoom);
+
 	}
 	
 	if (env.population.find(selectID) == env.population.end()) {
-		selectInd = &env.empty;
 		selectID = 0;
 	}
 }

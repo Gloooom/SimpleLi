@@ -74,8 +74,8 @@ bool FrameFunc() {
 	CheckKeys();
 	winManager->Update(dt, state.mp.x, state.mp.y);
 	
-	if (selectInd->ID != 0) 
-		(*display)(selectInd->pos) = 0xFF1111DD;
+	if (env.population.find(selectID) != env.population.end()) 
+		(*display)(env.population.find(selectID)->second->pos) = 0xFF1111DD;
 
 	display->Update();
 
@@ -115,7 +115,7 @@ bool RenderFunc()
 				Cell c = (*display)[p->second->pos.x + p->second->pos.y*env.W()];
 				Vector <double> start, end;
 				start = c.getCenterPos()-display->getPos().toDouble();
-				end = start + p->second->way*20*zoom;
+				end = start + p->second->way*10*zoom;
 				hge->Gfx_RenderLine(start.x, start.y, end.x, end.y, 0xAA00AA00);
 			}
 			p++;
