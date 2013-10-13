@@ -219,4 +219,15 @@ void GUI_window::setAColor(BYTE alpha) {
 		_col.b[3] = alpha;
 		background.v[i].col = _col.dw;
 	}
+
+	std::vector <hgeQuad> ::iterator q = graphic.begin();
+	while(q != graphic.end()) {
+		for(int i=0;i<4;i++) {
+			_col.dw = q->v[i].col;
+			_col.b[3] = alpha;
+
+			q->v[i].col = _col.dw;
+		}
+		q++;
+	}
 }

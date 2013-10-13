@@ -247,7 +247,6 @@ private:
 /////////////////////////////////////////
 ///////////////////////////////////////
 /////////////////////////////////////
-//Полная хуета, господи.
 class GraphicArea {
 private:
 	int _border;
@@ -291,6 +290,9 @@ public:
 					colorArr(x, y) = 0xFFFFFFFF;
 				}
 			setZoom(1);
+			int maxResolution = getMin(_screenWidth, _screenHeight);
+			maxResolution /= 2;
+			setCenterPos(maxResolution, maxResolution);
 		};
 	  
 	Cell operator[](int i) {return quadArr[i];};
@@ -379,29 +381,33 @@ public:
 
 		_border= (int) (coef/2);
 
-		_cellWidth = ((float)_screenWidth*coef)/((float) _colCount - (float) _border);
-		_cellHeight = ((float) _screenWidth*coef)/((float) _rowCount - (float) _border);
+		float maxResoluution = getMin(_screenWidth, _screenHeight);
+		_cellWidth = (maxResoluution*coef)/(float) _colCount - (float) _border;
+		_cellHeight = (maxResoluution*coef)/(float) _rowCount - (float) _border;
 
 		_totalW = _colCount*(_cellWidth+_border);
 		_totalH = _rowCount*(_cellHeight+_border);
+		if (_totalW >= 0 && _totalH >= 0) {
+			for(int _x=0; _x<_colCount; _x++)
+				for(int _y=0; _y<_rowCount; _y++)
+					quadArr(_x, _y).setQuad(_cellWidth*_x+_border*_x+_border/2,
+					_cellHeight*_y+_border*_y +_border/2, 
+					_cellWidth, _cellHeight);
 
-		for(int _x=0; _x<_colCount; _x++)
-			for(int _y=0; _y<_rowCount; _y++)
-				quadArr(_x, _y).setQuad(_cellWidth*_x+_border*_x+_border/2,
-				_cellHeight*_y+_border*_y +_border/2, 
-				_cellWidth, _cellHeight);
-
-		newPos.x = (float)tempCenterPos.x/(float)tempTotalW * (float)_totalW - deltaPos.x;
-		newPos.y = (float)tempCenterPos.y/(float)tempTotalH * (float)_totalH - deltaPos.y;
-		setPos(newPos);
+			newPos.x = (float)tempCenterPos.x/(float)tempTotalW * (float)_totalW - deltaPos.x;
+			newPos.y = (float)tempCenterPos.y/(float)tempTotalH * (float)_totalH - deltaPos.y;
+			setPos(newPos);
+		}
 	}
 
 	Vector <int> getPos() { return _pos; }
 	
 	void setCenterPos(Vector <int> pos) {
-		setPos(pos - Vector <int> (_screenWidth/2, _screenHeight/2));
+		setCenterPos(pos.x, pos.y);
 	}
-
+	void setCenterPos(int x, int y) {
+		setPos(_totalW/2 - x, _totalH/2 - y);
+	}
 	void setPos(Vector <int> pos) {
 		setPos(pos.x, pos.y);
 	}

@@ -27,10 +27,12 @@ enum Soc {
 	max_speed,
 	rand_way,
 	libido,
+
 	partner,
 	cohesion_partner,
 	separation_partner,
 	alignment_partner,
+
 	enemy,
 	cohesion_enemy,
 	separation_enemy,

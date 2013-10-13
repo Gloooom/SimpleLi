@@ -17,7 +17,7 @@
 
 HGE *hge=0;
 
-Environment env(200, 200);
+Environment env(400, 400);
 EditorState	state;
 
 GUI_win_manager *winManager;
@@ -74,7 +74,9 @@ bool FrameFunc() {
 	CheckKeys();
 	winManager->Update(dt, state.mp.x, state.mp.y);
 	
-	if (selectInd->ID != 0) (*display)(selectInd->pos) = 0xFF1111DD;
+	if (selectInd->ID != 0) 
+		(*display)(selectInd->pos) = 0xFF1111DD;
+
 	display->Update();
 
 	return state.down;

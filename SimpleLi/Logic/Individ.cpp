@@ -225,10 +225,10 @@ void Individ_Proto::reproduction() {
 				reproduction_timer++;
 			} else {
 				if (gender == FEMALE) {
-					env->addIndivid(new 
-						Individ_Auto(
-						getNearestEmpty(), 
-						dna.hibridization(env->population[spouseID]->dna, AVERAGE))
+					env->addIndivid(
+						CreateIndivid(
+							getNearestEmpty(), 
+							dna.hibridization(env->population[spouseID]->dna, AVERAGE))
 						);
 				}
 				energy -= dna.phis[reproduction_cost];

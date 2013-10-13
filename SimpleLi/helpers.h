@@ -6,6 +6,13 @@
 
 #define M_PI       3.14159265358979323846
 
+
+template <typename T>
+T getMin(T a, T b) {return a<b ? a : b;};
+template <typename T>
+T getMax(T a, T b) {return a>b ? a : b;};
+
+
 template <typename T> class Point {
 public:
 	T x;

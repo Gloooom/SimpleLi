@@ -10,6 +10,8 @@
 #define WIN_MAIN_MENU			8
 
 GeneticCode *genes = new GeneticCode();
+GeneticCode phisGetero;
+GeneticCode phisAuto;
 Individ_Proto *selectInd = &env.empty;
 long long int selectID = 0;
 float zoom = 1.0f;
@@ -321,78 +323,228 @@ private:
 	static Win_EditPhis *self;
 private:
 	Win_EditPhis(DWORD _headCol, DWORD _backCol, DWORD _objsColor): 
-	   GUI_window(320, 410, "Edit phis attributes", fnt, _headCol, _backCol, _objsColor) {
+	   GUI_window(440, 410, "Edit phis attributes", fnt, _headCol, _backCol, _objsColor) {
 
 		   HTEXTURE *sliderTex = new HTEXTURE(getButtonTex(10, 10, 0xFFFFFFFF, 0.1));
 
 		   hgeGUISlider *phisSlider;
-		   phisSlider = new hgeGUISlider(0, 0, 0, 300, 10, *sliderTex, 1, 0, 5, 10);
+		   phisSlider = new hgeGUISlider(0, 0, 0, 200, 10, *sliderTex, 1, 0, 5, 10);
 		   phisSlider->SetValue(0);
-
-
-		   phisSlider->SetMode(0, 10, HGESLIDER_BAR);
-		   addCtrl(phisSlider, 10, 35, "acceleration_s");
-		   phisSlider->SetMode(0, 1000, HGESLIDER_BAR);
-		   addCtrl(phisSlider, 10, 60, "hp_max_s");
-		   phisSlider->SetMode(0, 100, HGESLIDER_BAR);
-		   addCtrl(phisSlider, 10, 85, "saturation_s");
-		   addCtrl(phisSlider, 10, 110, "consumption_s");
-		   addCtrl(phisSlider, 10, 135, "fertility_s");
-		   phisSlider->SetMode(0, 1000, HGESLIDER_BAR);
-		   addCtrl(phisSlider, 10, 160, "live_time_s");
-		   addCtrl(phisSlider, 10, 185, "energy_max_s");
-		   addCtrl(phisSlider, 10, 210, "energy_mature_s");
-		   addCtrl(phisSlider, 10, 235, "energy_hungry_s");
-		   addCtrl(phisSlider, 10, 260, "reproduction_cost_s");
-		   addCtrl(phisSlider, 10, 285, "reproduction_time_s");
-		   addCtrl(phisSlider, 10, 310, "reproduction_pause_s");
 
 		   slidersStaticText = new hgeGUIText(0, 0, 0, 100, 20, fnt);
 		   slidersStaticText->SetMode(HGETEXT_LEFT);
 		   slidersStaticText->bEnabled = false;
-
-		   slidersStaticText->SetText("Acceleration:");
-		   addCtrl(slidersStaticText, 10, 25, "acceleration_t");
-		   slidersStaticText->SetText("Max HP:");
-		   addCtrl(slidersStaticText, 10, 50, "hp_max_t");
-		   slidersStaticText->SetText("Saturation:");
-		   addCtrl(slidersStaticText, 10, 75, "saturation_t");
-		   slidersStaticText->SetText("Stamina:");
-		   addCtrl(slidersStaticText, 10, 100, "consumption_t");
-		   slidersStaticText->SetText("Fertility:");
-		   addCtrl(slidersStaticText, 10, 125, "fertility_t");
-		   slidersStaticText->SetText("Live time:");
-		   addCtrl(slidersStaticText, 10, 150, "live_time_t");
-		   slidersStaticText->SetText("Max energy:");
-		   addCtrl(slidersStaticText, 10, 175, "energy_max_t");
-		   slidersStaticText->SetText("Mature energy:");
-		   addCtrl(slidersStaticText, 10, 200, "energy_mature_t");
-		   slidersStaticText->SetText("Hungry energy:");
-		   addCtrl(slidersStaticText, 10, 225, "energy_hungry_t");
-		   slidersStaticText->SetText("Reproduction cost:");
-		   addCtrl(slidersStaticText, 10, 250, "reproduction_cost_t");
-		   slidersStaticText->SetText("Reproduction time:");
-		   addCtrl(slidersStaticText, 10, 275, "reproduction_time_t");
-		   slidersStaticText->SetText("Reproduction pause:");
-		   addCtrl(slidersStaticText, 10, 300, "reproduction_pause_t");
-
+		   
 		   slidersValText = new hgeGUIText(0, 0, 0, 100, 20, fnt);
 		   slidersValText->SetMode(HGETEXT_RIGHT);
 		   slidersValText->bEnabled = false;
 		   slidersValText->SetText("0");
 
-		   addCtrl(slidersValText, 210, 25, "acceleration_val");
-		   addCtrl(slidersValText, 210, 50, "hp_max_val");
-		   addCtrl(slidersValText, 210, 75, "saturation_val");
-		   addCtrl(slidersValText, 210, 100, "consumption_val");
-		   addCtrl(slidersValText, 210, 125, "fertility_val");
-		   addCtrl(slidersValText, 210, 150, "live_time_val");
-		   addCtrl(slidersValText, 210, 175, "energy_max_val");
-		   addCtrl(slidersValText, 210, 200, "energy_mature_val");
-		   addCtrl(slidersValText, 210, 225, "energy_hungry_val");
-		   addCtrl(slidersValText, 210, 250, "reproduction_cost_val");
-		   addCtrl(slidersValText, 210, 275, "reproduction_time_val");
-		   addCtrl(slidersValText, 210, 300, "reproduction_pause_val");
+		   hgeGUIText *header;
+		   header = new hgeGUIText(0, 0, 0, 200, 10, fnt);
+		   header->SetMode(HGETEXT_CENTER);
+		   header->bEnabled = false;
+		   header->SetText("AUTO");
+		   addCtrl(header, 10, 30, "auto_text");
+		   header->SetText("GETERO");
+		   addCtrl(header, 230, 30, "getero_text");
+		   delete header;
+
+		   int w_pos = 10;
+		   int h_pos = 50;
+		   int h_step = 25;
+
+		   phisSlider->SetMode(0, 10, HGESLIDER_BAR);
+		   slidersStaticText->SetText("Acceleration:");
+		   addCtrl(slidersStaticText, w_pos, h_pos, "acceleration_t_auto");
+		   addCtrl(slidersValText, w_pos+100, h_pos, "acceleration_val_auto");
+		   addCtrl(phisSlider, w_pos, h_pos+10, "acceleration_s_auto");
+
+		   phisSlider->SetMode(0, 1000, HGESLIDER_BAR);
+		   h_pos += h_step;
+		   slidersStaticText->SetText("Max HP:");
+		   addCtrl(slidersStaticText, w_pos, h_pos, "hp_max_t_auto");
+		   addCtrl(slidersValText, w_pos+100, h_pos, "hp_max_val_auto");
+		   addCtrl(phisSlider, w_pos, h_pos+10, "hp_max_s_auto");
+
+		   phisSlider->SetMode(0, 100, HGESLIDER_BAR);
+		   h_pos += h_step;
+		   slidersStaticText->SetText("Saturation:");
+		   addCtrl(slidersStaticText, w_pos, h_pos, "saturation_t_auto");
+		   addCtrl(slidersValText, w_pos+100, h_pos, "saturation_val_auto");
+		   addCtrl(phisSlider, w_pos, h_pos+10, "saturation_s_auto");
+		   
+		   h_pos += h_step;
+		   slidersStaticText->SetText("Consumption:");
+		   addCtrl(slidersStaticText, w_pos, h_pos, "consumption_t_auto");
+		   addCtrl(slidersValText, w_pos+100, h_pos, "consumption_val_auto");
+		   addCtrl(phisSlider, w_pos, h_pos+10, "consumption_s_auto");
+		   
+		   h_pos += h_step;
+		   slidersStaticText->SetText("Fertility:");
+		   addCtrl(slidersStaticText, w_pos, h_pos, "fertility_t_auto");
+		   addCtrl(slidersValText, w_pos+100, h_pos, "fertility_val_auto");
+		   addCtrl(phisSlider, w_pos, h_pos+10, "fertility_s_auto");
+
+		   phisSlider->SetMode(0, 1000, HGESLIDER_BAR);
+		   h_pos += h_step;
+		   slidersStaticText->SetText("Live time:");
+		   addCtrl(slidersStaticText, w_pos, h_pos, "live_time_t_auto");
+		   addCtrl(slidersValText, w_pos+100, h_pos, "live_time_val_auto");
+		   addCtrl(phisSlider, w_pos, h_pos+10, "live_time_s_auto");
+		   
+		   h_pos += h_step;
+		   slidersStaticText->SetText("Max energy:");
+		   addCtrl(slidersStaticText, w_pos, h_pos, "energy_max_t_auto");
+		   addCtrl(slidersValText, w_pos+100, h_pos, "energy_max_val_auto");
+		   addCtrl(phisSlider, w_pos, h_pos+10, "energy_max_s_auto");
+		   
+		   h_pos += h_step;
+		   slidersStaticText->SetText("Mature energy:");
+		   addCtrl(slidersStaticText, w_pos, h_pos, "energy_mature_t_auto");
+		   addCtrl(slidersValText, w_pos+100, h_pos, "energy_mature_val_auto");
+		   addCtrl(phisSlider, w_pos, h_pos+10, "energy_mature_s_auto");
+		   
+		   h_pos += h_step;
+		   slidersStaticText->SetText("Hungry energy:");
+		   addCtrl(slidersStaticText, w_pos, h_pos, "energy_hungry_t_auto");
+		   addCtrl(slidersValText, w_pos+100, h_pos, "energy_hungry_val_auto");
+		   addCtrl(phisSlider, w_pos, h_pos+10, "energy_hungry_s_auto");
+		   
+		   h_pos += h_step;
+		   slidersStaticText->SetText("Reproduction cost:");
+		   addCtrl(slidersStaticText, w_pos, h_pos, "reproduction_cost_t_auto");
+		   addCtrl(slidersValText, w_pos+100, h_pos, "reproduction_cost_val_auto");
+		   addCtrl(phisSlider, w_pos, h_pos+10, "reproduction_cost_s_auto");
+		   
+		   h_pos += h_step;
+		   slidersStaticText->SetText("Reproduction time:");
+		   addCtrl(slidersStaticText, w_pos, h_pos, "reproduction_time_t_auto");
+		   addCtrl(slidersValText, w_pos+100, h_pos, "reproduction_time_val_auto");
+		   addCtrl(phisSlider, w_pos, h_pos+10, "reproduction_time_s_auto");
+		   
+		   h_pos += h_step;
+		   slidersStaticText->SetText("Reproduction pause:");
+		   addCtrl(slidersStaticText, w_pos, h_pos, "reproduction_pause_t_auto");
+		   addCtrl(slidersValText, w_pos+100, h_pos, "reproduction_pause_val_auto");
+		   addCtrl(phisSlider, w_pos, h_pos+10, "reproduction_pause_s_auto");
+
+
+
+
+
+		   w_pos = 230;
+		   h_pos = 50;
+		   h_step = 25;
+
+		   phisSlider->SetMode(0, 10, HGESLIDER_BAR);
+		   slidersStaticText->SetText("Acceleration:");
+		   addCtrl(slidersStaticText, w_pos, h_pos, "acceleration_t_getero");
+		   addCtrl(slidersValText, w_pos+100, h_pos, "acceleration_val_getero");
+		   addCtrl(phisSlider, w_pos, h_pos+10, "acceleration_s_getero");
+
+		   phisSlider->SetMode(0, 1000, HGESLIDER_BAR);
+		   h_pos += h_step;
+		   slidersStaticText->SetText("Max HP:");
+		   addCtrl(slidersStaticText, w_pos, h_pos, "hp_max_t_getero");
+		   addCtrl(slidersValText, w_pos+100, h_pos, "hp_max_val_getero");
+		   addCtrl(phisSlider, w_pos, h_pos+10, "hp_max_s_getero");
+
+		   phisSlider->SetMode(0, 100, HGESLIDER_BAR);
+		   h_pos += h_step;
+		   slidersStaticText->SetText("Saturation:");
+		   addCtrl(slidersStaticText, w_pos, h_pos, "saturation_t_getero");
+		   addCtrl(slidersValText, w_pos+100, h_pos, "saturation_val_getero");
+		   addCtrl(phisSlider, w_pos, h_pos+10, "saturation_s_getero");
+		   
+		   h_pos += h_step;
+		   slidersStaticText->SetText("Consumption:");
+		   addCtrl(slidersStaticText, w_pos, h_pos, "consumption_t_getero");
+		   addCtrl(slidersValText, w_pos+100, h_pos, "consumption_val_getero");
+		   addCtrl(phisSlider, w_pos, h_pos+10, "consumption_s_getero");
+		   
+		   h_pos += h_step;
+		   slidersStaticText->SetText("Fertility:");
+		   addCtrl(slidersStaticText, w_pos, h_pos, "fertility_t_getero");
+		   addCtrl(slidersValText, w_pos+100, h_pos, "fertility_val_getero");
+		   addCtrl(phisSlider, w_pos, h_pos+10, "fertility_s_getero");
+
+		   phisSlider->SetMode(0, 1000, HGESLIDER_BAR);
+		   h_pos += h_step;
+		   slidersStaticText->SetText("Live time:");
+		   addCtrl(slidersStaticText, w_pos, h_pos, "live_time_t_getero");
+		   addCtrl(slidersValText, w_pos+100, h_pos, "live_time_val_getero");
+		   addCtrl(phisSlider, w_pos, h_pos+10, "live_time_s_getero");
+		   
+		   h_pos += h_step;
+		   slidersStaticText->SetText("Max energy:");
+		   addCtrl(slidersStaticText, w_pos, h_pos, "energy_max_t_getero");
+		   addCtrl(slidersValText, w_pos+100, h_pos, "energy_max_val_getero");
+		   addCtrl(phisSlider, w_pos, h_pos+10, "energy_max_s_getero");
+		   
+		   h_pos += h_step;
+		   slidersStaticText->SetText("Mature energy:");
+		   addCtrl(slidersStaticText, w_pos, h_pos, "energy_mature_t_getero");
+		   addCtrl(slidersValText, w_pos+100, h_pos, "energy_mature_val_getero");
+		   addCtrl(phisSlider, w_pos, h_pos+10, "energy_mature_s_getero");
+		   
+		   h_pos += h_step;
+		   slidersStaticText->SetText("Hungry energy:");
+		   addCtrl(slidersStaticText, w_pos, h_pos, "energy_hungry_t_getero");
+		   addCtrl(slidersValText, w_pos+100, h_pos, "energy_hungry_val_getero");
+		   addCtrl(phisSlider, w_pos, h_pos+10, "energy_hungry_s_getero");
+		   
+		   h_pos += h_step;
+		   slidersStaticText->SetText("Reproduction cost:");
+		   addCtrl(slidersStaticText, w_pos, h_pos, "reproduction_cost_t_getero");
+		   addCtrl(slidersValText, w_pos+100, h_pos, "reproduction_cost_val_getero");
+		   addCtrl(phisSlider, w_pos, h_pos+10, "reproduction_cost_s_getero");
+		   
+		   h_pos += h_step;
+		   slidersStaticText->SetText("Reproduction time:");
+		   addCtrl(slidersStaticText, w_pos, h_pos, "reproduction_time_t_getero");
+		   addCtrl(slidersValText, w_pos+100, h_pos, "reproduction_time_val_getero");
+		   addCtrl(phisSlider, w_pos, h_pos+10, "reproduction_time_s_getero");
+		   
+		   h_pos += h_step;
+		   slidersStaticText->SetText("Reproduction pause:");
+		   addCtrl(slidersStaticText, w_pos, h_pos, "reproduction_pause_t_getero");
+		   addCtrl(slidersValText, w_pos+100, h_pos, "reproduction_pause_val_getero");
+		   addCtrl(phisSlider, w_pos, h_pos+10, "reproduction_pause_s_getero");
+
+
+		   hgeQuad cellQ;
+		    cellQ.v[0].col=
+			   cellQ.v[1].col=
+			   cellQ.v[2].col=
+			   cellQ.v[3].col=0xFF444444;
+		   cellQ.v[0].z=
+			   cellQ.v[1].z=
+			   cellQ.v[2].z=
+			   cellQ.v[3].z=0.5f;
+		   cellQ.blend=BLEND_COLORMUL | BLEND_ALPHABLEND | BLEND_NOZWRITE;
+		   cellQ.tex=0;
+
+		   cellQ.v[0].x=5;
+		   cellQ.v[0].y=20;
+		   cellQ.v[1].x=215;
+		   cellQ.v[1].y=20;
+		   cellQ.v[2].x=215;
+		   cellQ.v[2].y=350;
+		   cellQ.v[3].x=5;
+		   cellQ.v[3].y=350;
+		   graphic.push_back(cellQ);
+
+		   cellQ.v[0].x=225;
+		   cellQ.v[0].y=20;
+		   cellQ.v[1].x=435;
+		   cellQ.v[1].y=20;
+		   cellQ.v[2].x=435;
+		   cellQ.v[2].y=350;
+		   cellQ.v[3].x=225;
+		   cellQ.v[3].y=350;
+		   graphic.push_back(cellQ);
+
 
 		   HTEXTURE editPhisButTex = getButtonTex(300, 20, objsColor, 0.1);
 		   hgeGUIButton *editPhisBut;
@@ -403,86 +555,119 @@ private:
 		   editPhisButText->SetMode(HGETEXT_CENTER);
 		   editPhisButText->bEnabled = false;
 
-
 		   editPhisButText->SetText("Standart");
-		   addCtrl(editPhisBut, 10, 355, "standart_phis_but", standart_PhisGenes);
-		   addCtrl(editPhisButText, 10, 360, "standart_phis_but_t");
+		   addCtrl(editPhisBut, 70, 355, "standart_phis_but", standart_PhisGenes);
+		   addCtrl(editPhisButText, 70, 360, "standart_phis_but_t");
 
 		   editPhisButText->SetText("Apply");
-		   addCtrl(editPhisBut, 10, 380, "edit_phis_but", set_PhisGenes);
-		   addCtrl(editPhisButText, 10, 385, "edit_phis_but_t");
+		   addCtrl(editPhisBut, 70, 380, "edit_phis_but", set_PhisGenes);
+		   addCtrl(editPhisButText, 70, 385, "edit_phis_but_t");
 	   };
 public:
-
 	static void get_PhisGenes() {
-		SetWinSliderValue(self, "acceleration_s", genes->phis[acceleration]);
-		SetWinSliderValue(self, "hp_max_s", genes->phis[hp_max]);
-		SetWinSliderValue(self, "saturation_s", genes->phis[saturation]);
-		SetWinSliderValue(self, "consumption_s", genes->phis[consumption]);
-		SetWinSliderValue(self, "fertility_s", genes->phis[fertility]);
-		SetWinSliderValue(self, "live_time_s", genes->phis[live_time]);
-		SetWinSliderValue(self, "energy_max_s", genes->phis[energy_max]);
-		SetWinSliderValue(self, "energy_mature_s", genes->phis[energy_mature]);
-		SetWinSliderValue(self, "energy_hungry_s", genes->phis[energy_hungry]);
-		SetWinSliderValue(self, "reproduction_cost_s", genes->phis[reproduction_cost]);
-		SetWinSliderValue(self, "reproduction_time_s", genes->phis[reproduction_time]);
-		SetWinSliderValue(self, "reproduction_pause_s", genes->phis[reproduction_pause]);
+		SetWinSliderValue(self, "acceleration_s_auto", phisAuto.phis[acceleration]);
+		SetWinSliderValue(self, "hp_max_s_auto", phisAuto.phis[hp_max]);
+		SetWinSliderValue(self, "saturation_s_auto", phisAuto.phis[saturation]);
+		SetWinSliderValue(self, "consumption_s_auto", phisAuto.phis[consumption]);
+		SetWinSliderValue(self, "fertility_s_auto", phisAuto.phis[fertility]);
+		SetWinSliderValue(self, "live_time_s_auto", phisAuto.phis[live_time]);
+		SetWinSliderValue(self, "energy_max_s_auto", phisAuto.phis[energy_max]);
+		SetWinSliderValue(self, "energy_mature_s_auto", phisAuto.phis[energy_mature]);
+		SetWinSliderValue(self, "energy_hungry_s_auto", phisAuto.phis[energy_hungry]);
+		SetWinSliderValue(self, "reproduction_cost_s_auto", phisAuto.phis[reproduction_cost]);
+		SetWinSliderValue(self, "reproduction_time_s_auto", phisAuto.phis[reproduction_time]);
+		SetWinSliderValue(self, "reproduction_pause_s_auto", phisAuto.phis[reproduction_pause]);
+
+		
+		SetWinSliderValue(self, "acceleration_s_getero", phisGetero.phis[acceleration]);
+		SetWinSliderValue(self, "hp_max_s_getero", phisGetero.phis[hp_max]);
+		SetWinSliderValue(self, "saturation_s_getero", phisGetero.phis[saturation]);
+		SetWinSliderValue(self, "consumption_s_getero", phisGetero.phis[consumption]);
+		SetWinSliderValue(self, "fertility_s_getero", phisGetero.phis[fertility]);
+		SetWinSliderValue(self, "live_time_s_getero", phisGetero.phis[live_time]);
+		SetWinSliderValue(self, "energy_max_s_getero", phisGetero.phis[energy_max]);
+		SetWinSliderValue(self, "energy_mature_s_getero", phisGetero.phis[energy_mature]);
+		SetWinSliderValue(self, "energy_hungry_s_getero", phisGetero.phis[energy_hungry]);
+		SetWinSliderValue(self, "reproduction_cost_s_getero", phisGetero.phis[reproduction_cost]);
+		SetWinSliderValue(self, "reproduction_time_s_getero", phisGetero.phis[reproduction_time]);
+		SetWinSliderValue(self, "reproduction_pause_s_getero", phisGetero.phis[reproduction_pause]);
 	}
 
 	static void set_PhisGenes() {
-		genes->phis[acceleration] = GetWinSliderValue(self, "acceleration_s");
-		genes->phis[hp_max] = GetWinSliderValue(self, "hp_max_s");
-		genes->phis[saturation] = GetWinSliderValue(self, "saturation_s");
-		genes->phis[consumption] = GetWinSliderValue(self, "consumption_s");
-		genes->phis[fertility] = GetWinSliderValue(self, "fertility_s");
-		genes->phis[live_time] = GetWinSliderValue(self, "live_time_s");
-		genes->phis[energy_max] = GetWinSliderValue(self, "energy_max_s");
-		genes->phis[energy_mature] = GetWinSliderValue(self, "energy_mature_s");
-		genes->phis[energy_hungry] = GetWinSliderValue(self, "energy_hungry_s");
-		genes->phis[reproduction_cost] = GetWinSliderValue(self, "reproduction_cost_s");
-		genes->phis[reproduction_time] = GetWinSliderValue(self, "reproduction_time_s");
-		genes->phis[reproduction_pause] = GetWinSliderValue(self, "reproduction_pause_s");
-
 		if (!env.population.empty()) {
 			std::map <long long int, Individ_Proto*> ::iterator p = env.population.begin();
 			while (p != env.population.end()) {
-				p->second->dna.phis = genes->phis;
+				if (p->second->dna.diet == AUTO) 
+					p->second->dna.phis = phisAuto.phis;
+				if (p->second->dna.diet == GETERO) 
+					p->second->dna.phis = phisGetero.phis;
 				p++;
 			}
 		}
 	}
 
 	static void standart_PhisGenes() {
-		genes->phis[acceleration] = 0.3;
-		genes->phis[hp_max] = 10; 
-		genes->phis[saturation] = 10;
-		genes->phis[consumption] = 2;
-		genes->phis[fertility] = 4;
-		genes->phis[live_time] = 400;
-		genes->phis[energy_max] = 1000;
-		genes->phis[energy_mature] = 0;
-		genes->phis[energy_hungry] = 0;
-		genes->phis[reproduction_cost] = 10; 
-		genes->phis[reproduction_time] = 10; 
-		genes->phis[reproduction_pause] = 100;
+		phisAuto.phis[acceleration] = 0.2;
+		phisAuto.phis[hp_max] = 50;
+		phisAuto.phis[saturation] = 10;
+		phisAuto.phis[consumption] = 2;
+		phisAuto.phis[fertility] = 0;
+		phisAuto.phis[live_time] = 400;
+
+		phisAuto.phis[energy_max] = 1000;
+		phisAuto.phis[energy_mature] = 300;
+		phisAuto.phis[energy_hungry] = 200;
+
+		phisAuto.phis[reproduction_cost] = 150;
+		phisAuto.phis[reproduction_time] = 15;
+		phisAuto.phis[reproduction_pause] = 100;
+
+
+		phisGetero.phis[acceleration] = 0.2;
+		phisGetero.phis[hp_max] = 50;
+		phisGetero.phis[saturation] = 20;
+		phisGetero.phis[consumption] = 2;
+		phisGetero.phis[fertility] = 0;
+		phisGetero.phis[live_time] = 800;
+
+		phisGetero.phis[energy_max] = 800;
+		phisGetero.phis[energy_mature] = 300;
+		phisGetero.phis[energy_hungry] = 600;
+
+		phisGetero.phis[reproduction_cost] = 150;
+		phisGetero.phis[reproduction_time] = 15;
+		phisGetero.phis[reproduction_pause] = 100;
 
 		get_PhisGenes();
 	};
 
 public:
 	void UpdateFunc() {
-		SetWinLink(self, "acceleration_s", "acceleration_val");
-		SetWinLink(self, "hp_max_s", "hp_max_val");
-		SetWinLink(self, "saturation_s", "saturation_val");
-		SetWinLink(self, "consumption_s", "consumption_val");
-		SetWinLink(self, "fertility_s", "fertility_val");
-		SetWinLink(self, "live_time_s", "live_time_val");
-		SetWinLink(self, "energy_max_s", "energy_max_val");
-		SetWinLink(self, "energy_mature_s", "energy_mature_val");
-		SetWinLink(self, "energy_hungry_s", "energy_hungry_val");
-		SetWinLink(self, "reproduction_cost_s", "reproduction_cost_val");
-		SetWinLink(self, "reproduction_time_s", "reproduction_time_val");
-		SetWinLink(self, "reproduction_pause_s", "reproduction_pause_val");
+		SetWinLink(self, "acceleration_s_auto", "acceleration_val_auto");
+		SetWinLink(self, "hp_max_s_auto", "hp_max_val_auto");
+		SetWinLink(self, "saturation_s_auto", "saturation_val_auto");
+		SetWinLink(self, "consumption_s_auto", "consumption_val_auto");
+		SetWinLink(self, "fertility_s_auto", "fertility_val_auto");
+		SetWinLink(self, "live_time_s_auto", "live_time_val_auto");
+		SetWinLink(self, "energy_max_s_auto", "energy_max_val_auto");
+		SetWinLink(self, "energy_mature_s_auto", "energy_mature_val_auto");
+		SetWinLink(self, "energy_hungry_s_auto", "energy_hungry_val_auto");
+		SetWinLink(self, "reproduction_cost_s_auto", "reproduction_cost_val_auto");
+		SetWinLink(self, "reproduction_time_s_auto", "reproduction_time_val_auto");
+		SetWinLink(self, "reproduction_pause_s_auto", "reproduction_pause_val_auto");
+		
+		SetWinLink(self, "acceleration_s_getero", "acceleration_val_getero");
+		SetWinLink(self, "hp_max_s_getero", "hp_max_val_getero");
+		SetWinLink(self, "saturation_s_getero", "saturation_val_getero");
+		SetWinLink(self, "consumption_s_getero", "consumption_val_getero");
+		SetWinLink(self, "fertility_s_getero", "fertility_val_getero");
+		SetWinLink(self, "live_time_s_getero", "live_time_val_getero");
+		SetWinLink(self, "energy_max_s_getero", "energy_max_val_getero");
+		SetWinLink(self, "energy_mature_s_getero", "energy_mature_val_getero");
+		SetWinLink(self, "energy_hungry_s_getero", "energy_hungry_val_getero");
+		SetWinLink(self, "reproduction_cost_s_getero", "reproduction_cost_val_getero");
+		SetWinLink(self, "reproduction_time_s_getero", "reproduction_time_val_getero");
+		SetWinLink(self, "reproduction_pause_s_getero", "reproduction_pause_val_getero");
 	};
 
 public:
@@ -952,38 +1137,11 @@ void randPopulation(int count) {
 	GeneticCode temp = *genes;
 	for (int i=0; i<count; i++) {
 		genes->randomize();
-		genes->diet = AUTO;
-		if (genes->diet == AUTO) {
-			genes->phis[acceleration] = 0.2;
-			genes->phis[hp_max] = 50;
-			genes->phis[saturation] = 10;
-			genes->phis[consumption] = 2;
-			genes->phis[fertility] = 0;
-			genes->phis[live_time] = 400;
-
-			genes->phis[energy_max] = 1000;
-			genes->phis[energy_mature] = 300;
-			genes->phis[energy_hungry] = 200;
-
-			genes->phis[reproduction_cost] = 150;
-			genes->phis[reproduction_time] = 15;
-			genes->phis[reproduction_pause] = 100;
-		} else {
-			genes->phis[acceleration] = 0.2;
-			genes->phis[hp_max] = 50;
-			genes->phis[saturation] = 20;
-			genes->phis[consumption] = 2;
-			genes->phis[fertility] = 0;
-			genes->phis[live_time] = 800;
-
-			genes->phis[energy_max] = 800;
-			genes->phis[energy_mature] = 300;
-			genes->phis[energy_hungry] = 600;
-
-			genes->phis[reproduction_cost] = 150;
-			genes->phis[reproduction_time] = 15;
-			genes->phis[reproduction_pause] = 100;
-		}
+		genes->diet = func::randBool();
+		genes->diet ?
+		genes->phis = phisGetero.phis :
+		genes->phis = phisAuto.phis;
+		
 		env.addIndivid(
 			CreateIndivid(Vector <int> (func::randi(0, env.W()-2), func::randi(0, env.H()-2)), *genes)
 			);
@@ -1094,27 +1252,6 @@ public:
 };
 Win_MainMenu *Win_MainMenu::self = NULL;
 
-
-//организовать ещё окно для настройки отображения
-//if (zoom != hgeSliderGetValue(mainGUI, CMD_ZOOM)) {
-//	zoom = hgeSliderGetValue(mainGUI, CMD_ZOOM);
-//	display->setZoom(zoom);
-//}
-
-
-//text = new hgeGUIText(GUI_TEXT, 610, 285, 180, 30, fnt);
-//text->SetMode(HGETEXT_CENTER);
-//text->SetColor(0xFFFFFFFF);
-//text->SetText("Zoom");
-//text->bEnabled = false;
-//mainGUI->AddCtrl(text);
-
-//hgeGUISlider *slid;
-//slid = new hgeGUISlider(CMD_ZOOM, 610, 300, 180, 10, Tex, 1, 0, 5, 10);
-//slid->SetMode(1, env.H()/10, HGESLIDER_BAR);
-//slid->SetValue(1);
-//mainGUI->AddCtrl(slid);
-
 void CheckKeys() {
 
 	static Vector <int> pastPos;
@@ -1196,6 +1333,12 @@ void CheckKeys() {
 	}
 
 	int deltaZ = hge->Input_GetMouseWheel();
+
+	if (hge->Input_GetKeyState(HGEK_MINUS)) 
+		deltaZ = -1;
+	if (hge->Input_GetKeyState(HGEK_EQUALS))
+		deltaZ = 1;
+
 	if (deltaZ != 0) {
 		if (zoomStep + deltaZ >= -8) 
 			zoomStep += deltaZ;
