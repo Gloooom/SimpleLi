@@ -71,7 +71,7 @@ bool FrameFunc() {
 		p++;
 	}
 
-	CheckKeys();
+	UpdateGUI();
 	winManager->Update(dt, state.mp.x, state.mp.y);
 	
 	if (env.population.find(selectID) != env.population.end()) 
@@ -137,7 +137,6 @@ bool RenderFunc()
 void addIndivid(Vector <int> p, Mode_feeding diet) {
 	GeneticCode g;
 
-	g.radialEye.setHeight(0);
 	g.eyes.push_back(FOV_Tri(0, 30, 20));
 	g.diet=diet;
 	g.color = 0xFF000000;

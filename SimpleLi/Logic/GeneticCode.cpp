@@ -3,6 +3,21 @@
 
 using namespace func;
 
+
+GenesConfines *GenesConfines::_self = NULL;
+
+std::vector <Interval> GenesConfines::phisConf = std::vector <Interval>();
+std::vector <Interval> GenesConfines::socConf = std::vector <Interval>();
+
+std::vector <Interval> GenesConfines::eyesConf = std::vector <Interval>();
+
+void GeneticCode::mutationGen(int Status, int selectGen, float maxDelta) {
+	soc[Status][selectGen] = getVariation(
+				soc[Status][selectGen], 
+				config->socConf[selectGen], 
+				maxDelta);
+}
+
 GeneticCode GeneticCode::hibridization(GeneticCode person, Mode_hibrid mode) {
 	GeneticCode result;
 	result.diet = diet;
@@ -53,15 +68,9 @@ GeneticCode GeneticCode::mutation(float maxDelta, int mutGenCount, float eyeAddC
 		for (int j=0; j<end_of_soc; j++)
 			result.soc[i][j] = soc[i][j];
 	
-	for (int i = 0; i<mutGenCount; i++) {
-		int selectStatus, selectSoc;
-		selectStatus = randi(0, end_of_status-1);
-		selectSoc = randi(0, end_of_soc-1);
-		if (selectSoc != 0 && selectSoc != 1)
-			result.soc[selectStatus][selectSoc] = getVariation(soc[selectStatus][selectSoc], maxDelta);
-		else 
-			result.soc[selectStatus][selectSoc] = getVariation(soc[selectStatus][selectSoc], maxDelta, false);
-	}
+	for (int i = 0; i<mutGenCount; i++) 
+		mutationGen(randi(0, end_of_status-1), randi(0, end_of_soc-1), maxDelta);	
+	
 	
 	if (randPercentBool(eyeMutationChance)) {
 		int selectEye = randi(0, eyes.size()-1);
@@ -69,7 +78,6 @@ GeneticCode GeneticCode::mutation(float maxDelta, int mutGenCount, float eyeAddC
 	}
 
 	if (randPercentBool(eyeAddChance)) result.eyes.push_back(FOV_Tri(randf(-M_PI, M_PI), randf(0,50), randf(0,50)));
-	if (randPercentBool(radEyeMutationChance)) result.radialEye = radialEye.mutation(maxDelta);
 
 	return result;
 }

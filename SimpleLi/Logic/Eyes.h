@@ -5,16 +5,21 @@ private:
 	float _angle;
 	float _height;
 	float _width;
+	GenesConfines *config;
 	Point <double> polygon[3];
 public:
 	FOV_Tri():
 		_angle(0),
 		_height(0),
-		_width(0) {};
+		_width(0),
+		config(GenesConfines::instance())
+		{};
 	FOV_Tri(float ang, float wdt, float hgt):
 		_angle(ang),
 		_height(hgt),
-		_width(wdt) {calculatPolygon();};
+		_width(wdt),
+		config(GenesConfines::instance())
+		{calculatPolygon();};
 
 	float getAngle()	{return _angle;};
 	float getHeight()	{return _height;};
@@ -106,9 +111,9 @@ public:
 
 	FOV_Tri mutation(float coef) {
 		FOV_Tri result;
-			result._angle = getVariation(_angle, coef);
-			result._height = getVariation(_height, coef, false, false);
-			result._width = getVariation(_width, coef, false, false); 
+		result._angle = getVariation(_angle, config->eyesConf[0], coef);
+			result._height = getVariation(_height, config->eyesConf[1], coef, false);
+			result._width = getVariation(_width, config->eyesConf[2], coef, false); 
 		result.calculatPolygon();
 		return result;
 	};
@@ -151,33 +156,5 @@ public:
 		} else {
 			return false;
 		}
-	};
-};
-
-class FOV_Rad {
-private:
-	float _height;
-public:
-	FOV_Rad(): 
-	  _height(0) {};
-	FOV_Rad(float hgt):
-		_height(hgt)
-	{ };
-
-	float angle()	{return 0;};
-	float height()	{return _height;};
-	float width()	{return 0;};
-
-	void setHeight(float hgt) {_height = hgt;};
-
-	FOV_Rad mutation(float coef) {
-		FOV_Rad result;
-		getVariation(_height, coef, false);
-		return result;
-	};
-	FOV_Rad hibrid(FOV_Rad eye) {
-		FOV_Rad result;
-		result._height = (_height + eye._height)/2;
-		return result;
 	};
 };

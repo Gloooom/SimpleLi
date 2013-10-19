@@ -132,23 +132,9 @@ private:
 	std::deque <Individ_Proto*> cradle;
 
 public:
-	Environment(int width, int height):
-	field(width, height) {
-		_width = width;
-		_height = height;
-		empty.dna.color = 0xFFFFFFFF;
-		mutation_maxDelta = 0;
-		mutation_mutGenCount = 1;
-		mutation_eyeAddChance = 0;
-		mutation_eyeMutationChance = 0;
-		mutation_radEyeMutationChance = 0;
-
-		stepCount = 0;
-		for (int i=0; i<field.getW(); i++)
-			for (int j=0; j<field.getH(); j++)
-				field(i,j ) = &empty;
-	};
+	Environment(int width, int height);
 	~Environment() { };
+
 	void save(std::string path);
 	void load(std::string path);
 

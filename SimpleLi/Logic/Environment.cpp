@@ -2,6 +2,26 @@
 
 #pragma once
 
+
+Environment::Environment(int width, int height):
+	field(width, height) {
+		_width = width;
+		_height = height;
+		empty.dna.color = 0xFFFFFFFF;
+		mutation_maxDelta = 0;
+		mutation_mutGenCount = 1;
+		mutation_eyeAddChance = 0;
+		mutation_eyeMutationChance = 0;
+		mutation_radEyeMutationChance = 0;
+
+		stepCount = 0;
+		for (int i=0; i<field.getW(); i++)
+			for (int j=0; j<field.getH(); j++)
+				field(i,j ) = &empty;
+
+		//Реализация генетических ограничений//
+	};
+
 void saveVal(std::ofstream *out, UnionVal *val) {
 	for (int i = 0; i<8; i++) {
 		*out << val->by[i];
@@ -49,7 +69,6 @@ void Environment::save(std::string path) {
 			val.f = p->second->dna.eyes[i].getWidth();
 			saveVal(&outf, &val);
 		}
-		val.f = p->second->dna.radialEye.height();
 		saveVal(&outf, &val);
 		for (int i = 0; i<end_of_phis; i++) {
 			val.f = p->second->dna.phis[i];
@@ -124,7 +143,6 @@ void Environment::load(std::string path) {
 			ind->dna.eyes.push_back(tempEye);
 		}
 		loadVal(&inf, &val);
-		ind->dna.radialEye.setHeight(val.f);
 		for (int i = 0; i<end_of_phis; i++) {
 			loadVal(&inf, &val);
 			ind->dna.phis[i] = val.f;

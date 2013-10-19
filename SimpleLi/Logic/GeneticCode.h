@@ -2,7 +2,6 @@
 #pragma once
 
 #include "Functions.h"
-#include "Eyes.h"
 
 enum Phis { 
 	acceleration,
@@ -41,15 +40,50 @@ enum Soc {
 	end_of_soc
 };
 
+class GenesConfines {
+private:
+	static GenesConfines *_self;
+	GenesConfines() {
+		phisConf.resize(end_of_phis, Interval(0, 0));
+		socConf.resize(end_of_soc, Interval(0, 10));
+		eyesConf.resize(3, Interval(0, 10));
+
+		eyesConf[0].start = -M_PI;
+		eyesConf[0].end = M_PI;
+
+		socConf[max_speed].start = 0;
+		socConf[max_speed].end = 5;
+		socConf[rand_way].start = 0;
+		socConf[rand_way].end = M_PI;
+	};
+	~GenesConfines();
+public:
+	static std::vector <Interval> phisConf;
+	static std::vector <Interval> socConf;
+
+	static std::vector <Interval> eyesConf;
+
+	static GenesConfines *instance() {
+		if (_self == NULL) {
+			_self = new GenesConfines();
+		}
+		return _self;
+	};
+};
+
+
+#include "Eyes.h"
+
 class GeneticCode {
 public:
 	std::vector <float> phis;
 	std::vector <std::vector <float> > soc;
 
 	DWORD color;
-	FOV_Rad radialEye;
 	std::vector <FOV_Tri> eyes;
 	int diet;
+private:
+	GenesConfines *config;
 public:
 	GeneticCode() {
 		color=0xFF000000;
@@ -61,6 +95,8 @@ public:
 		std::vector <float> one_of_soc;
 		one_of_soc.resize(end_of_soc, 0);
 		soc.resize(end_of_status, one_of_soc);
+
+		config = GenesConfines::instance();
 	};
 
 	GeneticCode hibridization(GeneticCode person, Mode_hibrid mode);
@@ -70,4 +106,7 @@ public:
 	void randomize();
 	bool save(std::string path);
 	bool load(std::string path);
+
+private:
+	void mutationGen(int selectStatus, int selectSoc, float maxDelta);
 };

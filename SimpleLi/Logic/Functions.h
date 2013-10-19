@@ -19,12 +19,20 @@ namespace func {
 	Point <double> crossLine(double k1, double b1, double k2, double b2);
 
 	template <typename F>
-	F getVariation (F d, double coef, bool negativeValue = true, bool zeroValue = true) {
-		//coef определяет максимально возможное отклонение в процентах.
-		F maxDelta = abs(d*coef);
-		F result = d + randf(maxDelta*(-1), maxDelta);
-		if (!negativeValue && result < 0) result = 0;
-		if (!zeroValue && result == 0) result = 0.0001;
+	F getVariation (F def, Interval interval, float coef, bool zeroValue = true) {
+		/*
+		def			- значение, измененную версию которого нужно получить
+		interval	- определяет границы интервала, в котором нужно получить значение
+		coef		- определяет максимально возможное отклонение в процентах 
+		диапазон отклонения равен проценту, взятому от длины интервала.
+		максимальное отклонение от def равно половине диапазоны; т.е. */
+		F maxDelta = (abs(interval.end - interval.start)*coef)/2;
+
+		F result = def + randf(maxDelta*(-1), maxDelta);
+
+		if (result <= interval.start) result = interval.start;
+		if (result >= interval.end) result = interval.end;
+		if (result == 0 && !zeroValue) result = 0.01;
 		return result;
 	}
 

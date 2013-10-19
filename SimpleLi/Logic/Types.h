@@ -37,7 +37,13 @@ public:
 	};
 };
 
-
+struct Interval {
+	float start;
+	float end;
+	Interval(float _start, float _end):
+		start(_start),
+		end(_end) {};
+};
 
 
 

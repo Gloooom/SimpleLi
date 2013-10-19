@@ -392,6 +392,8 @@ private:
 		   addCtrl(slidersValText, w_pos+100, h_pos, "live_time_val_auto");
 		   addCtrl(phisSlider, w_pos, h_pos+10, "live_time_s_auto");
 		   
+		   
+		   phisSlider->SetMode(0, 5000, HGESLIDER_BAR);
 		   h_pos += h_step;
 		   slidersStaticText->SetText("Max energy:");
 		   addCtrl(slidersStaticText, w_pos, h_pos, "energy_max_t_auto");
@@ -1251,7 +1253,7 @@ public:
 		env.clear();
 	}
 	static void cmd_rand_pop() {
-		randPopulation(sqrt((double)(env.H()*env.W()))*2);
+		randPopulation(sqrt((double)(env.H()*env.W()))*4);
 		//randPopulation(10);
 	}
 	static void cmd_pause() {
@@ -1278,7 +1280,7 @@ public:
 };
 Win_MainMenu *Win_MainMenu::self = NULL;
 
-void CheckKeys() {
+void UpdateGUI() {
 
 	static Vector <int> pastPos;
 	static Vector <int> downPos;
